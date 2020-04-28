@@ -9,5 +9,5 @@ inline fun <reified T : GenericEvent> JDA.listener(crossinline consumer: suspend
             if (event is T)
                 consumer(event)
         }
-    }.also(this::addEventListener)
+    }.also { addEventListener(it) }
 }

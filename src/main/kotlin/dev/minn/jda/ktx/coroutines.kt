@@ -8,22 +8,18 @@ import java.util.concurrent.CompletableFuture
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-suspend fun <T> RestAction<T>.await() = suspendCancellableCoroutine<T> { cont ->
-    var check = true
-    cont.invokeOnCancellation { check = false }
-    setCheck { check }
-    queue(cont::resume, cont::resumeWithException)
-}
-
 suspend fun <T> CompletableFuture<T>.await() = suspendCancellableCoroutine<T> {
-    it.invokeOnCancellation { this.cancel(true) }
+    it.invokeOnCancellation { cancel(true) }
     whenComplete { r, e ->
-        if (e != null)
-            it.resumeWithException(e)
-        else
-            it.resume(r)
+        when {
+            e != null -> it.resumeWithException(e)
+            else -> it.resume(r)
+        }
     }
 }
+
+@Suppress("HasPlatformType")
+suspend fun <T> RestAction<T>.await() = submit().await()
 
 suspend inline fun <reified T : GenericEvent> JDA.await(crossinline filter: (T) -> Boolean = { true }) = suspendCancellableCoroutine<T> {
     val listener = object : CoroutineEventListener {
@@ -33,6 +29,7 @@ suspend inline fun <reified T : GenericEvent> JDA.await(crossinline filter: (T) 
                 it.resume(event)
             }
         }
-    }.also(this::addEventListener)
+    }
+    addEventListener(listener)
     it.invokeOnCancellation { removeEventListener(listener) }
 }
