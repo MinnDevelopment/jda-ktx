@@ -7,11 +7,13 @@ version = "0.1.0-rc"
 
 repositories {
     jcenter()
+    maven("https://jitpack.io")
 }
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("net.dv8tion:JDA:4.1.1_140")
+    compileOnly("com.github.dv8fromtheworld:jda:78d0846")
+//    implementation("net.dv8tion:JDA:4.1.1_140")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
 }
 
