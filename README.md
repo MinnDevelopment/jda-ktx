@@ -4,6 +4,7 @@
 [3]: https://github.com/MinnDevelopment/jda-reactor
 
 [4]: https://github.com/MinnDevelopment/jda-ktx/tree/master/src/main/kotlin/dev/minn/jda/ktx/CoroutineEventManager.kt
+[5]: https://github.com/MinnDevelopment/jda-reactor/tree/master/src/main/java/club/minnced/jda/reactor/ReactiveEventManager.java
 
 # jda-ktx
 
@@ -20,6 +21,7 @@ val jda = JDABuilder.createLight("token")
     .setEventManager(CoroutineEventManager())
     .build()
 
+// This can only be used with the CoroutineEventManager
 jda.listener<MessageReceivedEvent> {
     val guild = it.guild
     val channel = it.channel
@@ -49,6 +51,10 @@ jda.listener<MessageReceivedEvent> {
 ### Coroutine Extensions
 
 I've added a few suspending extension functions to various JDA components.
+None of these extensions require the `CoroutineEventManager`!
+
+To use `await<Event>` and `awaitMessage` the event manager must support either `EventListener` or `@SubscribeEvent`,
+the [`ReactiveEventManager`][5] and [`CoroutineEventManager`][4] both support this.
 
 ```kotlin
 // Await RestAction result
