@@ -1,6 +1,5 @@
 package dev.minn.jda.ktx
 
-import kotlinx.coroutines.suspendCancellableCoroutine
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.User
