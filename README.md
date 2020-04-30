@@ -59,4 +59,6 @@ suspend fun <T> Task<T>.await()
 suspend fun <T : GenericEvent> JDA.await(filter: (T) -> Boolean = { true })
 // Await message from specific channel (filter by user and/or filter function)
 suspend fun MessageChannel.awaitMessage(author: User? = null, filter: (Message) -> Boolean = { true }): Message
+// Coroutine iterators for PaginationAction
+suspend fun <T, M: PaginationAction<T, M>> M.produce(scope: CoroutineScope = GlobalScope): ReceiverChannel<T>
 ```
