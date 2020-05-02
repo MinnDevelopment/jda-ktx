@@ -8,6 +8,11 @@ import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.hooks.IEventManager
 import java.util.concurrent.CopyOnWriteArrayList
 
+/**
+ * EventManager implementation which supports both [EventListener] and [CoroutineEventListener].
+ *
+ * This enables [the coroutine listener extension][listener].
+ */
 class CoroutineEventManager(
     private val scope: CoroutineScope = GlobalScope
 ) : IEventManager {

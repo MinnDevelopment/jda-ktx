@@ -18,7 +18,7 @@ suspending functions in your event handlers.
 
 ```kotlin
 val jda = JDABuilder.createLight("token")
-    .setEventManager(CoroutineEventManager())
+    .injectKTX() // Sets the coroutine event manager
     .build()
 
 // This can only be used with the CoroutineEventManager
@@ -63,8 +63,12 @@ suspend fun <T> RestAction<T>.await()
 suspend fun <T> Task<T>.await()
 // Await specific event
 suspend fun <T : GenericEvent> JDA.await(filter: (T) -> Boolean = { true })
+// Await specific event
+suspend fun <T : GenericEvent> ShardManager.await(filter: (T) -> Boolean = { true })
 // Await message from specific channel (filter by user and/or filter function)
 suspend fun MessageChannel.awaitMessage(author: User? = null, filter: (Message) -> Boolean = { true }): Message
 // Coroutine iterators for PaginationAction
 suspend fun <T, M: PaginationAction<T, M>> M.produce(scope: CoroutineScope = GlobalScope): ReceiverChannel<T>
+// Flow representation for PaginationAction
+suspend fun <T, M: PaginationAction<T, M>> M.asFlow(scope: CoroutineScope = GlobalScope): Flow<T>
 ```
