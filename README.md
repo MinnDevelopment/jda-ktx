@@ -57,16 +57,24 @@ To use `await<Event>` and `awaitMessage` the event manager must support either `
 the [`ReactiveEventManager`][5] and [`CoroutineEventManager`][4] both support this.
 
 ```kotlin
+/* Async Operations */
+
 // Await RestAction result
 suspend fun <T> RestAction<T>.await()
 // Await Task result (retrieveMembersByPrefix)
 suspend fun <T> Task<T>.await()
+
+/* Event Waiter */
+
 // Await specific event
 suspend fun <T : GenericEvent> JDA.await(filter: (T) -> Boolean = { true })
 // Await specific event
 suspend fun <T : GenericEvent> ShardManager.await(filter: (T) -> Boolean = { true })
 // Await message from specific channel (filter by user and/or filter function)
 suspend fun MessageChannel.awaitMessage(author: User? = null, filter: (Message) -> Boolean = { true }): Message
+
+/* Experimental Channel API */
+
 // Coroutine iterators for PaginationAction
 suspend fun <T, M: PaginationAction<T, M>> M.produce(scope: CoroutineScope = GlobalScope): ReceiverChannel<T>
 // Flow representation for PaginationAction
