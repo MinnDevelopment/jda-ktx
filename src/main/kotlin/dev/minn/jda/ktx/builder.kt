@@ -63,7 +63,7 @@ fun embed(
         setTimestamp(timestamp)
         setThumbnail(thumbnail)
         setImage(image)
-        fields.forEach(this::addField)
+        fields.map(this::addField)
         color?.let(this::setColor)
         builder()
         build()
