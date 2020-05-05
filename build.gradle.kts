@@ -13,8 +13,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    compileOnly("com.github.dv8fromtheworld:jda:78d0846")
-//    compileOnly("net.dv8tion:JDA:4.1.1_141")
+    compileOnly("net.dv8tion:JDA:4.1.1_143")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
 }
 
