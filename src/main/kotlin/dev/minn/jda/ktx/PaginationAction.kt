@@ -42,7 +42,7 @@ import java.util.concurrent.CancellationException
  * @return[Flow] instance
  */
 @ExperimentalCoroutinesApi
-suspend fun <T, M: PaginationAction<T, M>> M.asFlow(scope: CoroutineScope = GlobalScope): Flow<T> = flow {
+fun <T, M: PaginationAction<T, M>> M.asFlow(scope: CoroutineScope = GlobalScope): Flow<T> = flow {
     this.emitAll(produce(scope))
 }
 
@@ -54,7 +54,7 @@ suspend fun <T, M: PaginationAction<T, M>> M.asFlow(scope: CoroutineScope = Glob
  * @return [ReceiveChannel][kotlinx.coroutines.channels.ReceiveChannel] instance
  */
 @ExperimentalCoroutinesApi
-suspend fun <T, M: PaginationAction<T, M>> M.produce(scope: CoroutineScope = GlobalScope) = scope.produce<T> {
+fun <T, M: PaginationAction<T, M>> M.produce(scope: CoroutineScope = GlobalScope) = scope.produce<T> {
     cache(false)
     val queue = LinkedList<T>()
     try {

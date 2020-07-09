@@ -80,3 +80,45 @@ suspend fun <T, M: PaginationAction<T, M>> M.produce(scope: CoroutineScope = Glo
 // Flow representation for PaginationAction
 suspend fun <T, M: PaginationAction<T, M>> M.asFlow(scope: CoroutineScope = GlobalScope): Flow<T>
 ```
+
+## Download
+
+[![](https://api.bintray.com/packages/minndevelopment/maven/jda-ktx/images/download.svg)](https://bintray.com/minndevelopment/maven/jda-ktx)
+
+All versions for this library are hosted on [jcenter](https://bintray.com/minndevelopment/maven/jda-ktx)
+
+### Gradle
+
+```gradle
+repositories {
+    jcenter()
+}
+
+dependencies {
+    implementation("net.dv8tion:JDA:${JDA_VERSION}")
+    implementation("dev.minn:jda-ktx:${KTX_VERSION}")
+}
+```
+
+### Maven
+
+```xml
+<repository>
+    <id>jcenter</id>
+    <name>jcenter-bintray</name>
+    <url>https://jcenter.bintray.com</url>
+</repository>
+```
+
+```xml
+<dependency>
+  <groupId>net.dv8tion</groupId>
+  <artifactId>JDA</artifactId>
+  <version>$JDA_VERSION</version>
+</dependency>
+<dependency>
+  <groupId>dev.minn</groupId>
+  <artifactId>jda-ktx</artifactId>
+  <version>$KTX_VERSION</version>
+</dependency>
+```
