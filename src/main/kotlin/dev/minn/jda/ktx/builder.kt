@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("FunctionName")
+
 package dev.minn.jda.ktx
 
 import net.dv8tion.jda.api.EmbedBuilder
@@ -22,7 +24,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import java.time.temporal.TemporalAccessor
 
-fun message(
+fun Message(
     content: String? = null,
     embed: MessageEmbed? = null,
     nonce: String? = null,
@@ -39,7 +41,7 @@ fun message(
     }
 }
 
-fun embed(
+fun Embed(
     description: String? = null,
     title: String? = null,
     url: String? = null,
