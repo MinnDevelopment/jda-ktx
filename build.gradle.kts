@@ -9,14 +9,14 @@ plugins {
 }
 
 group = "dev.minn"
-version = "0.1.0"
+version = "0.2.0"
 
 repositories {
     jcenter()
 }
 
 dependencies {
-    compileOnly("net.dv8tion:JDA:4.2.0_175")
+    compileOnly("net.dv8tion:JDA:4.2.0_211")
 
     api(kotlin("stdlib-jdk8"))
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
