@@ -5,6 +5,7 @@
 
 [4]: https://github.com/MinnDevelopment/jda-ktx/tree/master/src/main/kotlin/dev/minn/jda/ktx/CoroutineEventManager.kt
 [5]: https://github.com/MinnDevelopment/jda-reactor/tree/master/src/main/java/club/minnced/jda/reactor/ReactiveEventManager.java
+[6]: https://github.com/MinnDevelopment/jda-ktx/tree/master/src/main/kotlin/dev/minn/jda/ktx/builders.kt
 
 # jda-ktx
 
@@ -91,6 +92,36 @@ class Foo(guild: Guild) {
     val guild : Guild by guild.ref()
 }
 ```
+
+### Embed- and MessageBuilders
+
+This library also provides some useful builder alternatives which can be used instead of the default `MessageBuilder` and `EmbedBuilder` from JDA.
+
+You can see both builders in [builders.kt][6].
+
+**Example**
+
+```kotlin
+val embed = Embed(title="Hello Friend", description="Goodbye Friend")
+```
+
+Or the builder function style:
+
+```kotlin
+val embed = Embed {
+    title = "Hello Friend"
+    description = "Goodbye Friend"
+    field {
+        name = "How good is this example?"
+        value = "5 :star:"
+        inline = false
+    }
+    timestamp = Instant.now()
+    color = 0xFF0000
+}
+```
+
+
 
 ## Download
 
