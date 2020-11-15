@@ -22,6 +22,9 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.requests.restaction.MessageAction
 import java.time.temporal.TemporalAccessor
 
 fun Message(
@@ -29,14 +32,20 @@ fun Message(
     embed: MessageEmbed? = null,
     nonce: String? = null,
     tts: Boolean = false,
-    builder: MessageBuilder.() -> Unit = {}
+    allowedMentionTypes: Collection<Message.MentionType>? = null,
+    mentionUsers: Collection<Long>? = null,
+    mentionRoles: Collection<Long>? = null,
+    builder: InlineMessage.() -> Unit = {}
 ): Message {
     return MessageBuilder().run {
+        InlineMessage(this).also(builder)
         setContent(content)
         setEmbed(embed)
         setNonce(nonce)
         setTTS(tts)
-        builder()
+        allowedMentionTypes?.let { setAllowedMentions(allowedMentionTypes) }
+        mentionUsers?.forEach { mentionUsers(it) }
+        mentionRoles?.forEach { mentionRoles(it) }
         build()
     }
 }
@@ -55,9 +64,10 @@ fun Embed(
     image: String? = null,
     thumbnail: String? = null,
     fields: Collection<MessageEmbed.Field> = emptyList(),
-    builder: EmbedBuilder.() -> Unit = {}
+    builder: InlineEmbed.() -> Unit = {}
 ): MessageEmbed {
     return EmbedBuilder().run {
+        InlineEmbed(this).also(builder)
         setDescription(description)
         setTitle(title, url)
         setFooter(footerText, footerIcon)
@@ -67,7 +77,134 @@ fun Embed(
         setImage(image)
         fields.map(this::addField)
         color?.let(this::setColor)
-        builder()
         build()
     }
+}
+
+class InlineMessage(val builder: MessageBuilder) {
+    var content: String? = null
+        set(value) {
+            builder.setContent(value)
+            field = value
+        }
+
+    var embed: MessageEmbed? = null
+        set(value) {
+            builder.setEmbed(embed)
+            field = value
+        }
+
+    var nonce: String? = null
+        set(value) {
+            builder.setNonce(nonce)
+            field = value
+        }
+
+    var tts: Boolean = false
+        set(value) {
+            builder.setTTS(value)
+            field = value
+        }
+
+    var allowedMentionTypes = MessageAction.getDefaultMentions()
+        set(value) {
+            builder.setAllowedMentions(value)
+            field = value
+        }
+
+    inline fun mentions(build: InlineMentions.() -> Unit) {
+        val mentions = InlineMentions().also(build)
+        mentions.users.forEach { builder.mentionUsers(it) }
+        mentions.roles.forEach { builder.mentionRoles(it) }
+    }
+
+    class InlineMentions {
+        val users = mutableListOf<Long>()
+        val roles = mutableListOf<Long>()
+
+        fun user(user: User) {
+            users.add(user.idLong)
+        }
+        fun user(id: String) {
+            users.add(id.toLong())
+        }
+        fun user(id: Long) {
+            users.add(id)
+        }
+
+        fun role(role: Role) {
+            roles.add(role.idLong)
+        }
+        fun role(id: String) {
+            roles.add(id.toLong())
+        }
+        fun role(id: Long) {
+            roles.add(id)
+        }
+    }
+}
+
+class InlineEmbed(val builder: EmbedBuilder) {
+    var description: String = ""
+        set(value) {
+            builder.setDescription(value)
+            field = value
+        }
+
+    var title: String? = null
+        set(value) {
+            builder.setTitle(value, url)
+            field = value
+        }
+
+    var url: String? = null
+        set(value) {
+            builder.setTitle(title, value)
+            field = value
+        }
+
+    var color: Int? = null
+        set(value) {
+            builder.setColor(value ?: Role.DEFAULT_COLOR_RAW)
+            field = value
+        }
+
+    var timestamp: TemporalAccessor? = null
+        set(value) {
+            builder.setTimestamp(value)
+            field = value
+        }
+
+    inline fun footer(build: InlineFooter.() -> Unit) {
+        val footer = InlineFooter().also(build)
+        this.builder.setFooter(footer.name, footer.iconUrl)
+    }
+
+    inline fun author(build: InlineAuthor.() -> Unit) {
+        val author = InlineAuthor().also(build)
+        builder.setAuthor(author.name, author.url, author.iconUrl)
+    }
+
+    inline fun field(build: InlineField.() -> Unit) {
+        val field = InlineField().also(build)
+        builder.addField(field.name, field.value, field.inline)
+    }
+
+
+    data class InlineFooter(
+        var name: String = "",
+        var iconUrl: String? = null
+    )
+
+    data class InlineAuthor(
+        var name: String? = null,
+        var iconUrl: String? = null,
+        var url: String? = null
+    )
+
+    data class InlineField(
+        var name: String = EmbedBuilder.ZERO_WIDTH_SPACE,
+        var value: String = EmbedBuilder.ZERO_WIDTH_SPACE,
+        var inline: Boolean = true
+    )
 }
