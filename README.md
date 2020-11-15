@@ -82,6 +82,17 @@ suspend fun <T, M: PaginationAction<T, M>> M.produce(scope: CoroutineScope = Glo
 suspend fun <T, M: PaginationAction<T, M>> M.asFlow(scope: CoroutineScope = GlobalScope): Flow<T>
 ```
 
+### Delegates
+
+This library implements [delegate properties](https://kotlinlang.org/docs/reference/delegated-properties.html) which can be used to safely keep references of JDA entities such as users/channels.
+These delegates can be used with the [`ref()`](https://github.com/MinnDevelopment/jda-ktx/tree/master/src/main/kotlin/dev/minn/jda/ktx/proxies.kt) extension function:
+
+```kotlin
+class Foo(guild: Guild) {
+    val guild : Guild by guild.ref()
+}
+```
+
 ### Embed- and MessageBuilders
 
 This library also provides some useful builder alternatives which can be used instead of the default `MessageBuilder` and `EmbedBuilder` from JDA.
