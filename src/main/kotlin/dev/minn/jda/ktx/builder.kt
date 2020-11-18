@@ -145,7 +145,7 @@ class InlineMessage(val builder: MessageBuilder) {
 }
 
 class InlineEmbed(val builder: EmbedBuilder) {
-    var description: String = ""
+    var description: String? = null
         set(value) {
             builder.setDescription(value)
             field = value
@@ -172,6 +172,19 @@ class InlineEmbed(val builder: EmbedBuilder) {
     var timestamp: TemporalAccessor? = null
         set(value) {
             builder.setTimestamp(value)
+            field = value
+        }
+
+
+    var image: String? = null
+        set(value) {
+            builder.setImage(value)
+            field = value
+        }
+
+    var thumbnail: String? = null
+        set(value) {
+            builder.setThumbnail(value)
             field = value
         }
 
