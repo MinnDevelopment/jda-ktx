@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "dev.minn"
-version = "0.3.0"
+version = "0.3.1"
 
 repositories {
     jcenter()
