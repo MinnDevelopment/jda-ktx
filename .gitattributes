@@ -1,4 +1,4 @@
-gradlew binary
 
 .* text eol=crlf
 * text eol=crlf
+gradlew binary
