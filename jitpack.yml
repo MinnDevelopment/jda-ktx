@@ -1,4 +1,4 @@
 before_install:
-  - cat gradle
+  - chmod u+x gradlew
 install:
-  - sh gradlew publishToMavenLocal
+  - ./gradlew publishToMavenLocal
