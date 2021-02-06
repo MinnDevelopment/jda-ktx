@@ -6,7 +6,7 @@ plugins {
     kotlin("jvm") version "1.3.71"
 }
 
-group = "dev.minn" // temporary
+group = "dev.minn"
 version = "0.3.1"
 
 repositories {
