@@ -125,20 +125,17 @@ val embed = Embed {
 
 ## Download
 
-[![](https://api.bintray.com/packages/minndevelopment/maven/jda-ktx/images/download.svg)](https://bintray.com/minndevelopment/maven/jda-ktx)
-
-All versions for this library are hosted on [jcenter](https://bintray.com/minndevelopment/maven/jda-ktx)
-
 ### Gradle
 
 ```gradle
 repositories {
-    jcenter()
+    mavenCentral()
+    maven("https://jitpack.io/")
 }
 
 dependencies {
     implementation("net.dv8tion:JDA:${JDA_VERSION}")
-    implementation("dev.minn:jda-ktx:${KTX_VERSION}")
+    implementation("com.github.minndevelopment:jda-ktx:${COMMIT}")
 }
 ```
 
@@ -146,9 +143,9 @@ dependencies {
 
 ```xml
 <repository>
-    <id>jcenter</id>
-    <name>jcenter-bintray</name>
-    <url>https://jcenter.bintray.com</url>
+    <id>jitpack</id>
+    <name>jitpack</name>
+    <url>https://jitpack.io/</url>
 </repository>
 ```
 
@@ -159,8 +156,8 @@ dependencies {
   <version>$JDA_VERSION</version>
 </dependency>
 <dependency>
-  <groupId>dev.minn</groupId>
+  <groupId>com.github.minndevelopment</groupId>
   <artifactId>jda-ktx</artifactId>
-  <version>$KTX_VERSION</version>
+  <version>$COMMIT</version>
 </dependency>
 ```

@@ -1,22 +1,22 @@
-import com.jfrog.bintray.gradle.BintrayExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `maven-publish`
     `java-library`
     kotlin("jvm") version "1.3.71"
-    id("com.jfrog.bintray") version "1.8.4"
 }
 
 group = "dev.minn"
 version = "0.3.1"
 
 repositories {
-    jcenter()
+    mavenCentral()
+    jcenter() // Legacy
+    maven("https://jitpack.io/")
 }
 
 dependencies {
-    compileOnly("net.dv8tion:JDA:4.2.0_211")
+    compileOnly("net.dv8tion:JDA:4.2.0_227")
 
     api(kotlin("stdlib-jdk8"))
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
@@ -49,7 +49,7 @@ tasks {
 }
 
 publishing.publications {
-    register("BintrayRelease", MavenPublication::class) {
+    register("Release", MavenPublication::class) {
         from(components["java"])
         groupId = project.group as String
         artifactId = project.name
@@ -60,25 +60,5 @@ publishing.publications {
     }
 }
 
-bintray {
-    setPublications("BintrayRelease")
-    user = properties["bintrayName"] as? String ?: ""
-    key  = properties["bintrayKey"] as? String ?: ""
-    pkg(delegateClosureOf<BintrayExtension.PackageConfig> {
-        setLicenses("Apache-2.0")
-        repo = "maven"
-        vcsUrl = "https://github.com/MinnDevelopment/jda-ktx"
-        githubRepo = "minndevelopment/jda-ktx"
-        issueTrackerUrl = "$vcsUrl/issues"
-        websiteUrl = vcsUrl
-        desc = "Collection of useful Kotlin extensions for JDA. Great in combination with kotlinx-coroutines and jda-reactor."
-        setLabels("reactive", "jda", "discord", "kotlin")
-        name = project.name
-        publish = true
-        publicDownloadNumbers = true
-        version(delegateClosureOf<BintrayExtension.VersionConfig> {
-            name = project.version as String
-            gpg.sign = true
-        })
-    })
-}
+val publishToMavenLocal: Task by tasks
+tasks.create("install").dependsOn(publishToMavenLocal)
