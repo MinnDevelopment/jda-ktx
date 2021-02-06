@@ -1,2 +1,4 @@
+before_install:
+  - cat gradle
 install:
   - sh gradlew publishToMavenLocal
