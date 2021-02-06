@@ -6,7 +6,7 @@ plugins {
     kotlin("jvm") version "1.3.71"
 }
 
-group = "com.github.minndevelopment" // temporary
+group = "dev.minn" // temporary
 version = "0.3.1"
 
 repositories {
@@ -59,6 +59,3 @@ publishing.publications {
         artifact(sourcesJar)
     }
 }
-
-val publishToMavenLocal: Task by tasks
-tasks.create("install").dependsOn(publishToMavenLocal)
