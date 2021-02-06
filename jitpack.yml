@@ -1,4 +1,2 @@
-jdk:
-  - openjdk11
 install:
-  - sh gradlew clean publishToMavenLocal
+  - sh gradlew publishToMavenLocal
