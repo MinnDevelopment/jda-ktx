@@ -38,7 +38,6 @@ fun Message(
     builder: InlineMessage.() -> Unit = {}
 ): Message {
     return MessageBuilder().run {
-        InlineMessage(this).also(builder)
         setContent(content)
         setEmbed(embed)
         setNonce(nonce)
@@ -46,6 +45,7 @@ fun Message(
         allowedMentionTypes?.let { setAllowedMentions(allowedMentionTypes) }
         mentionUsers?.forEach { mentionUsers(it) }
         mentionRoles?.forEach { mentionRoles(it) }
+        InlineMessage(this).also(builder)
         build()
     }
 }
@@ -67,7 +67,6 @@ fun Embed(
     builder: InlineEmbed.() -> Unit = {}
 ): MessageEmbed {
     return EmbedBuilder().run {
-        InlineEmbed(this).also(builder)
         setDescription(description)
         setTitle(title, url)
         setFooter(footerText, footerIcon)
@@ -77,6 +76,7 @@ fun Embed(
         setImage(image)
         fields.map(this::addField)
         color?.let(this::setColor)
+        InlineEmbed(this).also(builder)
         build()
     }
 }
