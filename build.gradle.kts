@@ -2,21 +2,25 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `maven-publish`
-    `java-library`
-    kotlin("jvm") version "1.3.71"
+    kotlin("jvm") version "1.4.32"
 }
 
 group = "dev.minn"
-version = "0.3.1"
+version = "0.4.0"
+
+configure<JavaPluginConvention> {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 
 repositories {
     mavenCentral()
-    jcenter() // Legacy
+    maven("https://m2.dv8tion.net/releases")
     maven("https://jitpack.io/")
 }
 
 dependencies {
-    compileOnly("net.dv8tion:JDA:4.2.0_242")
+    compileOnly("net.dv8tion:JDA:4.2.1_255")
     api(kotlin("stdlib-jdk8"))
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
 }
@@ -29,12 +33,12 @@ val javadoc: Javadoc by tasks
 
 val sourcesJar = task<Jar>("sourcesJar") {
     from(sourceSets["main"].allSource)
-    classifier = "sources"
+    archiveClassifier.set("sources")
 }
 
 val javadocJar = task<Jar>("javadocJar") {
     from(javadoc.destinationDir)
-    classifier = "javadoc"
+    archiveClassifier.set("javadoc")
 
     dependsOn(javadoc)
 }

@@ -27,7 +27,7 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.requests.restaction.MessageAction
 import java.time.temporal.TemporalAccessor
 
-fun Message(
+inline fun Message(
     content: String? = null,
     embed: MessageEmbed? = null,
     nonce: String? = null,
@@ -45,12 +45,12 @@ fun Message(
         allowedMentionTypes?.let { setAllowedMentions(allowedMentionTypes) }
         mentionUsers?.forEach { mentionUsers(it) }
         mentionRoles?.forEach { mentionRoles(it) }
-        InlineMessage(this).also(builder)
+        InlineMessage(this).builder()
         build()
     }
 }
 
-fun Embed(
+inline fun Embed(
     description: String? = null,
     title: String? = null,
     url: String? = null,
@@ -76,12 +76,67 @@ fun Embed(
         setImage(image)
         fields.map(this::addField)
         color?.let(this::setColor)
-        InlineEmbed(this).also(builder)
+        InlineEmbed(this).builder()
         build()
     }
 }
 
+inline fun MessageBuilder(
+    content: String? = null,
+    embed: MessageEmbed? = null,
+    nonce: String? = null,
+    tts: Boolean = false,
+    allowedMentionTypes: Collection<Message.MentionType>? = null,
+    mentionUsers: Collection<Long>? = null,
+    mentionRoles: Collection<Long>? = null,
+    builder: InlineMessage.() -> Unit = {}
+): InlineMessage {
+    return MessageBuilder().run {
+        setContent(content)
+        setEmbed(embed)
+        setNonce(nonce)
+        setTTS(tts)
+        allowedMentionTypes?.let { setAllowedMentions(allowedMentionTypes) }
+        mentionUsers?.forEach { mentionUsers(it) }
+        mentionRoles?.forEach { mentionRoles(it) }
+        InlineMessage(this).apply(builder)
+    }
+}
+
+inline fun EmbedBuilder(
+    description: String? = null,
+    title: String? = null,
+    url: String? = null,
+    color: Int? = null,
+    footerText: String? = null,
+    footerIcon: String? = null,
+    authorName: String? = null,
+    authorIcon: String? = null,
+    authorUrl: String? = null,
+    timestamp: TemporalAccessor? = null,
+    image: String? = null,
+    thumbnail: String? = null,
+    fields: Collection<MessageEmbed.Field> = emptyList(),
+    builder: InlineEmbed.() -> Unit = {}
+): InlineEmbed {
+    return EmbedBuilder().run {
+        setDescription(description)
+        setTitle(title, url)
+        setFooter(footerText, footerIcon)
+        setAuthor(authorName, authorUrl, authorIcon)
+        setTimestamp(timestamp)
+        setThumbnail(thumbnail)
+        setImage(image)
+        fields.map(this::addField)
+        color?.let(this::setColor)
+        InlineEmbed(this).apply(builder)
+    }
+}
+
+
 class InlineMessage(val builder: MessageBuilder) {
+    fun build() = builder.build()
+
     var content: String? = null
         set(value) {
             builder.setContent(value)
@@ -145,6 +200,8 @@ class InlineMessage(val builder: MessageBuilder) {
 }
 
 class InlineEmbed(val builder: EmbedBuilder) {
+    fun build() = builder.build()
+
     var description: String? = null
         set(value) {
             builder.setDescription(value)
@@ -188,18 +245,23 @@ class InlineEmbed(val builder: EmbedBuilder) {
             field = value
         }
 
-    inline fun footer(build: InlineFooter.() -> Unit) {
-        val footer = InlineFooter().also(build)
+    inline fun footer(name: String = "", iconUrl: String? = null, build: InlineFooter.() -> Unit = {}) {
+        val footer = InlineFooter(name, iconUrl).apply(build)
         this.builder.setFooter(footer.name, footer.iconUrl)
     }
 
-    inline fun author(build: InlineAuthor.() -> Unit) {
-        val author = InlineAuthor().also(build)
+    inline fun author(name: String? = null, url: String? = null, iconUrl: String? = null, build: InlineAuthor.() -> Unit = {}) {
+        val author = InlineAuthor(name, iconUrl, url).apply(build)
         builder.setAuthor(author.name, author.url, author.iconUrl)
     }
 
-    inline fun field(build: InlineField.() -> Unit) {
-        val field = InlineField().also(build)
+    inline fun field(
+        name: String = EmbedBuilder.ZERO_WIDTH_SPACE,
+        value: String = EmbedBuilder.ZERO_WIDTH_SPACE,
+        inline: Boolean = true,
+        build: InlineField.() -> Unit = {}
+    ) {
+        val field = InlineField(name, value, inline).apply(build)
         builder.addField(field.name, field.value, field.inline)
     }
 
