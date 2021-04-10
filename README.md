@@ -93,6 +93,18 @@ class Foo(guild: Guild) {
 }
 ```
 
+You can also use the `SLF4J` delegate to initialize loggers.
+
+```kotlin
+object Listener : ListenerAdapter() {
+    private val log by SLF4J 
+
+    override fun onMessageReceived(event: MessageReceivedEvent) {
+        log.info("[{}] {}: {}", event.channel.name, event.author.asTag, event.message.contentDispaly)
+    }
+}
+```
+
 ### Embed- and MessageBuilders
 
 This library also provides some useful builder alternatives which can be used instead of the default `MessageBuilder` and `EmbedBuilder` from JDA.

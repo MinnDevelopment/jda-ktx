@@ -17,6 +17,8 @@
 package dev.minn.jda.ktx
 
 import net.dv8tion.jda.api.entities.*
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import kotlin.reflect.KProperty
 
 open class BackedReference<T>(private var entity: T, private val update: (T) -> T?) {
@@ -49,6 +51,12 @@ fun PrivateChannel.ref() = BackedReference(this) {
 @Suppress("UNCHECKED_CAST")
 fun <T : GuildChannel> T.ref() = BackedReference(this) {
     jda.getGuildChannelById(type, idLong) as T
+}
+
+object SLF4J {
+    operator fun getValue(thisRef: Any?, prop: KProperty<*>): Logger {
+        return LoggerFactory.getLogger(thisRef!!::class.java)!!
+    }
 }
 
 // Example Usage:
