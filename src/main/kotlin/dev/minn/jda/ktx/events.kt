@@ -19,6 +19,7 @@ package dev.minn.jda.ktx
 import kotlinx.coroutines.suspendCancellableCoroutine
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.events.GenericEvent
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.hooks.SubscribeEvent
 import net.dv8tion.jda.api.sharding.ShardManager
@@ -74,6 +75,52 @@ inline fun <reified T : GenericEvent> ShardManager.listener(crossinline consumer
                 consumer(event)
         }
     }.also { addEventListener(it) }
+}
+
+/**
+ * Requires [CoroutineEventManager] to be used!
+ *
+ * Opens an event listener scope for simple hooking. This is a special listener which is used to listen for slash commands!
+ *
+ * ## Example
+ *
+ * ```kotlin
+ * jda.onCommand("ping") { event ->
+ *     event.reply("Pong!").queue()
+ * }
+ * ```
+ *
+ * @param[name] The command name
+ * @param[consumer] The event consumer function
+ *
+ * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
+ */
+inline fun JDA.onCommand(name: String, crossinline consumer: suspend (SlashCommandEvent) -> Unit) = listener<SlashCommandEvent> {
+    if (it.name == name)
+        consumer(it)
+}
+
+/**
+ * Requires [CoroutineEventManager] to be used!
+ *
+ * Opens an event listener scope for simple hooking. This is a special listener which is used to listen for slash commands!
+ *
+ * ## Example
+ *
+ * ```kotlin
+ * shardManager.onCommand("ping") { event ->
+ *     event.reply("Pong!").queue()
+ * }
+ * ```
+ *
+ * @param[name] The command name
+ * @param[consumer] The event consumer function
+ *
+ * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
+ */
+inline fun ShardManager.onCommand(name: String, crossinline consumer: suspend (SlashCommandEvent) -> Unit) = listener<SlashCommandEvent> {
+    if (it.name == name)
+        consumer(it)
 }
 
 /**
