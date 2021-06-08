@@ -17,11 +17,13 @@
 package dev.minn.jda.ktx.interactions
 
 import dev.minn.jda.ktx.Message
+import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Emoji
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.GenericEvent
+import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.hooks.SubscribeEvent
 import net.dv8tion.jda.api.interactions.Interaction
@@ -29,6 +31,7 @@ import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.Button
 import net.dv8tion.jda.api.interactions.components.ButtonInteraction
+import net.dv8tion.jda.api.requests.ErrorResponse
 import java.security.SecureRandom
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -78,7 +81,7 @@ class Paginator internal constructor(private val nonce: String, private val ttl:
     @SubscribeEvent
     override fun onEvent(event: GenericEvent) {
         if (expiresAt < System.currentTimeMillis())
-            return event.jda.removeEventListener(this)
+            return unregister(event.jda)
         if (event !is ButtonInteraction) return
         val buttonId = event.componentId
         if (!buttonId.startsWith(nonce) || !filter(event)) return
@@ -88,19 +91,28 @@ class Paginator internal constructor(private val nonce: String, private val ttl:
             "prev" -> {
                 event.editMessage(prevPage)
                     .setActionRows(controls)
-                    .queue()
+                    .queue(null, ErrorHandler().handle(ErrorResponse.UNKNOWN_MESSAGE) { unregister(event.jda) })
             }
             "next" -> {
                 event.editMessage(nextPage)
                     .setActionRows(controls)
-                    .queue()
+                    .queue(null, ErrorHandler().handle(ErrorResponse.UNKNOWN_MESSAGE) { unregister(event.jda) })
             }
             "delete" -> {
-                event.jda.removeEventListener(this)
+                unregister(event.jda)
                 event.deferEdit().queue()
-                event.hook.deleteOriginal().queue()
+                if (event.message == null)
+                    event.hook.editOriginal(pageCache[index])
+                        .setActionRows(emptyList())
+                        .queue()
+                else
+                    event.hook.deleteOriginal().queue(null, ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE))
             }
         }
+    }
+
+    private fun unregister(jda: JDA) {
+        jda.removeEventListener(this)
     }
 }
 
