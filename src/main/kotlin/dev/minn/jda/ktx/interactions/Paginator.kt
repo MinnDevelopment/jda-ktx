@@ -81,7 +81,6 @@ class Paginator internal constructor(private val nonce: String, private val ttl:
             return event.jda.removeEventListener(this)
         if (event !is ButtonInteraction) return
         val buttonId = event.componentId
-        println(buttonId)
         if (!buttonId.startsWith(nonce) || !filter(event)) return
         expiresAt = System.currentTimeMillis() + ttl
         val (_, operation) = buttonId.split(":")
