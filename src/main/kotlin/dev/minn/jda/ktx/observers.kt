@@ -16,6 +16,7 @@
 
 package dev.minn.jda.ktx
 
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.User
@@ -75,7 +76,8 @@ suspend inline fun MessageChannel.awaitMessage(
  *     .addActionRow(Button.danger("${user.id}:confirm", "Confirm"))
  *     .setEphemeral(true)
  *     .queue()
- *   event.channel.awaitButton("${user.id}:confirm")
+ *   val pressed = event.channel.awaitButton("${user.id}:confirm")
+ *   pressed.deferEdit().queue() // don't forget to acknowledge
  *   event.guild.ban(user, 0).queue()
  * }
  * ```
@@ -108,7 +110,8 @@ suspend inline fun MessageChannel.awaitButton(id: String, user: User? = null, cr
  *     .addActionRow(button)
  *     .setEphemeral(true)
  *     .queue()
- *   event.channel.awaitButton(button)
+ *   val pressed = event.channel.awaitButton(button)
+ *   pressed.deferEdit().queue() // don't forget to acknowledge
  *   event.guild.ban(user, 0).queue()
  * }
  * ```
@@ -120,3 +123,121 @@ suspend inline fun MessageChannel.awaitButton(id: String, user: User? = null, cr
  * @return[ButtonClickEvent]
  */
 suspend inline fun MessageChannel.awaitButton(button: Button, user: User? = null, crossinline filter: (ButtonClickEvent) -> Boolean) = awaitButton(checkNotNull(button.id), user, filter)
+
+/**
+ * Requires an EventManager implementation that supports either [EventListener] or [SubscribeEvent].
+ *
+ * Waits for button to be pressed/clicked by the target user.
+ *
+ * ## Example
+ *
+ * ```kotlin
+ * jda.onCommand("ban") { event ->
+ *   val user = event.getOption("user")!!.asUser
+ *   event.reply("Are you sure you want to ban ${user.asMention}?")
+ *     .addActionRow(Button.danger("${user.id}:confirm", "Confirm"))
+ *     .setEphemeral(true)
+ *     .queue()
+ *   val pressed = event.user.awaitButton("${user.id}:confirm")
+ *   pressed.deferEdit().queue() // don't forget to acknowledge
+ *   event.guild.ban(user, 0).queue()
+ * }
+ * ```
+ *
+ * @param[id] The button id
+ * @param[filter] A filter function to simplify code flow (optional)
+ *
+ * @return[ButtonClickEvent]
+ */
+suspend inline fun User.awaitButton(id: String, crossinline filter: (ButtonClickEvent) -> Boolean) = jda.await<ButtonClickEvent> {
+    it.user == this
+        && it.componentId == id
+        && filter(it)
+}
+
+/**
+ * Requires an EventManager implementation that supports either [EventListener] or [SubscribeEvent].
+ *
+ * Waits for button to be pressed/clicked by the target user.
+ *
+ * ## Example
+ *
+ * ```kotlin
+ * jda.onCommand("ban") { event ->
+ *   val user = event.getOption("user")!!.asUser
+ *   val button = Button.danger("${user.id}:confirm", "Confirm")
+ *   event.reply("Are you sure you want to ban ${user.asMention}?")
+ *     .addActionRow(button)
+ *     .setEphemeral(true)
+ *     .queue()
+ *   val pressed = event.user.awaitButton(button)
+ *   pressed.deferEdit().queue() // don't forget to acknowledge
+ *   event.guild.ban(user, 0).queue()
+ * }
+ * ```
+ *
+ * @param[button] The button (must not be link button)
+ * @param[filter] A filter function to simplify code flow (optional)
+ *
+ * @return[ButtonClickEvent]
+ */
+suspend inline fun User.awaitButton(button: Button, crossinline filter: (ButtonClickEvent) -> Boolean) = awaitButton(checkNotNull(button.id), filter)
+
+/**
+ * Requires an EventManager implementation that supports either [EventListener] or [SubscribeEvent].
+ *
+ * Waits for button to be pressed/clicked by the target member.
+ *
+ * ## Example
+ *
+ * ```kotlin
+ * jda.onCommand("ban") { event ->
+ *   val user = event.getOption("user")!!.asUser
+ *   event.reply("Are you sure you want to ban ${user.asMention}?")
+ *     .addActionRow(Button.danger("${user.id}:confirm", "Confirm"))
+ *     .setEphemeral(true)
+ *     .queue()
+ *   val pressed = event.member!!.awaitButton("${user.id}:confirm")
+ *   pressed.deferEdit().queue() // don't forget to acknowledge
+ *   event.guild.ban(user, 0).queue()
+ * }
+ * ```
+ *
+ * @param[id] The button id
+ * @param[filter] A filter function to simplify code flow (optional)
+ *
+ * @return[ButtonClickEvent]
+ */
+suspend inline fun Member.awaitButton(id: String, crossinline filter: (ButtonClickEvent) -> Boolean) = jda.await<ButtonClickEvent> {
+    it.member == this
+        && it.componentId == id
+        && filter(it)
+}
+
+/**
+ * Requires an EventManager implementation that supports either [EventListener] or [SubscribeEvent].
+ *
+ * Waits for button to be pressed/clicked by the target member.
+ *
+ * ## Example
+ *
+ * ```kotlin
+ * jda.onCommand("ban") { event ->
+ *   val user = event.getOption("user")!!.asUser
+ *   val button = Button.danger("${user.id}:confirm", "Confirm")
+ *   event.reply("Are you sure you want to ban ${user.asMention}?")
+ *     .addActionRow(button)
+ *     .setEphemeral(true)
+ *     .queue()
+ *   val pressed = event.member!!.awaitButton(button)
+ *   pressed.deferEdit().queue() // don't forget to acknowledge
+ *   event.guild.ban(user, 0).queue()
+ * }
+ * ```
+ *
+ * @param[button] The button (must not be link button)
+ * @param[filter] A filter function to simplify code flow (optional)
+ *
+ * @return[ButtonClickEvent]
+ */
+suspend inline fun Member.awaitButton(button: Button, crossinline filter: (ButtonClickEvent) -> Boolean) = awaitButton(checkNotNull(button.id), filter)

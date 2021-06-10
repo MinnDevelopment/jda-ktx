@@ -47,6 +47,25 @@ jda.listener<MessageReceivedEvent> {
                 .queue()
     }
 }
+
+jda.onCommand("ban") { event ->
+    val user = event.getOption("user")!!.asUser
+    val confirm = Button.danger("${user.id}:ban", "Confirm")
+    event.reply("Are you sure you want to ban **${user.asTag}**?")
+        .addActionRow(confirm)
+        .setEphemeral(true)
+        .queue()
+    
+    withTimeoutOrNull(60000) { // 1 minute timeout
+        val pressed = event.user.awaitButton(confirm) // await for user to click button
+        pressed.deferEdit().queue() // Acknowledge the button press
+        event.guild.ban(user, 0).queue() // the button is pressed -> execute action
+    } ?: event.hook.editOriginal("Timed out.").setActionRows(emptyList()).queue()
+}
+
+jda.onButton("hello") { // Button that says hello
+    it.reply("Hello :)").queue()
+}
 ```
 
 ### Coroutine Extensions

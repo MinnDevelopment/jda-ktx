@@ -43,8 +43,12 @@ import kotlin.coroutines.resume
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun <reified T : GenericEvent> JDA.listener(crossinline consumer: suspend (T) -> Unit): CoroutineEventListener {
+inline fun <reified T : GenericEvent> JDA.listener(crossinline consumer: suspend CoroutineEventListener.(T) -> Unit): CoroutineEventListener {
     return object : CoroutineEventListener {
+        override fun cancel() {
+            return removeEventListener(this)
+        }
+
         override suspend fun onEvent(event: GenericEvent) {
             if (event is T)
                 consumer(event)
@@ -69,8 +73,12 @@ inline fun <reified T : GenericEvent> JDA.listener(crossinline consumer: suspend
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun <reified T : GenericEvent> ShardManager.listener(crossinline consumer: suspend (T) -> Unit): CoroutineEventListener {
+inline fun <reified T : GenericEvent> ShardManager.listener(crossinline consumer: suspend CoroutineEventListener.(T) -> Unit): CoroutineEventListener {
     return object : CoroutineEventListener {
+        override fun cancel() {
+            return removeEventListener(this)
+        }
+
         override suspend fun onEvent(event: GenericEvent) {
             if (event is T)
                 consumer(event)
@@ -96,7 +104,7 @@ inline fun <reified T : GenericEvent> ShardManager.listener(crossinline consumer
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun JDA.onCommand(name: String, crossinline consumer: suspend (SlashCommandEvent) -> Unit) = listener<SlashCommandEvent> {
+inline fun JDA.onCommand(name: String, crossinline consumer: suspend CoroutineEventListener.(SlashCommandEvent) -> Unit) = listener<SlashCommandEvent> {
     if (it.name == name)
         consumer(it)
 }
@@ -119,7 +127,7 @@ inline fun JDA.onCommand(name: String, crossinline consumer: suspend (SlashComma
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun ShardManager.onCommand(name: String, crossinline consumer: suspend (SlashCommandEvent) -> Unit) = listener<SlashCommandEvent> {
+inline fun ShardManager.onCommand(name: String, crossinline consumer: suspend CoroutineEventListener.(SlashCommandEvent) -> Unit) = listener<SlashCommandEvent> {
     if (it.name == name)
         consumer(it)
 }
@@ -143,7 +151,7 @@ inline fun ShardManager.onCommand(name: String, crossinline consumer: suspend (S
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun JDA.onButton(id: String, crossinline consumer: suspend (ButtonClickEvent) -> Unit) = listener<ButtonClickEvent> {
+inline fun JDA.onButton(id: String, crossinline consumer: suspend CoroutineEventListener.(ButtonClickEvent) -> Unit) = listener<ButtonClickEvent> {
     if (it.componentId == id)
         consumer(it)
 }
@@ -167,7 +175,7 @@ inline fun JDA.onButton(id: String, crossinline consumer: suspend (ButtonClickEv
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun ShardManager.onButton(id: String, crossinline consumer: suspend (ButtonClickEvent) -> Unit) = listener<ButtonClickEvent> {
+inline fun ShardManager.onButton(id: String, crossinline consumer: suspend CoroutineEventListener.(ButtonClickEvent) -> Unit) = listener<ButtonClickEvent> {
     if (it.componentId == id)
         consumer(it)
 }

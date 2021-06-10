@@ -23,4 +23,9 @@ import net.dv8tion.jda.api.events.GenericEvent
  */
 interface CoroutineEventListener {
     suspend fun onEvent(event: GenericEvent)
+
+    /**
+     * Unregisters this listener
+     */
+    fun cancel() {}
 }
