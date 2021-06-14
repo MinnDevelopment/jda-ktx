@@ -39,11 +39,21 @@ inline fun <reified T> Option(name: String, description: String, required: Boole
 }
 
 inline fun CommandListUpdateAction.command(name: String, description: String, builder: CommandData.() -> Unit = {}) = addCommands(Command(name, description, builder))
-inline fun <reified T> CommandData.option(name: String, description: String, required: Boolean = false, builder: OptionData.() -> Unit = {}) = addOptions(Option<T>(name, description, required, builder))
-inline fun <reified T> SubcommandData.option(name: String, description: String, required: Boolean = false, builder: OptionData.() -> Unit = {}) = addOptions(Option<T>(name, description, required, builder))
 inline fun CommandData.subcommand(name: String, description: String, builder: SubcommandData.() -> Unit = {}) = addSubcommands(Subcommand(name, description, builder))
 inline fun SubcommandGroupData.subcommand(name: String, description: String, builder: SubcommandData.() -> Unit = {}) = addSubcommands(Subcommand(name, description, builder))
 inline fun CommandData.group(name: String, description: String, builder: SubcommandGroupData.() -> Unit = {}) = addSubcommandGroups(SubcommandGroup(name, description, builder))
+
+inline fun <reified T> CommandData.option(name: String, description: String, required: Boolean = false, builder: OptionData.() -> Unit = {}) = addOptions(Option<T>(name, description, required, builder))
+inline fun <reified T> SubcommandData.option(name: String, description: String, required: Boolean = false, builder: OptionData.() -> Unit = {}) = addOptions(Option<T>(name, description, required, builder))
+
+fun CommandListUpdateAction.command(name: String, description: String) = addCommands(Command(name, description) {})
+fun CommandData.subcommand(name: String, description: String) = addSubcommands(Subcommand(name, description) {})
+fun SubcommandGroupData.subcommand(name: String, description: String) = addSubcommands(Subcommand(name, description) {})
+fun CommandData.group(name: String, description: String) = addSubcommandGroups(SubcommandGroup(name, description) {})
+
+inline fun <reified T> CommandData.option(name: String, description: String, required: Boolean = false) = addOptions(Option<T>(name, description, required) {})
+inline fun <reified T> SubcommandData.option(name: String, description: String, required: Boolean = false) = addOptions(Option<T>(name, description, required) {})
+
 fun OptionData.choice(name: String, value: String) = addChoice(name, value)
 fun OptionData.choice(name: String, value: Int) = addChoice(name, value)
 
