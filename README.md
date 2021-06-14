@@ -47,6 +47,25 @@ jda.listener<MessageReceivedEvent> {
                 .queue()
     }
 }
+
+jda.onCommand("ban") { event ->
+    val user = event.getOption("user")!!.asUser
+    val confirm = Button.danger("${user.id}:ban", "Confirm")
+    event.reply("Are you sure you want to ban **${user.asTag}**?")
+        .addActionRow(confirm)
+        .setEphemeral(true)
+        .queue()
+    
+    withTimeoutOrNull(60000) { // 1 minute timeout
+        val pressed = event.user.awaitButton(confirm) // await for user to click button
+        pressed.deferEdit().queue() // Acknowledge the button press
+        event.guild.ban(user, 0).queue() // the button is pressed -> execute action
+    } ?: event.hook.editOriginal("Timed out.").setActionRows(emptyList()).queue()
+}
+
+jda.onButton("hello") { // Button that says hello
+    it.reply("Hello :)").queue()
+}
 ```
 
 ### Coroutine Extensions
@@ -133,6 +152,42 @@ val embed = Embed {
 }
 ```
 
+### Command Builders
+
+```kotlin
+jda.updateCommands {
+    command("ban", "Ban a user") {
+        option<User>("user", "The user to ban", true)
+        option<String>("reason", "Why to ban this user")
+        option<Int>("duration", "For how long to ban this user") {
+            choice("1 day", 1)
+            choice("1 week", 7)
+            choice("1 month", 31)
+        }
+    }
+
+    command("mod", "Moderation commands") {
+        subcommand("ban", "Ban a user") {
+            option<User>("user", "The user to ban", true)
+            option<String>("reason", "Why to ban this user")
+            option<Int>("duration", "For how long to ban this user") {
+                choice("1 day", 1)
+                choice("1 week", 7)
+                choice("1 month", 31)
+            }
+        }
+
+        subcommand("prune", "Prune messages") {
+            option<Int>("amount", "The amount to delete from 2-100, default 50")
+        }
+    }
+}.queue()
+
+jda.upsertCommand("prune", "Prune messages") {
+    option<Int>("amount", "The amount to delete from 2-100, default 50")
+}.queue()
+```
+
 
 
 ## Download
@@ -142,6 +197,7 @@ val embed = Embed {
 ```gradle
 repositories {
     mavenCentral()
+    maven("https://m2.dv8tion.net/releases")
     maven("https://jitpack.io/")
 }
 
@@ -158,6 +214,11 @@ dependencies {
     <id>jitpack</id>
     <name>jitpack</name>
     <url>https://jitpack.io/</url>
+</repository>
+<repository>
+    <id>dv8tion</id>
+    <name>m2-dv8tion</name>
+    <url>https://m2.dv8tion.net/releases</url>
 </repository>
 ```
 

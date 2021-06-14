@@ -19,6 +19,8 @@ package dev.minn.jda.ktx
 import kotlinx.coroutines.suspendCancellableCoroutine
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.events.GenericEvent
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.hooks.SubscribeEvent
 import net.dv8tion.jda.api.sharding.ShardManager
@@ -41,8 +43,12 @@ import kotlin.coroutines.resume
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun <reified T : GenericEvent> JDA.listener(crossinline consumer: suspend (T) -> Unit): CoroutineEventListener {
+inline fun <reified T : GenericEvent> JDA.listener(crossinline consumer: suspend CoroutineEventListener.(T) -> Unit): CoroutineEventListener {
     return object : CoroutineEventListener {
+        override fun cancel() {
+            return removeEventListener(this)
+        }
+
         override suspend fun onEvent(event: GenericEvent) {
             if (event is T)
                 consumer(event)
@@ -67,13 +73,111 @@ inline fun <reified T : GenericEvent> JDA.listener(crossinline consumer: suspend
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun <reified T : GenericEvent> ShardManager.listener(crossinline consumer: suspend (T) -> Unit): CoroutineEventListener {
+inline fun <reified T : GenericEvent> ShardManager.listener(crossinline consumer: suspend CoroutineEventListener.(T) -> Unit): CoroutineEventListener {
     return object : CoroutineEventListener {
+        override fun cancel() {
+            return removeEventListener(this)
+        }
+
         override suspend fun onEvent(event: GenericEvent) {
             if (event is T)
                 consumer(event)
         }
     }.also { addEventListener(it) }
+}
+
+/**
+ * Requires [CoroutineEventManager] to be used!
+ *
+ * Opens an event listener scope for simple hooking. This is a special listener which is used to listen for slash commands!
+ *
+ * ## Example
+ *
+ * ```kotlin
+ * jda.onCommand("ping") { event ->
+ *     event.reply("Pong!").queue()
+ * }
+ * ```
+ *
+ * @param[name] The command name
+ * @param[consumer] The event consumer function
+ *
+ * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
+ */
+inline fun JDA.onCommand(name: String, crossinline consumer: suspend CoroutineEventListener.(SlashCommandEvent) -> Unit) = listener<SlashCommandEvent> {
+    if (it.name == name)
+        consumer(it)
+}
+
+/**
+ * Requires [CoroutineEventManager] to be used!
+ *
+ * Opens an event listener scope for simple hooking. This is a special listener which is used to listen for slash commands!
+ *
+ * ## Example
+ *
+ * ```kotlin
+ * shardManager.onCommand("ping") { event ->
+ *     event.reply("Pong!").queue()
+ * }
+ * ```
+ *
+ * @param[name] The command name
+ * @param[consumer] The event consumer function
+ *
+ * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
+ */
+inline fun ShardManager.onCommand(name: String, crossinline consumer: suspend CoroutineEventListener.(SlashCommandEvent) -> Unit) = listener<SlashCommandEvent> {
+    if (it.name == name)
+        consumer(it)
+}
+
+/**
+ * Requires [CoroutineEventManager] to be used!
+ *
+ * Opens an event listener scope for simple hooking. This is a special listener which is used to listen for button presses!
+ *
+ * ## Example
+ *
+ * ```kotlin
+ * jda.onButton("delete") { event ->
+ *     event.deferEdit().queue()
+ *     event.hook.deleteOriginal().queue()
+ * }
+ * ```
+ *
+ * @param[id] The button id
+ * @param[consumer] The event consumer function
+ *
+ * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
+ */
+inline fun JDA.onButton(id: String, crossinline consumer: suspend CoroutineEventListener.(ButtonClickEvent) -> Unit) = listener<ButtonClickEvent> {
+    if (it.componentId == id)
+        consumer(it)
+}
+
+/**
+ * Requires [CoroutineEventManager] to be used!
+ *
+ * Opens an event listener scope for simple hooking. This is a special listener which is used to listen for button presses!
+ *
+ * ## Example
+ *
+ * ```kotlin
+ * shardManager.onButton("delete") { event ->
+ *     event.deferEdit().queue()
+ *     event.hook.deleteOriginal().queue()
+ * }
+ * ```
+ *
+ * @param[id] The button id
+ * @param[consumer] The event consumer function
+ *
+ * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
+ */
+inline fun ShardManager.onButton(id: String, crossinline consumer: suspend CoroutineEventListener.(ButtonClickEvent) -> Unit) = listener<ButtonClickEvent> {
+    if (it.componentId == id)
+        consumer(it)
 }
 
 /**
