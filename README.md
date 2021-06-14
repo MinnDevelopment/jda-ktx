@@ -152,6 +152,42 @@ val embed = Embed {
 }
 ```
 
+### Command Builders
+
+```kotlin
+jda.updateCommands {
+    command("ban", "Ban a user") {
+        option<User>("user", "The user to ban", true)
+        option<String>("reason", "Why to ban this user")
+        option<Int>("duration", "For how long to ban this user") {
+            choice("1 day", 1)
+            choice("1 week", 7)
+            choice("1 month", 31)
+        }
+    }
+
+    command("mod", "Moderation commands") {
+        subcommand("ban", "Ban a user") {
+            option<User>("user", "The user to ban", true)
+            option<String>("reason", "Why to ban this user")
+            option<Int>("duration", "For how long to ban this user") {
+                choice("1 day", 1)
+                choice("1 week", 7)
+                choice("1 month", 31)
+            }
+        }
+
+        subcommand("prune", "Prune messages") {
+            option<Int>("amount", "The amount to delete from 2-100, default 50")
+        }
+    }
+}.queue()
+
+jda.upsertCommand("prune", "Prune messages") {
+    option<Int>("amount", "The amount to delete from 2-100, default 50")
+}.queue()
+```
+
 
 
 ## Download
