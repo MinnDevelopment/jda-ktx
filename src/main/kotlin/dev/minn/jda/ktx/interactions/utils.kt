@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 inline fun <reified T> optionType() = when(T::class.java) {
-    Int::class.java -> OptionType.INTEGER
+    Integer::class.java, java.lang.Long::class.java, java.lang.Short::class.java, java.lang.Byte::class.java -> OptionType.INTEGER
     String::class.java -> OptionType.STRING
     User::class.java -> OptionType.USER
     Role::class.java -> OptionType.ROLE
