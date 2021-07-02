@@ -376,6 +376,7 @@ class InlineJDABuilder(val builder: JDABuilder) {
             field = value
         }
 
+    var injectKtx: Boolean = true
 
     class InlineSharding {
         var shardId: Int = 0
@@ -388,6 +389,9 @@ class InlineJDABuilder(val builder: JDABuilder) {
             builder.setEnabledIntents(gatewayIntents)
         if (cacheFlags.isNotEmpty())
             builder.setEnabledCacheFlags(enumSetOf(*cacheFlags.toTypedArray()))
+        if (injectKtx)
+            builder.injectKTX()
+
         return builder.build()
     }
 }
