@@ -15,7 +15,7 @@
  *
  */
 
-@file:Suppress("FunctionName", "unused", "MemberVisibilityCanBePrivate", "NOTHING_TO_INLINE")
+@file:Suppress("FunctionName", "unused", "MemberVisibilityCanBePrivate")
 
 package dev.minn.jda.ktx
 
@@ -181,19 +181,19 @@ class InlineJDABuilder(val builder: JDABuilder) {
                         "enableCache(flags) and disableCache(flags)")
     var cacheFlags: MutableSet<CacheFlag> = mutableSetOf()
 
-    inline fun enableCache(cacheFlag: CacheFlag, vararg cacheFlags: CacheFlag) {
+    fun enableCache(cacheFlag: CacheFlag, vararg cacheFlags: CacheFlag) {
         builder.enableCache(cacheFlag, *cacheFlags)
     }
 
-    inline fun enableCache(cacheFlags: Set<CacheFlag>) {
+    fun enableCache(cacheFlags: Set<CacheFlag>) {
         builder.enableCache(cacheFlags)
     }
 
-    inline fun disableCache(cacheFlag: CacheFlag, vararg cacheFlags: CacheFlag) {
+    fun disableCache(cacheFlag: CacheFlag, vararg cacheFlags: CacheFlag) {
         builder.disableCache(cacheFlag, *cacheFlags)
     }
 
-    inline fun disableCache(cacheFlags: Set<CacheFlag>) {
+    fun disableCache(cacheFlags: Set<CacheFlag>) {
         builder.disableCache(cacheFlags)
     }
 
