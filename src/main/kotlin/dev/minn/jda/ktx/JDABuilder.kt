@@ -316,6 +316,7 @@ class InlineJDABuilder(val builder: JDABuilder) {
     var idle: Boolean = false
         set(value) {
             builder.setIdle(value)
+            field = value
         }
 
     var activity: Activity? = null
