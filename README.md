@@ -18,9 +18,12 @@ The most useful feature of this library is the [CoroutineEventManager][4] which 
 suspending functions in your event handlers.
 
 ```kotlin
-val jda = JDABuilder.createLight("token")
-    .injectKTX() // Sets the coroutine event manager
-    .build()
+val jda = DefaultJDA("token") {
+    memberCachePolicy = MemberCachePolicy.ONLINE or MemberCachePolicy.VOICE or MemberCachePolicy.OWNER
+    chunkingFilter = ChunkingFilter.NONE
+    compression = Compression.ZLIB
+    largeThreshold = 250
+}
 
 // This can only be used with the CoroutineEventManager
 jda.listener<MessageReceivedEvent> {
