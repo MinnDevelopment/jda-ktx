@@ -152,7 +152,7 @@ val embed = Embed {
 }
 ```
 
-### Command Builders
+### Command and SelectionMenu Builders
 
 ```kotlin
 jda.updateCommands {
@@ -186,6 +186,12 @@ jda.updateCommands {
 jda.upsertCommand("prune", "Prune messages") {
     option<Int>("amount", "The amount to delete from 2-100, default 50")
 }.queue()
+
+val menu = SelectionMenu("menu:class") {
+    option("Frost Mage", "mage-frost", emoji=FROST_SPEC, default=true)
+    option("Fire Mage", "mage-fire", emoji=FIRE_SPEC)
+    option("Arcane Mage", "mage-arcane", emoji=ARCANE_SPEC)
+}
 ```
 
 

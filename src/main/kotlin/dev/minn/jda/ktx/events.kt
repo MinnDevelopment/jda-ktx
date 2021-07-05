@@ -20,6 +20,8 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
+import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.interaction.SelectionMenuEvent
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.hooks.SubscribeEvent
@@ -140,6 +142,54 @@ inline fun ShardManager.onCommand(name: String, crossinline consumer: suspend Co
  * ## Example
  *
  * ```kotlin
+ * jda.on<ButtonClickEvent>("delete") { event ->
+ *     event.deferEdit().queue()
+ *     event.hook.deleteOriginal().queue()
+ * }
+ * ```
+ *
+ * @param[customId] The button id
+ * @param[consumer] The event consumer function
+ *
+ * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
+ */
+inline fun <reified T : GenericComponentInteractionCreateEvent> JDA.onComponent(customId: String, crossinline consumer: suspend CoroutineEventListener.(T) -> Unit) = listener<T> {
+    if (it.componentId == customId)
+        consumer(it)
+}
+
+/**
+ * Requires [CoroutineEventManager] to be used!
+ *
+ * Opens an event listener scope for simple hooking. This is a special listener which is used to listen for button presses!
+ *
+ * ## Example
+ *
+ * ```kotlin
+ * shardManager.on<ButtonClickEvent>("delete") { event ->
+ *     event.deferEdit().queue()
+ *     event.hook.deleteOriginal().queue()
+ * }
+ * ```
+ *
+ * @param[customId] The button id
+ * @param[consumer] The event consumer function
+ *
+ * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
+ */
+inline fun <reified T : GenericComponentInteractionCreateEvent> ShardManager.onComponent(customId: String, crossinline consumer: suspend CoroutineEventListener.(T) -> Unit) = listener<T> {
+    if (it.componentId == customId)
+        consumer(it)
+}
+
+/**
+ * Requires [CoroutineEventManager] to be used!
+ *
+ * Opens an event listener scope for simple hooking. This is a special listener which is used to listen for button presses!
+ *
+ * ## Example
+ *
+ * ```kotlin
  * jda.onButton("delete") { event ->
  *     event.deferEdit().queue()
  *     event.hook.deleteOriginal().queue()
@@ -151,10 +201,7 @@ inline fun ShardManager.onCommand(name: String, crossinline consumer: suspend Co
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun JDA.onButton(id: String, crossinline consumer: suspend CoroutineEventListener.(ButtonClickEvent) -> Unit) = listener<ButtonClickEvent> {
-    if (it.componentId == id)
-        consumer(it)
-}
+inline fun JDA.onButton(id: String, crossinline consumer: suspend CoroutineEventListener.(ButtonClickEvent) -> Unit) = onComponent(id, consumer)
 
 /**
  * Requires [CoroutineEventManager] to be used!
@@ -175,10 +222,49 @@ inline fun JDA.onButton(id: String, crossinline consumer: suspend CoroutineEvent
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun ShardManager.onButton(id: String, crossinline consumer: suspend CoroutineEventListener.(ButtonClickEvent) -> Unit) = listener<ButtonClickEvent> {
-    if (it.componentId == id)
-        consumer(it)
-}
+inline fun ShardManager.onButton(id: String, crossinline consumer: suspend CoroutineEventListener.(ButtonClickEvent) -> Unit) = onComponent(id, consumer)
+
+/**
+ * Requires [CoroutineEventManager] to be used!
+ *
+ * Opens an event listener scope for simple hooking. This is a special listener which is used to listen for selection menu events!
+ *
+ * ## Example
+ *
+ * ```kotlin
+ * jda.onSelection("menu:class") { event ->
+ *     event.deferEdit().queue()
+ *     println("User selected: ${event.values}")
+ * }
+ * ```
+ *
+ * @param[id] The selection menu id
+ * @param[consumer] The event consumer function
+ *
+ * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
+ */
+inline fun JDA.onSelection(id: String, crossinline consumer: suspend CoroutineEventListener.(SelectionMenuEvent) -> Unit) = onComponent(id, consumer)
+
+/**
+ * Requires [CoroutineEventManager] to be used!
+ *
+ * Opens an event listener scope for simple hooking. This is a special listener which is used to listen for selection menu events!
+ *
+ * ## Example
+ *
+ * ```kotlin
+ * shardManager.onSelection("menu:class") { event ->
+ *     event.deferEdit().queue()
+ *     println("User selected: ${event.values}")
+ * }
+ * ```
+ *
+ * @param[id] The selection menu id
+ * @param[consumer] The event consumer function
+ *
+ * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
+ */
+inline fun ShardManager.onSelection(id: String, crossinline consumer: suspend CoroutineEventListener.(SelectionMenuEvent) -> Unit) = onComponent(id, consumer)
 
 /**
  * Requires an EventManager implementation that supports either [EventListener] or [SubscribeEvent].
