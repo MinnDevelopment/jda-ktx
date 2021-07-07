@@ -18,8 +18,8 @@ The most useful feature of this library is the [CoroutineEventManager][4] which 
 suspending functions in your event handlers.
 
 ```kotlin
-val jda = DefaultJDA("token") {
-    memberCachePolicy = MemberCachePolicy.ONLINE or MemberCachePolicy.VOICE or MemberCachePolicy.OWNER
+val jda = DefaultJDA("[your token here]") {
+    memberCachePolicy = MemberCachePolicy.ONLINE or MemberCachePolicy.VOICE
     chunkingFilter = ChunkingFilter.NONE
     compression = Compression.ZLIB
     largeThreshold = 250
