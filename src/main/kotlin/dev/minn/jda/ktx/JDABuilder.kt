@@ -358,7 +358,7 @@ class InlineJDABuilder(val builder: JDABuilder) {
             field = value
         }
     
-    var eventListeners: Collection<Any> = DelegatingCollection(
+    var eventListeners: MutableCollection<Any> = DelegatingCollection(
             adder = { item -> builder.addEventListeners(item) },
             remover = { item -> builder.removeEventListeners(item) },
                                                               )
