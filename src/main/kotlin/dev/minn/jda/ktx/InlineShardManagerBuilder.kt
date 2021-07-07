@@ -317,7 +317,7 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
     var eventManager: IEventManager? = null
         set(value) {
             if (value != null) {
-                builder.setEventManager(value)
+                eventManagerProvider = IntFunction { value }
             }
             field = value
         }
@@ -535,7 +535,7 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
     
     fun build(login: Boolean = false): ShardManager {
         if (injectKtx)
-            builder.injectKTX()
+            builder.injectKTX(eventManagerProvider)
         
         return builder.build(login)
     }

@@ -14,47 +14,57 @@
  * limitations under the License.
  */
 
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package dev.minn.jda.ktx
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.GenericEvent
-import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.hooks.IEventManager
+import net.dv8tion.jda.api.hooks.InterfacedEventManager
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
- * EventManager implementation which supports both [EventListener] and [CoroutineEventListener].
+ * EventManager which works via a delegate to support [CoroutineEventListener].
  *
  * This enables [the coroutine listener extension][listener].
+ *
+ * @property delegate
+ * @property scope
+ * @constructor Create empty Coroutine event manager
  */
 class CoroutineEventManager(
+    val delegate: IEventManager = InterfacedEventManager(),
     private val scope: CoroutineScope = GlobalScope
-) : IEventManager {
-    private val listeners = CopyOnWriteArrayList<Any>()
-
+                           ) : IEventManager {
+    private val listeners = CopyOnWriteArrayList<CoroutineEventListener>()
+    
     override fun handle(event: GenericEvent) {
         scope.launch {
             for (listener in listeners) {
                 when (listener) {
                     is CoroutineEventListener -> listener.onEvent(event)
-                    is EventListener -> listener.onEvent(event)
+                    else                      -> delegate.handle(event)
                 }
             }
         }
     }
-
+    
     override fun register(listener: Any) {
-        listeners.add(when (listener) {
-            is EventListener, is CoroutineEventListener -> listener
-            else -> throw IllegalArgumentException("Listener must implement either EventListener or CoroutineEventListener")
-        })
+        when (listener) {
+            is CoroutineEventListener -> listeners.add(listener)
+            else                      -> delegate.register(listener)
+        }
     }
-
-    override fun getRegisteredListeners(): MutableList<Any> = mutableListOf(listeners)
-
+    
+    override fun getRegisteredListeners(): List<Any?> = listeners + delegate.registeredListeners
+    
     override fun unregister(listener: Any) {
-        listeners.remove(listener)
+        when (listener) {
+            is CoroutineEventListener -> listeners.remove(listener)
+            else                      -> delegate.unregister(listener)
+        }
     }
 }
