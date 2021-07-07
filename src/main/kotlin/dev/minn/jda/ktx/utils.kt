@@ -20,22 +20,45 @@ package dev.minn.jda.ktx
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 
 /**
- * Allows you to do
+ *
+ * Convenience Infix function for [MemberCachePolicy.or] to concatenate another policy.
+ * This allows you to drop the brackets for cache policies declarations.
+ *
+ * This way you can do
  * ```kotlin
- * memberCachePolicy = MemberCachePolicy.ONLINE or MemberCachePolicy.VOICE or MemberCachePolicy.OWNER
+ * memberCachePolicy = MemberCachePolicy.ONLINE or MemberCachePolicy.VOICE
  * ```
  * instead of
  * ```kotlin
- * memberCachePolicy = MemberCachePolicy.ONLINE.or(MemberCachePolicy.VOICE).or(MemberCachePolicy.OWNER)
+ * memberCachePolicy = MemberCachePolicy.ONLINE.or(MemberCachePolicy.VOICE)
  * ```
  *
- * @param policy
- * @return
+ * @param policy The policy to concat
+ * @return New policy which combines both using a logical OR
+ * @see InlineJDABuilder.memberCachePolicy
  */
 infix fun MemberCachePolicy.or(policy: MemberCachePolicy): MemberCachePolicy {
     return policy.or(policy)
 }
 
+/**
+ *
+ * Convenience Infix function for [MemberCachePolicy.or] to require another policy.
+ * This allows you to drop the brackets for cache policies declarations.
+ *
+ * This way you can do
+ * ```kotlin
+ * memberCachePolicy = MemberCachePolicy.ONLINE and MemberCachePolicy.VOICE
+ * ```
+ * instead of
+ * ```kotlin
+ * memberCachePolicy = MemberCachePolicy.ONLINE.and(MemberCachePolicy.VOICE)
+ * ```
+ *
+ * @param policy The policy to require in addition to this one
+ * @return New policy which combines both using a logical AND
+ * @see InlineJDABuilder.memberCachePolicy
+ */
 infix fun MemberCachePolicy.and(policy: MemberCachePolicy): MemberCachePolicy {
     return policy.and(policy)
 }
