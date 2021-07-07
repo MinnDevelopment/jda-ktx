@@ -279,12 +279,12 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
             field = value
         }
     
-    var eventListeners: MutableCollection<Any> = DelegatingCollection(
+    val eventListeners: MutableCollection<Any> = DelegatingCollection(
             adder = { item -> builder.addEventListeners(item) },
             remover = { item -> builder.removeEventListeners(item) },
                                                                      )
     
-    var eventListenerProvider: MutableCollection<IntFunction<Any>> = DelegatingCollection(
+    val eventListenerProvider: MutableCollection<IntFunction<Any>> = DelegatingCollection(
             adder = { item -> builder.addEventListenerProvider(item) },
             remover = { item -> builder.removeEventListenerProvider(item) },
                                                                                          )
