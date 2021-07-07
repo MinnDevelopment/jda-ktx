@@ -198,7 +198,7 @@ class InlineJDABuilder(val builder: JDABuilder) {
             field = value
         }
     
-    var rawEventsEnabled: Boolean = false
+    var rawEvents: Boolean = false
         set(value) {
             builder.setRawEventsEnabled(value)
             field = value
@@ -234,7 +234,7 @@ class InlineJDABuilder(val builder: JDABuilder) {
             field = value
         }
     
-    var contextEnabled: Boolean = true
+    var context: Boolean = true
         set(value) {
             builder.setContextEnabled(value)
             field = value
@@ -308,7 +308,7 @@ class InlineJDABuilder(val builder: JDABuilder) {
             field = value
         }
     
-    var bulkDeleteSplittingEnabled: Boolean = true
+    var bulkDeleteSplitting: Boolean = true
         set(value) {
             builder.setBulkDeleteSplittingEnabled(value)
             field = value

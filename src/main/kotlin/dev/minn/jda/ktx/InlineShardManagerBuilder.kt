@@ -265,7 +265,7 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
             field = value
         }
     
-    var contextEnabled: Boolean = true
+    var context: Boolean = true
         set(value) {
             builder.setContextEnabled(value)
             field = value
@@ -301,7 +301,7 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
             field = value
         }
     
-    var bulkDeleteSplittingEnabled: Boolean = true
+    var bulkDeleteSplitting: Boolean = true
         set(value) {
             builder.setBulkDeleteSplittingEnabled(value)
             field = value
