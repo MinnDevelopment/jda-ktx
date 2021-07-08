@@ -20,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("net.dv8tion:JDA:4.3.0_298")
+    compileOnly("net.dv8tion:JDA:4.3.0_295")
     api(kotlin("stdlib-jdk8"))
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
 }
