@@ -389,8 +389,6 @@ class InlineJDABuilder(val builder: JDABuilder) {
             field = value
         }
 
-    var gatewayIntents: MutableSet<GatewayIntent> = mutableSetOf()
-
     var enableIntents: Collection<GatewayIntent> = emptySet()
         set(value) {
             builder.enableIntents(value)
