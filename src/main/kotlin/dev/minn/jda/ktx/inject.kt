@@ -20,25 +20,34 @@ import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.hooks.IEventManager
 import net.dv8tion.jda.api.hooks.InterfacedEventManager
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
-import java.util.function.IntFunction
 
 
 /**
  * Applies the [CoroutineEventManager] to this builder.
+ *
+ * @param delegate A delegate passed to [CoroutineEventManager], allowing any [Event Manager][IEventManager] type to be used.
+ * Defaults to `InterfacedEventManager()`
  */
-fun JDABuilder.injectKTX(delegate: IEventManager? = null) =
-    setEventManager(CoroutineEventManager(delegate ?: InterfacedEventManager()))
+fun JDABuilder.injectKTX(delegate: IEventManager = InterfacedEventManager()) =
+    setEventManager(CoroutineEventManager(delegate))
 
 /**
  * Applies the [CoroutineEventManager] to this builder.
+ *
+ * @param delegate A delegate passed to [CoroutineEventManager], allowing any [Event Manager][IEventManager] type to be used.
+ * Defaults to `InterfacedEventManager()`
  */
-fun DefaultShardManagerBuilder.injectKTX(delegate: IEventManager? = null) =
-    injectKTX { CoroutineEventManager(delegate ?: InterfacedEventManager()) }
+fun DefaultShardManagerBuilder.injectKTX(delegate: IEventManager = InterfacedEventManager()) =
+    injectKTX { CoroutineEventManager(delegate) }
 
 /**
  * Applies the [CoroutineEventManager] to this builder.
+ *
+ * @param delegateProvider Provider for a delegate passed to [CoroutineEventManager], allowing any [Event Manager][IEventManager] type to be used.
+ * Defaults to `InterfacedEventManager()`
+ * @receiver id of the shard to provide an [Event Manager][IEventManager] for.
  */
-fun DefaultShardManagerBuilder.injectKTX(delegateProvider: IntFunction<out IEventManager>? = null) =
+fun DefaultShardManagerBuilder.injectKTX(delegateProvider: (Int) -> IEventManager = { InterfacedEventManager() }) =
     setEventManagerProvider { id ->
-        CoroutineEventManager(delegateProvider?.apply(id) ?: InterfacedEventManager())
+        CoroutineEventManager(delegateProvider(id))
     }
