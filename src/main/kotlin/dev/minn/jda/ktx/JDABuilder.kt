@@ -369,12 +369,6 @@ class InlineJDABuilder(val builder: JDABuilder) {
             field = value
         }
 
-    var sharding: Pair<Int, Int>? = null
-        set(value) {
-            value?.let { builder.useSharding(value.first, it.second) }
-            field = value
-        }
-
     fun sharding(shardId: Int, shardTotal: Int) = builder.useSharding(shardId, shardTotal)
 
     var sessionController: SessionController? = null
