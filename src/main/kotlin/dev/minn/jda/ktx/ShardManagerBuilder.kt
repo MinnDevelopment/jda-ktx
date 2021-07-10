@@ -341,7 +341,6 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
             field = value
         }
 
-    @Deprecated("Use eventManagerProvider instead")
     var eventManager: IEventManager? = null
         set(value) {
             if (value != null)
