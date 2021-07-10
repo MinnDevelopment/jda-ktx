@@ -417,7 +417,7 @@ class InlineJDABuilder(val builder: JDABuilder) {
 
     fun build(): JDA {
         if (injectKtx)
-            builder.injectKTX()
+            builder.injectKTX(eventManager)
 
         return builder.build()
     }
