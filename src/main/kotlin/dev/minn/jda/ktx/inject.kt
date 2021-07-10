@@ -34,15 +34,6 @@ fun JDABuilder.injectKTX(delegate: IEventManager = InterfacedEventManager()) =
 /**
  * Applies the [CoroutineEventManager] to this builder.
  *
- * @param delegate A delegate passed to [CoroutineEventManager], allowing any [Event Manager][IEventManager] type to be used.
- * Defaults to `InterfacedEventManager()`
- */
-fun DefaultShardManagerBuilder.injectKTX(delegate: IEventManager = InterfacedEventManager()) =
-    injectKTX { CoroutineEventManager(delegate) }
-
-/**
- * Applies the [CoroutineEventManager] to this builder.
- *
  * @param delegateProvider Provider for a delegate passed to [CoroutineEventManager], allowing any [Event Manager][IEventManager] type to be used.
  * Defaults to `InterfacedEventManager()`
  * @receiver id of the shard to provide an [Event Manager][IEventManager] for.

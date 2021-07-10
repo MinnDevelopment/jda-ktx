@@ -476,8 +476,12 @@ class InlineJDABuilder(val builder: JDABuilder) {
     var injectKtx: Boolean = true
 
     fun build(): JDA {
-        if (injectKtx)
-            builder.injectKTX(eventManager)
+        if (injectKtx) {
+            if (eventManager != null)
+                builder.injectKTX(eventManager!!)
+            else
+                builder.injectKTX()
+        }
 
         return builder.build()
     }

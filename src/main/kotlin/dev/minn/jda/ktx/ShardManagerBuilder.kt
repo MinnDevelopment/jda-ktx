@@ -950,8 +950,12 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
     var injectKtx: Boolean = true
 
     fun build(login: Boolean = false): ShardManager {
-        if (injectKtx)
-            builder.injectKTX(eventManagerProvider)
+        if (injectKtx) {
+            if (eventManagerProvider != null)
+                builder.injectKTX { eventManagerProvider!!.apply(it) }
+            else
+                builder.injectKTX()
+        }
 
         return builder.build(login)
     }
