@@ -422,5 +422,3 @@ class InlineJDABuilder(val builder: JDABuilder) {
         return builder.build()
     }
 }
-
-private inline fun <reified T : Enum<T>> enumSetOf(vararg elems: T) = EnumSet.noneOf(T::class.java).apply { addAll(elems) }
