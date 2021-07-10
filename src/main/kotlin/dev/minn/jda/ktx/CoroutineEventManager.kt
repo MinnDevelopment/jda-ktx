@@ -38,7 +38,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 class CoroutineEventManager(
     val delegate: IEventManager = InterfacedEventManager(),
     private val scope: CoroutineScope = GlobalScope
-                           ) : IEventManager {
+) : IEventManager {
     private val listeners = CopyOnWriteArrayList<CoroutineEventListener>()
     
     override fun handle(event: GenericEvent) {
@@ -58,9 +58,7 @@ class CoroutineEventManager(
             else                      -> delegate.register(listener)
         }
     }
-    
     override fun getRegisteredListeners(): List<Any?> = listeners + delegate.registeredListeners
-    
     override fun unregister(listener: Any) {
         when (listener) {
             is CoroutineEventListener -> listeners.remove(listener)

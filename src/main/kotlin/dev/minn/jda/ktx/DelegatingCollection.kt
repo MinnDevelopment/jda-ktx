@@ -23,7 +23,7 @@ internal class DelegatingCollection<T>(
     private val delegate: MutableCollection<T> = mutableListOf(),
     private val adder: (toAdd: T) -> Unit,
     private val remover: (toRemove: T) -> Unit,
-                                      ) : MutableCollection<T> by delegate {
+) : MutableCollection<T> by delegate {
     override fun add(element: T): Boolean {
         adder(element)
         return delegate.add(element)
