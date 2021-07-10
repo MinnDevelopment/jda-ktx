@@ -17,14 +17,28 @@
 package dev.minn.jda.ktx
 
 import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.hooks.IEventManager
+import net.dv8tion.jda.api.hooks.InterfacedEventManager
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 
-/**
- * Applies the [CoroutineEventManager] to this builder.
- */
-fun JDABuilder.injectKTX() = setEventManager(CoroutineEventManager())
 
 /**
  * Applies the [CoroutineEventManager] to this builder.
+ *
+ * @param delegate A delegate passed to [CoroutineEventManager], allowing any [Event Manager][IEventManager] type to be used.
+ * Defaults to `InterfacedEventManager()`
  */
-fun DefaultShardManagerBuilder.injectKTX() = setEventManagerProvider { CoroutineEventManager() }
+fun JDABuilder.injectKTX(delegate: IEventManager = InterfacedEventManager()) =
+    setEventManager(CoroutineEventManager(delegate))
+
+/**
+ * Applies the [CoroutineEventManager] to this builder.
+ *
+ * @param delegateProvider Provider for a delegate passed to [CoroutineEventManager], allowing any [Event Manager][IEventManager] type to be used.
+ * Defaults to `InterfacedEventManager()`
+ * @receiver id of the shard to provide an [Event Manager][IEventManager] for.
+ */
+fun DefaultShardManagerBuilder.injectKTX(delegateProvider: (Int) -> IEventManager = { InterfacedEventManager() }) =
+    setEventManagerProvider { id ->
+        CoroutineEventManager(delegateProvider(id))
+    }
