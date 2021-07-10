@@ -52,7 +52,7 @@ import java.util.concurrent.ScheduledExecutorService
 inline fun DefaultJDA(
     token: String? = null,
     builder: InlineJDABuilder.() -> Unit
-                     ) = InlineJDABuilder(JDABuilder.createDefault(token)).also(builder).build()
+) = InlineJDABuilder(JDABuilder.createDefault(token)).also(builder).build()
 
 /**
  * Creates a new [JDA] instance with the default settings by using [JDABuilder.createDefault]
@@ -67,7 +67,7 @@ inline fun DefaultJDA(
     token: String? = null,
     vararg intents: GatewayIntent,
     builder: InlineJDABuilder.() -> Unit
-                     ) = InlineJDABuilder(JDABuilder.createDefault(token, intents.toList())).also(builder).build()
+) = InlineJDABuilder(JDABuilder.createDefault(token, intents.toList())).also(builder).build()
 
 /**
  * Creates a new [JDABuilder] instance with the default settings by using [JDABuilder.createDefault]
@@ -80,7 +80,7 @@ inline fun DefaultJDA(
 inline fun DefaultJDABuilder(
     token: String? = null,
     builder: InlineJDABuilder.() -> Unit
-                            ) = InlineJDABuilder(JDABuilder.createDefault(token)).also(builder)
+) = InlineJDABuilder(JDABuilder.createDefault(token)).also(builder)
 
 /**
  * Creates a new [JDABuilder] instance with the default settings by using [JDABuilder.createDefault]
@@ -95,7 +95,7 @@ inline fun DefaultJDABuilder(
     token: String? = null,
     vararg intents: GatewayIntent,
     builder: InlineJDABuilder.() -> Unit
-                            ) = InlineJDABuilder(JDABuilder.createDefault(token, intents.toList())).also(builder)
+) = InlineJDABuilder(JDABuilder.createDefault(token, intents.toList())).also(builder)
 
 /**
  * Creates a new [JDA] instance with the default settings by using [JDABuilder.createLight]
@@ -108,7 +108,7 @@ inline fun DefaultJDABuilder(
 inline fun LightJDA(
     token: String? = null,
     builder: InlineJDABuilder.() -> Unit
-                   ) = InlineJDABuilder(JDABuilder.createLight(token)).also(builder).build()
+) = InlineJDABuilder(JDABuilder.createLight(token)).also(builder).build()
 
 /**
  * Creates a new [JDA] instance with the default settings by using [JDABuilder.createLight]
@@ -123,7 +123,7 @@ inline fun LightJDA(
     token: String? = null,
     vararg intents: GatewayIntent,
     builder: InlineJDABuilder.() -> Unit
-                   ) = InlineJDABuilder(JDABuilder.createLight(token, intents.toList())).also(builder).build()
+) = InlineJDABuilder(JDABuilder.createLight(token, intents.toList())).also(builder).build()
 
 /**
  * Creates a new [JDABuilder] instance with the default settings by using [JDABuilder.createLight]
@@ -136,7 +136,7 @@ inline fun LightJDA(
 inline fun LightJDABuilder(
     token: String? = null,
     builder: InlineJDABuilder.() -> Unit
-                          ) = InlineJDABuilder(JDABuilder.createLight(token)).also(builder)
+) = InlineJDABuilder(JDABuilder.createLight(token)).also(builder)
 
 /**
  * Creates a new [JDABuilder] instance with the default settings by using [JDABuilder.createLight]
@@ -151,7 +151,7 @@ inline fun LightJDABuilder(
     token: String? = null,
     vararg intents: GatewayIntent,
     builder: InlineJDABuilder.() -> Unit
-                          ) = InlineJDABuilder(JDABuilder.createLight(token, intents.toList())).also(builder)
+) = InlineJDABuilder(JDABuilder.createLight(token, intents.toList())).also(builder)
 
 /**
  * Creates a new [JDA] instance with the default settings by using [JDABuilder.create]
@@ -166,7 +166,7 @@ inline fun JDA(
     token: String? = null,
     vararg intents: GatewayIntent,
     builder: InlineJDABuilder.() -> Unit
-              ) = InlineJDABuilder(JDABuilder.create(token, intents.toList())).also(builder).build()
+) = InlineJDABuilder(JDABuilder.create(token, intents.toList())).also(builder).build()
 
 /**
  * Creates a new [JDABuilder] instance with the default settings by using [JDABuilder.create]
@@ -181,7 +181,7 @@ inline fun JDABuilder(
     token: String? = null,
     vararg intents: GatewayIntent,
     builder: InlineJDABuilder.() -> Unit
-                     ) = InlineJDABuilder(JDABuilder.create(token, intents.toList())).also(builder)
+) = InlineJDABuilder(JDABuilder.create(token, intents.toList())).also(builder)
 
 /**
  * Makes construction of a [JDA] much more idiomatic and cleaner to do in kotlin.
@@ -197,49 +197,49 @@ class InlineJDABuilder(val builder: JDABuilder) {
             }
             field = value
         }
-    
+
     var rawEvents: Boolean = false
         set(value) {
             builder.setRawEventsEnabled(value)
             field = value
         }
-    
+
     var relativeRateLimit: Boolean = true
         set(value) {
             builder.setRelativeRateLimit(value)
             field = value
         }
-    
+
     var enableCache: Collection<CacheFlag> = emptySet()
         set(value) {
             builder.enableCache(value)
             field = value
         }
-    
+
     var disableCache: Collection<CacheFlag> = emptySet()
         set(value) {
             builder.disableCache(value)
             field = value
         }
-    
+
     var memberCachePolicy: MemberCachePolicy? = null
         set(value) {
             builder.setMemberCachePolicy(value)
             field = value
         }
-    
+
     var contextMap: ConcurrentMap<String, String>? = null
         set(value) {
             builder.setContextMap(value)
             field = value
         }
-    
+
     var context: Boolean = true
         set(value) {
             builder.setContextEnabled(value)
             field = value
         }
-    
+
     var compression: Compression? = null
         set(value) {
             if (value != null) {
@@ -247,109 +247,109 @@ class InlineJDABuilder(val builder: JDABuilder) {
             }
             field = value
         }
-    
+
     var requestTimeoutRetry: Boolean = true
         set(value) {
             builder.setRequestTimeoutRetry(value)
             field = value
         }
-    
+
     var token: String? = null
         set(value) {
             builder.setToken(value)
             field = value
         }
-    
+
     var httpClientBuilder: OkHttpClient.Builder? = null
         set(value) {
             builder.setHttpClientBuilder(value)
             field = value
         }
-    
+
     var httpClient: OkHttpClient? = null
         set(value) {
             builder.setHttpClient(value)
             field = value
         }
-    
+
     var webSocketFactory: WebSocketFactory? = null
         set(value) {
             builder.setWebsocketFactory(value)
             field = value
         }
-    
+
     var rateLimitPool: ScheduledExecutorService? = null
         set(value) {
             builder.setRateLimitPool(value, true)
             field = value
         }
-    
+
     var gatewayPool: ScheduledExecutorService? = null
         set(value) {
             builder.setGatewayPool(value, true)
             field = value
         }
-    
+
     var callbackPool: ExecutorService? = null
         set(value) {
             builder.setCallbackPool(value, true)
             field = value
         }
-    
+
     var eventPool: ExecutorService? = null
         set(value) {
             builder.setEventPool(value, true)
             field = value
         }
-    
+
     var audioPool: ScheduledExecutorService? = null
         set(value) {
             builder.setAudioPool(value, true)
             field = value
         }
-    
+
     var bulkDeleteSplitting: Boolean = true
         set(value) {
             builder.setBulkDeleteSplittingEnabled(value)
             field = value
         }
-    
+
     var enableShutdownHook: Boolean = true
         set(value) {
             builder.setEnableShutdownHook(value)
             field = value
         }
-    
+
     var autoReconnect: Boolean = true
         set(value) {
             builder.setAutoReconnect(value)
             field = value
         }
-    
+
     var eventManager: IEventManager? = null
         set(value) {
             builder.setEventManager(value)
             field = value
         }
-    
+
     var audioSendFactory: IAudioSendFactory? = null
         set(value) {
             builder.setAudioSendFactory(value)
             field = value
         }
-    
+
     var idle: Boolean = false
         set(value) {
             builder.setIdle(value)
             field = value
         }
-    
+
     var activity: Activity? = null
         set(value) {
             builder.setActivity(value)
             field = value
         }
-    
+
     var status: OnlineStatus? = null
         set(value) {
             if (value != null) {
@@ -357,76 +357,76 @@ class InlineJDABuilder(val builder: JDABuilder) {
             }
             field = value
         }
-    
+
     val eventListeners: MutableCollection<Any> = DelegatingCollection(
             adder = { item -> builder.addEventListeners(item) },
             remover = { item -> builder.removeEventListeners(item) },
-                                                              )
-    
+    )
+
     var maxReconnectDelay: Int = 900
         set(value) {
             builder.setMaxReconnectDelay(value)
             field = value
         }
-    
+
     var sharding: Pair<Int, Int>? = null
         set(value) {
             value?.let { builder.useSharding(value.first, it.second) }
             field = value
         }
-    
+
     fun sharding(shardId: Int, shardTotal: Int) = builder.useSharding(shardId, shardTotal)
-    
+
     var sessionController: SessionController? = null
         set(value) {
             builder.setSessionController(value)
             field = value
         }
-    
+
     var voiceDispatchInterceptor: VoiceDispatchInterceptor? = null
         set(value) {
             builder.setVoiceDispatchInterceptor(value)
             field = value
         }
-    
+
     var chunkingFilter: ChunkingFilter? = null
         set(value) {
             builder.setChunkingFilter(value)
             field = value
         }
-    
+
     var gatewayIntents: MutableSet<GatewayIntent> = mutableSetOf()
-    
+
     var enableIntents: Collection<GatewayIntent> = emptySet()
         set(value) {
             builder.enableIntents(value)
             field = value
         }
-    
+
     var disableIntents: Collection<GatewayIntent> = emptySet()
         set(value) {
             builder.disableIntents(value)
             field = value
         }
-    
+
     var largeThreshold: Int = 250
         set(value) {
             builder.setLargeThreshold(value)
             field = value
         }
-    
+
     var maxBufferSize: Int = 2048
         set(value) {
             builder.setMaxBufferSize(value)
             field = value
         }
-    
+
     var injectKtx: Boolean = true
-    
+
     fun build(): JDA {
         if (injectKtx)
             builder.injectKTX()
-        
+
         return builder.build()
     }
 }

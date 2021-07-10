@@ -55,7 +55,7 @@ inline fun DefaultShardManager(
     token: String? = null,
     login: Boolean = true,
     builder: InlineShardManagerBuilder.() -> Unit
-                              ) = InlineShardManagerBuilder(DefaultShardManagerBuilder.createDefault(token))
+) = InlineShardManagerBuilder(DefaultShardManagerBuilder.createDefault(token))
         .also(builder)
         .build(login)
 
@@ -74,7 +74,7 @@ inline fun DefaultShardManager(
     login: Boolean = true,
     vararg intents: GatewayIntent,
     builder: InlineShardManagerBuilder.() -> Unit
-                              ) =
+) =
     InlineShardManagerBuilder(DefaultShardManagerBuilder.createDefault(token, intents.toList()))
             .also(builder)
             .build(login)
@@ -90,7 +90,7 @@ inline fun DefaultShardManager(
 inline fun DefaultShardManagerBuilder(
     token: String? = null,
     builder: InlineShardManagerBuilder.() -> Unit
-                                     ) = InlineShardManagerBuilder(DefaultShardManagerBuilder.createDefault(token))
+) = InlineShardManagerBuilder(DefaultShardManagerBuilder.createDefault(token))
         .also(builder)
 
 /**
@@ -106,7 +106,7 @@ inline fun DefaultShardManagerBuilder(
     token: String? = null,
     vararg intents: GatewayIntent,
     builder: InlineShardManagerBuilder.() -> Unit
-                                     ) = InlineShardManagerBuilder(DefaultShardManagerBuilder.createDefault(token, intents.toList()))
+) = InlineShardManagerBuilder(DefaultShardManagerBuilder.createDefault(token, intents.toList()))
         .also(builder)
 
 /**
@@ -122,7 +122,7 @@ inline fun LightShardManager(
     token: String? = null,
     login: Boolean = true,
     builder: InlineShardManagerBuilder.() -> Unit
-                            ) = InlineShardManagerBuilder(DefaultShardManagerBuilder.createLight(token))
+) = InlineShardManagerBuilder(DefaultShardManagerBuilder.createLight(token))
         .also(builder)
         .build(login)
 
@@ -141,7 +141,7 @@ inline fun LightShardManager(
     login: Boolean = true,
     vararg intents: GatewayIntent,
     builder: InlineShardManagerBuilder.() -> Unit
-                            ) = InlineShardManagerBuilder(DefaultShardManagerBuilder.createLight(token, intents.toList()))
+) = InlineShardManagerBuilder(DefaultShardManagerBuilder.createLight(token, intents.toList()))
         .also(builder)
         .build(login)
 
@@ -156,7 +156,7 @@ inline fun LightShardManager(
 inline fun LightShardManagerBuilder(
     token: String? = null,
     builder: InlineShardManagerBuilder.() -> Unit
-                                   ) = InlineShardManagerBuilder(DefaultShardManagerBuilder.createLight(token))
+) = InlineShardManagerBuilder(DefaultShardManagerBuilder.createLight(token))
         .also(builder)
 
 /**
@@ -172,7 +172,7 @@ inline fun LightShardManagerBuilder(
     token: String? = null,
     vararg intents: GatewayIntent,
     builder: InlineShardManagerBuilder.() -> Unit
-                                   ) = InlineShardManagerBuilder(DefaultShardManagerBuilder.createLight(token, intents.toList()))
+) = InlineShardManagerBuilder(DefaultShardManagerBuilder.createLight(token, intents.toList()))
         .also(builder)
 
 /**
@@ -190,7 +190,7 @@ inline fun ShardManager(
     login: Boolean = true,
     vararg intents: GatewayIntent,
     builder: InlineShardManagerBuilder.() -> Unit
-                       ) = InlineShardManagerBuilder(DefaultShardManagerBuilder.create(token, intents.toList()))
+) = InlineShardManagerBuilder(DefaultShardManagerBuilder.create(token, intents.toList()))
         .also(builder)
         .build(login)
 
@@ -207,7 +207,7 @@ inline fun ShardManagerBuilder(
     token: String? = null,
     vararg intents: GatewayIntent,
     builder: InlineShardManagerBuilder.() -> Unit
-                              ) = InlineShardManagerBuilder(DefaultShardManagerBuilder.create(token, intents.toList()))
+) = InlineShardManagerBuilder(DefaultShardManagerBuilder.create(token, intents.toList()))
         .also(builder)
 
 /**
@@ -222,55 +222,55 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
             builder.setRawEventsEnabled(value)
             field = value
         }
-    
+
     var relativeRateLimit: Boolean = true
         set(value) {
             builder.setRelativeRateLimit(value)
             field = value
         }
-    
+
     var enableCache: Collection<CacheFlag> = emptySet()
         set(value) {
             builder.enableCache(value)
             field = value
         }
-    
+
     var disableCache: Collection<CacheFlag> = emptySet()
         set(value) {
             builder.disableCache(value)
             field = value
         }
-    
+
     var memberCachePolicy: MemberCachePolicy? = null
         set(value) {
             builder.setMemberCachePolicy(value)
             field = value
         }
-    
+
     var sessionController: SessionController? = null
         set(value) {
             builder.setSessionController(value)
             field = value
         }
-    
+
     var voiceDispatchInterceptor: VoiceDispatchInterceptor? = null
         set(value) {
             builder.setVoiceDispatchInterceptor(value)
             field = value
         }
-    
+
     var contextMap: IntFunction<out ConcurrentMap<String, String>>? = null
         set(value) {
             builder.setContextMap(value)
             field = value
         }
-    
+
     var context: Boolean = true
         set(value) {
             builder.setContextEnabled(value)
             field = value
         }
-    
+
     var compression: Compression? = null
         set(value) {
             if (value != null) {
@@ -278,41 +278,41 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
             }
             field = value
         }
-    
+
     val eventListeners: MutableCollection<Any> = DelegatingCollection(
             adder = { item -> builder.addEventListeners(item) },
             remover = { item -> builder.removeEventListeners(item) },
-                                                                     )
-    
+    )
+
     val eventListenerProvider: MutableCollection<IntFunction<Any>> = DelegatingCollection(
             adder = { item -> builder.addEventListenerProvider(item) },
             remover = { item -> builder.removeEventListenerProvider(item) },
-                                                                                         )
-    
+    )
+
     var audioSendFactory: IAudioSendFactory? = null
         set(value) {
             builder.setAudioSendFactory(value)
             field = value
         }
-    
+
     var autoReconnect: Boolean = true
         set(value) {
             builder.setAutoReconnect(value)
             field = value
         }
-    
+
     var bulkDeleteSplitting: Boolean = true
         set(value) {
             builder.setBulkDeleteSplittingEnabled(value)
             field = value
         }
-    
+
     var enableShutdownHook: Boolean = true
         set(value) {
             builder.setEnableShutdownHook(value)
             field = value
         }
-    
+
     @Deprecated("Use eventManagerProvider instead")
     var eventManager: IEventManager? = null
         set(value) {
@@ -321,7 +321,7 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
             }
             field = value
         }
-    
+
     var eventManagerProvider: IntFunction<out IEventManager>? = null
         set(value) {
             if (value != null) {
@@ -329,31 +329,31 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
             }
             field = value
         }
-    
+
     var activity: Activity? = null
         set(value) {
             builder.setActivity(value)
             field = value
         }
-    
+
     var activityProvider: IntFunction<Activity>? = null
         set(value) {
             builder.setActivityProvider(value)
             field = value
         }
-    
+
     var idle: Boolean = false
         set(value) {
             builder.setIdle(value)
             field = value
         }
-    
+
     var idleProvider: IntFunction<Boolean>? = null
         set(value) {
             builder.setIdleProvider(value)
             field = value
         }
-    
+
     var status: OnlineStatus? = null
         set(value) {
             if (value != null) {
@@ -361,7 +361,7 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
             }
             field = value
         }
-    
+
     var statusProvider: IntFunction<OnlineStatus>? = null
         set(value) {
             if (value != null) {
@@ -369,85 +369,85 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
             }
             field = value
         }
-    
+
     var threadFactory: ThreadFactory? = null
         set(value) {
             builder.setThreadFactory(value)
             field = value
         }
-    
+
     var httpClientBuilder: OkHttpClient.Builder? = null
         set(value) {
             builder.setHttpClientBuilder(value)
             field = value
         }
-    
+
     var httpClient: OkHttpClient? = null
         set(value) {
             builder.setHttpClient(value)
             field = value
         }
-    
+
     var rateLimitPool: ScheduledExecutorService? = null
         set(value) {
             builder.setRateLimitPool(value, true)
             field = value
         }
-    
+
     var rateLimitPoolProvider: ThreadPoolProvider<out ScheduledExecutorService>? = null
         set(value) {
             builder.setRateLimitPoolProvider(value)
             field = value
         }
-    
+
     var gatewayPool: ScheduledExecutorService? = null
         set(value) {
             builder.setGatewayPool(value, true)
             field = value
         }
-    
+
     var gatewayPoolProvider: ThreadPoolProvider<out ScheduledExecutorService>? = null
         set(value) {
             builder.setGatewayPoolProvider(value)
             field = value
         }
-    
+
     var callbackPool: ExecutorService? = null
         set(value) {
             builder.setCallbackPool(value, true)
             field = value
         }
-    
+
     var callbackPoolProvider: ThreadPoolProvider<out ExecutorService>? = null
         set(value) {
             builder.setCallbackPoolProvider(value)
             field = value
         }
-    
+
     var eventPool: ExecutorService? = null
         set(value) {
             builder.setEventPool(value, true)
             field = value
         }
-    
+
     var eventPoolProvider: ThreadPoolProvider<out ExecutorService>? = null
         set(value) {
             builder.setEventPoolProvider(value)
             field = value
         }
-    
+
     var audioPool: ScheduledExecutorService? = null
         set(value) {
             builder.setAudioPool(value, true)
             field = value
         }
-    
+
     var audioPoolProvider: ThreadPoolProvider<out ScheduledExecutorService>? = null
         set(value) {
             builder.setAudioPoolProvider(value)
             field = value
         }
-    
+
     var maxReconnectDelay: Int = 900
         set(value) {
             builder.setMaxReconnectDelay(value)
@@ -458,28 +458,28 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
             builder.setRequestTimeoutRetry(value)
             field = value
         }
-    
+
     var shards: Set<Int> = emptySet()
         set(value) {
             builder.setShards(shards)
             field = value
         }
-    
+
     var shardsTotal: Int = -1
         set(value) {
             builder.setShardsTotal(value)
             field = value
         }
-    
-    
+
+
     fun shards(minShardId: Int = 0, maxShardId: Int) {
         shards = (minShardId..maxShardId).toSet()
     }
-    
+
     fun shards(vararg shardIds: Int) {
         shards = shardIds.toSet()
     }
-    
+
     var token: String? = null
         set(value) {
             if (value != null) {
@@ -487,56 +487,56 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
             }
             field = value
         }
-    
+
     var useShutdownNow: Boolean = false
         set(value) {
             builder.setUseShutdownNow(value)
             field = value
         }
-    
+
     var webSocketFactory: WebSocketFactory? = null
         set(value) {
             builder.setWebsocketFactory(value)
             field = value
         }
-    
+
     var chunkingFilter: ChunkingFilter? = null
         set(value) {
             builder.setChunkingFilter(value)
             field = value
         }
-    
+
     var enableIntents: Collection<GatewayIntent> = emptySet()
         set(value) {
             builder.enableIntents(value)
             field = value
         }
-    
+
     var disableIntents: Collection<GatewayIntent> = emptySet()
         set(value) {
             builder.disableIntents(value)
             field = value
         }
-    
+
     var largeThreshold: Int = 250
         set(value) {
             val coercedValue = value.coerceIn(50, 250)
             builder.setLargeThreshold(coercedValue)
             field = coercedValue
         }
-    
+
     var maxBufferSize: Int = 2048
         set(value) {
             builder.setMaxBufferSize(value)
             field = value
         }
-    
+
     var injectKtx: Boolean = true
-    
+
     fun build(login: Boolean = false): ShardManager {
         if (injectKtx)
             builder.injectKTX(eventManagerProvider)
-        
+
         return builder.build(login)
     }
 }

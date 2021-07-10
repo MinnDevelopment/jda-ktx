@@ -40,7 +40,7 @@ class CoroutineEventManager(
     private val scope: CoroutineScope = GlobalScope
 ) : IEventManager {
     private val listeners = CopyOnWriteArrayList<CoroutineEventListener>()
-    
+
     override fun handle(event: GenericEvent) {
         scope.launch {
             for (listener in listeners) {
@@ -51,14 +51,16 @@ class CoroutineEventManager(
             }
         }
     }
-    
+
     override fun register(listener: Any) {
         when (listener) {
             is CoroutineEventListener -> listeners.add(listener)
             else                      -> delegate.register(listener)
         }
     }
+
     override fun getRegisteredListeners(): List<Any?> = listeners + delegate.registeredListeners
+
     override fun unregister(listener: Any) {
         when (listener) {
             is CoroutineEventListener -> listeners.remove(listener)

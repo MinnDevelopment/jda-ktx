@@ -28,27 +28,27 @@ internal class DelegatingCollection<T>(
         adder(element)
         return delegate.add(element)
     }
-    
+
     override fun addAll(elements: Collection<T>): Boolean {
         elements.forEach(adder)
         return delegate.addAll(elements)
     }
-    
+
     override fun clear() {
         delegate.forEach(remover)
         delegate.clear()
     }
-    
+
     override fun remove(element: T): Boolean {
         remover(element)
         return delegate.remove(element)
     }
-    
+
     override fun removeAll(elements: Collection<T>): Boolean {
         elements.forEach(remover)
         return delegate.removeAll(elements)
     }
-    
+
     override fun removeIf(filter: Predicate<in T>): Boolean {
         @Suppress("LABEL_NAME_CLASH")
         return delegate.removeIf { element ->
@@ -59,7 +59,7 @@ internal class DelegatingCollection<T>(
             return@removeIf false
         }
     }
-    
+
     override fun retainAll(elements: Collection<T>): Boolean {
         return delegate.removeIf { element ->
             if (!elements.contains(element)) {
