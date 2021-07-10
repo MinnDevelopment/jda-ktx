@@ -42,6 +42,12 @@ import java.util.concurrent.ThreadFactory
 import java.util.function.IntFunction
 
 
+typealias StatusProvider = IntFunction<OnlineStatus>
+typealias IdleProvider = IntFunction<Boolean>
+typealias ActivityProvider = IntFunction<Activity>
+typealias EventManagerProvider = IntFunction<out IEventManager>
+typealias EventListenerProvider = IntFunction<Any>
+
 /**
  * Creates a new [ShardManager] instance with the default settings by using [DefaultShardManagerBuilder.createDefault]
  *
@@ -284,10 +290,32 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
             remover = { item -> builder.removeEventListeners(item) },
     )
 
-    val eventListenerProvider: MutableCollection<IntFunction<Any>> = DelegatingCollection(
+    val eventListenerProviders: MutableCollection<IntFunction<Any>> = DelegatingCollection(
             adder = { item -> builder.addEventListenerProvider(item) },
             remover = { item -> builder.removeEventListenerProvider(item) },
     )
+
+    /**
+     * Sets an event listener on a per-shard basis..
+     *
+     * eg:
+     * ```kotlin
+     * eventListenerProvider {
+     *     when(it) {
+     *         1 -> ShardOneListener()
+     *         2 -> ShardTwoListener()
+     *         3 -> ShardThreeListener()
+     *         else -> throw IllegalStateException("There are only 4 shards!")
+     *     }
+     * }
+     * ```
+     *
+     * @param provider The provider for an event listener
+     * @receiver The id of the shard
+     */
+    fun eventListenerProvider(provider: (Int) -> Any) {
+        eventListenerProviders.add(EventListenerProvider(provider))
+    }
 
     var audioSendFactory: IAudioSendFactory? = null
         set(value) {
@@ -316,13 +344,12 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
     @Deprecated("Use eventManagerProvider instead")
     var eventManager: IEventManager? = null
         set(value) {
-            if (value != null) {
+            if (value != null)
                 eventManagerProvider = IntFunction { value }
-            }
             field = value
         }
 
-    var eventManagerProvider: IntFunction<out IEventManager>? = null
+    var eventManagerProvider: EventManagerProvider? = null
         set(value) {
             if (value != null) {
                 builder.setEventManagerProvider(value)
@@ -330,39 +357,92 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
             field = value
         }
 
+    /**
+     * Set the event manager for each shard.
+     *
+     * eg:
+     * ```kotlin
+     * eventManagerProvider {
+     *     InterfacedEventManager()
+     * }
+     * ```
+     *
+     * @param provider The provider for the event managers
+     * @receiver The id of the shard
+     */
+    fun eventManagerProvider(provider: (Int) -> IEventManager) {
+        eventManagerProvider = EventManagerProvider(provider)
+    }
+
     var activity: Activity? = null
         set(value) {
-            builder.setActivity(value)
+            if (value != null)
+                activityProvider = ActivityProvider { value }
             field = value
         }
 
-    var activityProvider: IntFunction<Activity>? = null
+    var activityProvider: ActivityProvider? = null
         set(value) {
             builder.setActivityProvider(value)
             field = value
         }
 
+    /**
+     * Set the activity on a per-shard basis.
+     *
+     * eg:
+     * ```kotlin
+     * activityProvider {
+     *     Activity.playing("shard $it")
+     * }
+     * ```
+     *
+     * @param provider The provider for the bot activity
+     * @receiver The id of the shard
+     */
+    fun activityProvider(provider: (Int) -> Activity) {
+        activityProvider = ActivityProvider(provider)
+    }
+
     var idle: Boolean = false
         set(value) {
-            builder.setIdle(value)
+            idleProvider { value }
             field = value
         }
 
-    var idleProvider: IntFunction<Boolean>? = null
+    var idleProvider: IdleProvider? = null
         set(value) {
             builder.setIdleProvider(value)
             field = value
         }
 
+    /**
+     * Set whether or not the bot is idle on a per-shard basis.
+     *
+     * eg:
+     * ```kotlin
+     * idleProvider {
+     *     if (it == 1) true
+     *     else false
+     * }
+     * ```
+     *
+     * @param provider The provider for whether or not the shard is idle
+     * @receiver The id of the shard
+     */
+    fun idleProvider(provider: (Int) -> Boolean) {
+        idleProvider = IdleProvider(provider)
+    }
+
     var status: OnlineStatus? = null
         set(value) {
             if (value != null) {
-                builder.setStatus(value)
+                statusProvider = StatusProvider { value }
             }
             field = value
         }
 
-    var statusProvider: IntFunction<OnlineStatus>? = null
+    var statusProvider: StatusProvider? = null
         set(value) {
             if (value != null) {
                 builder.setStatusProvider(value)
@@ -370,11 +450,45 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
             field = value
         }
 
+    /**
+     * Sets the status on a per-shard basis.
+     *
+     * eg:
+     * ```kotlin
+     * statusProvider {
+     *     if (it == 1) ONLINE
+     *     else OFFLINE
+     * }
+     * ```
+     *
+     * @param provider The provider for the status
+     * @receiver The id of the shard
+     */
+    fun statusProvider(provider: (Int) -> OnlineStatus) {
+        statusProvider = StatusProvider(provider)
+    }
+
     var threadFactory: ThreadFactory? = null
         set(value) {
             builder.setThreadFactory(value)
             field = value
         }
+
+    /**
+     * Set the thread factory to be used by internal executor of the [Shard Manager][ShardManager].
+     *
+     * ```kotlin
+     * threadFactory {
+     *     Thread(it)
+     * }
+     * ```
+     *
+     * @param factory The thread factory
+     * @receiver The id of the shard
+     */
+    fun threadFactory(factory: (Runnable) -> Thread) {
+        threadFactory = ThreadFactory(factory)
+    }
 
     var httpClientBuilder: OkHttpClient.Builder? = null
         set(value) {
@@ -388,11 +502,63 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
             field = value
         }
 
-    var rateLimitPool: ScheduledExecutorService? = null
-        set(value) {
-            builder.setRateLimitPool(value, true)
-            field = value
-        }
+    /**
+     * Set the [OkHttpClient Builder][OkHttpClient.Builder] via a receiver function on an [OkHttpClient Builder][OkHttpClient.Builder].
+     * This **does not** invoke [OkHttpClient.Builder.build] and instead passes it to [DefaultShardManagerBuilder.setHttpClientBuilder].
+     *
+     * @param builder Configure the Builder receiver
+     * @receiver The new [OkHttpClient Builder][OkHttpClient.Builder].
+     * @see httpClient
+     */
+    fun httpClientBuilder(builder: OkHttpClient.Builder.() -> Unit) {
+        val httpBuilder = OkHttpClient.Builder()
+        httpBuilder.builder()
+        httpClientBuilder = httpBuilder
+    }
+
+    /**
+     * Set the [OkHttpClient] via a receiver function on an [OkHttpClient Builder][OkHttpClient.Builder].
+     * This invokes [Builder.build][OkHttpClient.Builder.build] and passes it to [DefaultShardManagerBuilder.setHttpClient].
+     *
+     * @param builder Configure the Builder receiver
+     * @receiver The new [OkHttpClient Builder][OkHttpClient.Builder].
+     * @see httpClientBuilder
+     */
+    fun httpClient(builder: OkHttpClient.Builder.() -> Unit) {
+        val httpBuilder = OkHttpClient.Builder()
+        httpBuilder.builder()
+        httpClient = httpBuilder.build()
+    }
+
+    /**
+     * Set the [rate limit pool][DefaultShardManagerBuilder.setRateLimitPool] to be used for rate limit handling.
+     *
+     * ```kotlin
+     * rateLimitPool(false, Executors.newScheduledThreadPool(4))
+     * ```
+     *
+     * @param automaticShutdown Whether [JDA.shutdown()][net.dv8tion.jda.api.JDA.shutdown] should automatically shutdown this pool
+     * @param pool The rate limit pool
+     */
+    fun rateLimitPool(automaticShutdown: Boolean = false, pool: ScheduledExecutorService) {
+        builder.setRateLimitPool(pool, automaticShutdown)
+    }
+
+    /**
+     * Set the [rate limit pool][DefaultShardManagerBuilder.setRateLimitPool] to be used for rate limit handling.
+     *
+     * ```kotlin
+     * rateLimitPool(false) {
+     *      Executors.newScheduledThreadPool(4)
+     * }
+     * ```
+     *
+     * @param automaticShutdown Whether [JDA.shutdown()][net.dv8tion.jda.api.JDA.shutdown] should automatically shutdown this pool
+     * @param poolProvider The provider for the rate limit pool
+     */
+    fun rateLimitPool(automaticShutdown: Boolean = false, poolProvider: () -> ScheduledExecutorService) {
+        builder.setRateLimitPool(poolProvider(), automaticShutdown)
+    }
 
     var rateLimitPoolProvider: ThreadPoolProvider<out ScheduledExecutorService>? = null
         set(value) {
@@ -400,11 +566,57 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
             field = value
         }
 
-    var gatewayPool: ScheduledExecutorService? = null
-        set(value) {
-            builder.setGatewayPool(value, true)
-            field = value
+    /**
+     * Set the [rate limit pool provider][DefaultShardManagerBuilder.setRateLimitPoolProvider] to be used for rate limit handling
+     * on a per-shard basis.
+     *
+     * eg:
+     * ```kotlin
+     * rateLimitPoolProvider(true) {
+     *     Executors.newScheduledThreadPool(4)
+     * }
+     * ```
+     * @param automaticShutdown Whether [JDA.shutdown()][net.dv8tion.jda.api.JDA.shutdown] should automatically shutdown this pool
+     * @param provider The provider for each shard's rate limit pool
+     * @receiver The id of the shard
+     */
+    fun rateLimitPoolProvider(automaticShutdown: Boolean = false, provider: (Int) -> ScheduledExecutorService) {
+        rateLimitPoolProvider = object : ThreadPoolProvider<ScheduledExecutorService> {
+            override fun provide(shardId: Int): ScheduledExecutorService = provider(shardId)
+
+            override fun shouldShutdownAutomatically(shardId: Int): Boolean = automaticShutdown
         }
+    }
+
+    /**
+     * Set the [gateway pool][DefaultShardManagerBuilder.setGatewayPool] to be used for gateway updates.
+     *
+     * ```kotlin
+     * gatewayPool(false, Executors.newScheduledThreadPool(4))
+     * ```
+     *
+     * @param automaticShutdown Whether [JDA.shutdown()][net.dv8tion.jda.api.JDA.shutdown] should automatically shutdown this pool
+     * @param pool The gateway pool
+     */
+    fun gatewayPool(automaticShutdown: Boolean = false, pool: ScheduledExecutorService) {
+        builder.setGatewayPool(pool, automaticShutdown)
+    }
+
+    /**
+     * Set the [gateway pool][DefaultShardManagerBuilder.setGatewayPool] to be used for gateway updates.
+     *
+     * ```kotlin
+     * gatewayPool(false) {
+     *      Executors.newScheduledThreadPool(4)
+     * }
+     * ```
+     *
+     * @param automaticShutdown Whether [JDA.shutdown()][net.dv8tion.jda.api.JDA.shutdown] should automatically shutdown this pool
+     * @param poolProvider The provider for the gateway pool
+     */
+    fun gatewayPool(automaticShutdown: Boolean = false, poolProvider: () -> ScheduledExecutorService) {
+        builder.setGatewayPool(poolProvider(), automaticShutdown)
+    }
 
     var gatewayPoolProvider: ThreadPoolProvider<out ScheduledExecutorService>? = null
         set(value) {
@@ -412,11 +624,57 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
             field = value
         }
 
-    var callbackPool: ExecutorService? = null
-        set(value) {
-            builder.setCallbackPool(value, true)
-            field = value
+    /**
+     * Set the [gateway pool provider][DefaultShardManagerBuilder.setGatewayPoolProvider] to be used for gateway updates.
+     * on a per-shard basis.
+     *
+     * eg:
+     * ```kotlin
+     * gatewayPoolProvider(true) {
+     *     Executors.newScheduledThreadPool(4)
+     * }
+     * ```
+     * @param automaticShutdown Whether [JDA.shutdown()][net.dv8tion.jda.api.JDA.shutdown] should automatically shutdown this pool
+     * @param provider The provider for each shard's gateway pool
+     * @receiver The id of the shard
+     */
+    fun gatewayPoolProvider(automaticShutdown: Boolean = false, provider: (Int) -> ScheduledExecutorService) {
+        gatewayPoolProvider = object : ThreadPoolProvider<ScheduledExecutorService> {
+            override fun provide(shardId: Int): ScheduledExecutorService = provider(shardId)
+
+            override fun shouldShutdownAutomatically(shardId: Int): Boolean = automaticShutdown
         }
+    }
+
+    /**
+     * Set the [callback pool][DefaultShardManagerBuilder.setCallbackPool] to be used for callback handling.
+     *
+     * ```kotlin
+     * callbackPool(false, Executors.newFixedThreadPool(4))
+     * ```
+     *
+     * @param automaticShutdown Whether [JDA.shutdown()][net.dv8tion.jda.api.JDA.shutdown] should automatically shutdown this pool
+     * @param pool The callback pool
+     */
+    fun callbackPool(automaticShutdown: Boolean = false, pool: ExecutorService) {
+        builder.setCallbackPool(pool, automaticShutdown)
+    }
+
+    /**
+     * Set the [callback pool][DefaultShardManagerBuilder.setCallbackPool] to be used for callback handling.
+     *
+     * ```kotlin
+     * callbackPool(false) {
+     *      Executors.newFixedThreadPool(4)
+     * }
+     * ```
+     *
+     * @param automaticShutdown Whether [JDA.shutdown()][net.dv8tion.jda.api.JDA.shutdown] should automatically shutdown this pool
+     * @param poolProvider The provider for the callback pool
+     */
+    fun callbackPool(automaticShutdown: Boolean = false, poolProvider: () -> ExecutorService) {
+        builder.setCallbackPool(poolProvider(), automaticShutdown)
+    }
 
     var callbackPoolProvider: ThreadPoolProvider<out ExecutorService>? = null
         set(value) {
@@ -424,11 +682,57 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
             field = value
         }
 
-    var eventPool: ExecutorService? = null
-        set(value) {
-            builder.setEventPool(value, true)
-            field = value
+    /**
+     * Set the [callback pool provider][DefaultShardManagerBuilder.setCallbackPoolProvider] to be used for callback handling
+     * on a per-shard basis.
+     *
+     * eg:
+     * ```kotlin
+     * callbackPoolProvider(true) {
+     *     Executors.newFixedThreadPool(4)
+     * }
+     * ```
+     * @param automaticShutdown Whether [JDA.shutdown()][net.dv8tion.jda.api.JDA.shutdown] should automatically shutdown this pool
+     * @param provider The provider for each shard's callback poo
+     * @receiver The id of the shardl
+     */
+    fun callbackPoolProvider(automaticShutdown: Boolean = false, provider: (Int) -> ExecutorService) {
+        callbackPoolProvider = object : ThreadPoolProvider<ExecutorService> {
+            override fun provide(shardId: Int): ExecutorService = provider(shardId)
+
+            override fun shouldShutdownAutomatically(shardId: Int): Boolean = automaticShutdown
         }
+    }
+
+    /**
+     * Set the [event pool][DefaultShardManagerBuilder.setEventPool] to be used for event handling.
+     *
+     * ```kotlin
+     * eventPool(false, Executors.newFixedThreadPool(4))
+     * ```
+     *
+     * @param automaticShutdown Whether [JDA.shutdown()][net.dv8tion.jda.api.JDA.shutdown] should automatically shutdown this pool
+     * @param pool The event pool
+     */
+    fun eventPool(automaticShutdown: Boolean = false, pool: ExecutorService) {
+        builder.setEventPool(pool, automaticShutdown)
+    }
+
+    /**
+     * Set the [callback pool][DefaultShardManagerBuilder.setEventPool] to be used for event handling.
+     *
+     * ```kotlin
+     * eventPool(false) {
+     *      Executors.newFixedThreadPool(4)
+     * }
+     * ```
+     *
+     * @param automaticShutdown Whether [JDA.shutdown()][net.dv8tion.jda.api.JDA.shutdown] should automatically shutdown this pool
+     * @param poolProvider The provider for the event pool
+     */
+    fun eventPool(automaticShutdown: Boolean = false, poolProvider: () -> ExecutorService) {
+        builder.setEventPool(poolProvider(), automaticShutdown)
+    }
 
     var eventPoolProvider: ThreadPoolProvider<out ExecutorService>? = null
         set(value) {
@@ -436,11 +740,57 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
             field = value
         }
 
-    var audioPool: ScheduledExecutorService? = null
-        set(value) {
-            builder.setAudioPool(value, true)
-            field = value
+    /**
+     * Set the [event pool provider][DefaultShardManagerBuilder.setEventPoolProvider] to be used for event handling
+     * on a per-shard basis.
+     *
+     * eg:
+     * ```kotlin
+     * callbackPoolProvider(true) {
+     *     Executors.newFixedThreadPool(4)
+     * }
+     * ```
+     * @param automaticShutdown Whether [JDA.shutdown()][net.dv8tion.jda.api.JDA.shutdown] should automatically shutdown this pool
+     * @param provider The provider for each shard's event pool
+     * @receiver The id of the shard
+     */
+    fun eventPoolProvider(automaticShutdown: Boolean = false, provider: (Int) -> ExecutorService) {
+        eventPoolProvider = object : ThreadPoolProvider<ExecutorService> {
+            override fun provide(shardId: Int): ExecutorService = provider(shardId)
+
+            override fun shouldShutdownAutomatically(shardId: Int): Boolean = automaticShutdown
         }
+    }
+
+    /**
+     * Set the [audio pool][DefaultShardManagerBuilder.setAudioPool] to be used for audio handling.
+     *
+     * ```kotlin
+     * audioPool(false, Executors.newScheduledThreadPool(4))
+     * ```
+     *
+     * @param automaticShutdown Whether [JDA.shutdown()][net.dv8tion.jda.api.JDA.shutdown] should automatically shutdown this pool
+     * @param pool The audio pool
+     */
+    fun audioPool(automaticShutdown: Boolean = false, pool: ScheduledExecutorService) {
+        builder.setGatewayPool(pool, automaticShutdown)
+    }
+
+    /**
+     * Set the [audio pool][DefaultShardManagerBuilder.setAudioPool] to be used for audio handling.
+     *
+     * ```kotlin
+     * audioPool(false) {
+     *      Executors.newScheduledThreadPool(4)
+     * }
+     * ```
+     *
+     * @param automaticShutdown Whether [JDA.shutdown()][net.dv8tion.jda.api.JDA.shutdown] should automatically shutdown this pool
+     * @param poolProvider The provider for the audio pool
+     */
+    fun audioPool(automaticShutdown: Boolean = false, poolProvider: () -> ScheduledExecutorService) {
+        builder.setAudioPool(poolProvider(), automaticShutdown)
+    }
 
     var audioPoolProvider: ThreadPoolProvider<out ScheduledExecutorService>? = null
         set(value) {
@@ -448,11 +798,34 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
             field = value
         }
 
+    /**
+     * Set the [audio pool provider][DefaultShardManagerBuilder.setGatewayPoolProvider] to be used for audio handling.
+     * on a per-shard basis.
+     *
+     * eg:
+     * ```kotlin
+     * audioPoolProvider(true) {
+     *     Executors.newScheduledThreadPool(4)
+     * }
+     * ```
+     * @param automaticShutdown Whether [JDA.shutdown()][net.dv8tion.jda.api.JDA.shutdown] should automatically shutdown this pool
+     * @param provider The provider for each shard's audio pool
+     * @receiver The id of the shard
+     */
+    fun audioPoolProvider(automaticShutdown: Boolean = false, provider: (Int) -> ScheduledExecutorService) {
+        gatewayPoolProvider = object : ThreadPoolProvider<ScheduledExecutorService> {
+            override fun provide(shardId: Int): ScheduledExecutorService = provider(shardId)
+
+            override fun shouldShutdownAutomatically(shardId: Int): Boolean = automaticShutdown
+        }
+    }
+
     var maxReconnectDelay: Int = 900
         set(value) {
             builder.setMaxReconnectDelay(value)
             field = value
         }
+
     var requestTimeoutRetry: Boolean = true
         set(value) {
             builder.setRequestTimeoutRetry(value)
@@ -505,6 +878,50 @@ class InlineShardManagerBuilder(val builder: DefaultShardManagerBuilder) {
             builder.setChunkingFilter(value)
             field = value
         }
+
+    /**
+     * Sets the [chunking filter][DefaultShardManagerBuilder.setChunkingFilter] for all guilds.
+     *
+     * eg:
+     * ```kotlin
+     * chunkingFilter {
+     *     return (it % 2) == 0L // only chunk guilds with an id % 2 = 0 (why tho)
+     * }
+     * ```
+     *
+     * @param filter The chunking filter
+     */
+    fun chunkingFilter(filter: (Long) -> Boolean) {
+        chunkingFilter = ChunkingFilter(filter)
+    }
+
+    /**
+     * Sets the [chunking filter][DefaultShardManagerBuilder.setChunkingFilter] for all guilds.
+     *
+     * @param ids The ids to filter for
+     * @param include Whether to include or exclude these guilds for chunking
+     * @see ChunkingFilter.include
+     * @see ChunkingFilter.exclude
+     */
+    fun chunkingFilterByIds(include: Boolean = true, vararg ids: Long) {
+        chunkingFilterByIds(include, ids.asList())
+    }
+
+    /**
+     * Sets the [chunking filter][DefaultShardManagerBuilder.setChunkingFilter] for all guilds.
+     *
+     * @param ids The ids to filter for
+     * @param include Whether to include or exclude these guilds for chunking
+     * @see ChunkingFilter.include
+     * @see ChunkingFilter.exclude
+     */
+    fun chunkingFilterByIds(include: Boolean = true, ids: Collection<Long>) {
+        chunkingFilter {
+            for (id in ids)
+                return@chunkingFilter include
+            return@chunkingFilter !include
+        }
+    }
 
     var enableIntents: Collection<GatewayIntent> = emptySet()
         set(value) {

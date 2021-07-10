@@ -25,17 +25,19 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory
+import net.dv8tion.jda.api.audio.factory.IAudioSendSystem
+import net.dv8tion.jda.api.audio.factory.IPacketProvider
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.hooks.IEventManager
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor
 import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.ChunkingFilter
 import net.dv8tion.jda.api.utils.Compression
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.SessionController
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import okhttp3.OkHttpClient
-import java.util.EnumSet
 import java.util.concurrent.ConcurrentMap
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.ScheduledExecutorService
@@ -338,6 +340,20 @@ class InlineJDABuilder(val builder: JDABuilder) {
             field = value
         }
 
+    /**
+     * Allows an audio send factory to be set via a lambda.
+     *
+     * eg:
+     * ```kotlin
+     * audioSendFactory {
+     *     DefaultSendSystem(it)
+     * }
+     * ```
+     */
+    fun audioSendFactory(factory: (IPacketProvider) -> IAudioSendSystem) {
+        audioSendFactory = IAudioSendFactory(factory)
+    }
+
     var idle: Boolean = false
         set(value) {
             builder.setIdle(value)
@@ -388,6 +404,50 @@ class InlineJDABuilder(val builder: JDABuilder) {
             builder.setChunkingFilter(value)
             field = value
         }
+
+    /**
+     * Sets the [chunking filter][DefaultShardManagerBuilder.setChunkingFilter] for all guilds.
+     *
+     * eg:
+     * ```kotlin
+     * chunkingFilter {
+     *     return (it % 2) == 0L // only chunk guilds with an id % 2 = 0 (why tho)
+     * }
+     * ```
+     *
+     * @param filter The chunking filter
+     */
+    fun chunkingFilter(filter: (Long) -> Boolean) {
+        chunkingFilter = ChunkingFilter(filter)
+    }
+
+    /**
+     * Sets the [chunking filter][DefaultShardManagerBuilder.setChunkingFilter] for all guilds.
+     *
+     * @param ids The ids to filter for
+     * @param include Whether to include or exclude these guilds for chunking
+     * @see ChunkingFilter.include
+     * @see ChunkingFilter.exclude
+     */
+    fun chunkingFilterByIds(include: Boolean = true, vararg ids: Long) {
+        chunkingFilterByIds(include, ids.asList())
+    }
+
+    /**
+     * Sets the [chunking filter][DefaultShardManagerBuilder.setChunkingFilter] for all guilds.
+     *
+     * @param ids The ids to filter for
+     * @param include Whether to include or exclude these guilds for chunking
+     * @see ChunkingFilter.include
+     * @see ChunkingFilter.exclude
+     */
+    fun chunkingFilterByIds(include: Boolean = true, ids: Collection<Long>) {
+        chunkingFilter {
+            for (id in ids)
+                return@chunkingFilter include
+            return@chunkingFilter !include
+        }
+    }
 
     var enableIntents: Collection<GatewayIntent> = emptySet()
         set(value) {
