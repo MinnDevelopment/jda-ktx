@@ -44,12 +44,11 @@ class CoroutineEventManager(
     override fun handle(event: GenericEvent) {
         scope.launch {
             for (listener in listeners) {
-                when (listener) {
-                    is CoroutineEventListener -> listener.onEvent(event)
-                    else                      -> delegate.handle(event)
-                }
+                listener.onEvent(event)
             }
         }
+
+        delegate.handle(event)
     }
 
     override fun register(listener: Any) {
