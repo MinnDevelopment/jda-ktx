@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.GenericEvent
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
 import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.hooks.SubscribeEvent
@@ -38,9 +39,19 @@ import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
-val DEFAULT_PREV = Button.secondary("prev", Emoji.fromUnicode("⬅️"))
-val DEFAULT_NEXT = Button.secondary("next", Emoji.fromUnicode("➡️"))
-val DEFAULT_DELETE = Button.danger("delete", Emoji.fromUnicode("\uD83D\uDEAE"))
+/**
+ * Defaults used for paginators.
+ *
+ * These can be changed but keep in mind they will apply globally.
+ */
+object PaginatorDefaults {
+    /** The default button to go to the previous page */
+    var PREV: Button = Button.secondary("prev", Emoji.fromUnicode("⬅️"))
+    /** The default button to go to the next page */
+    var NEXT: Button = Button.secondary("next", Emoji.fromUnicode("➡️"))
+    /** The default button to delete the paginator message */
+    var DELETE: Button = Button.danger("delete", Emoji.fromUnicode("\uD83D\uDEAE"))
+}
 
 class Paginator internal constructor(private val nonce: String, private val ttl: Long): EventListener {
     private var expiresAt: Long = System.currentTimeMillis() + ttl
@@ -58,9 +69,9 @@ class Paginator internal constructor(private val nonce: String, private val ttl:
         return this
     }
 
-    var prev: Button = DEFAULT_PREV
-    var next: Button = DEFAULT_NEXT
-    var delete: Button = DEFAULT_DELETE
+    var prev: Button = PaginatorDefaults.PREV
+    var next: Button = PaginatorDefaults.NEXT
+    var delete: Button = PaginatorDefaults.DELETE
 
     internal val controls: ActionRow get() = ActionRow.of(
         prev.withDisabled(index == 0).withId("$nonce:prev"),
@@ -82,7 +93,7 @@ class Paginator internal constructor(private val nonce: String, private val ttl:
     override fun onEvent(event: GenericEvent) {
         if (expiresAt < System.currentTimeMillis())
             return unregister(event.jda)
-        if (event !is ButtonInteraction) return
+        if (event !is ButtonClickEvent) return
         val buttonId = event.componentId
         if (!buttonId.startsWith(nonce) || !filter(event)) return
         expiresAt = System.currentTimeMillis() + ttl
