@@ -195,6 +195,42 @@ val menu = SelectionMenu("menu:class") {
 ```
 
 
+### Buttons
+
+```kotlin
+jda.upsertCommand("ban", "ban a user") {
+    option<Member>("member", "The member to ban", true)
+    option<String>("reason", "The ban reason")
+}.queue()
+
+jda.onCommand("ban") { event ->
+    if (event.user.asTag != "Minn#6688") return@onCommand
+    val guild = event.guild!!
+    val member = event.getOption("member")?.asUser!!
+    val reason = event.getOption("reason")?.asString
+
+    // Buttons will timeout after 15 minutes by default
+    val accept = jda.button(label = "Accept", style = SUCCESS, user = event.user) {
+        guild.ban(member, 0, reason).queue()
+        it.editMessage("${event.user.asTag} banned ${member.asTag}")
+            .setActionRows() // remove buttons from message
+            .queue()
+    }
+    val deny = jda.button(label = "Deny", style = DANGER, user = event.user) { butt ->
+        butt.hook.deleteOriginal().queue() // automatically acknowledged if callback does not do it
+    }
+
+    event.reply("Are you sure?")
+        .addActionRow(accept, deny) // send your buttons
+        .queue()
+}
+
+// or a global listener
+jda.onButton("accept") { event ->
+    event.reply("You accepted :)").queue()
+}
+```
+
 
 ## Download
 

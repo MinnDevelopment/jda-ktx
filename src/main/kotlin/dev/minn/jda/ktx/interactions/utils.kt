@@ -16,28 +16,18 @@
 
 package dev.minn.jda.ktx.interactions
 
-import net.dv8tion.jda.api.entities.AbstractChannel
-import net.dv8tion.jda.api.entities.IMentionable
-import net.dv8tion.jda.api.entities.Role
-import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 inline fun <reified T> optionType() = when(T::class.java) {
     Integer::class.java, java.lang.Long::class.java, java.lang.Short::class.java, java.lang.Byte::class.java -> OptionType.INTEGER
     String::class.java -> OptionType.STRING
-    User::class.java -> OptionType.USER
+    User::class.java, Member::class.java -> OptionType.USER
     Role::class.java -> OptionType.ROLE
     Boolean::class.java -> OptionType.BOOLEAN
     else -> when {
         AbstractChannel::class.java.isAssignableFrom(T::class.java) -> OptionType.CHANNEL
         IMentionable::class.java.isAssignableFrom(T::class.java) -> OptionType.MENTIONABLE
         else -> OptionType.UNKNOWN
-    }
-}
-
-data class Shape(val rows: Int, val cols: Int) {
-    fun check(row: Int, col: Int) {
-        check(row in 0 until rows) { "Row index $row is not in range [0, $rows)" }
-        check(col in 0 until cols) { "Column index $col is not in range [0, $cols)" }
     }
 }
