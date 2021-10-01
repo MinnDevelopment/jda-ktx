@@ -56,6 +56,7 @@ inline fun <reified T> SubcommandData.option(name: String, description: String, 
 
 fun OptionData.choice(name: String, value: String) = addChoice(name, value)
 fun OptionData.choice(name: String, value: Int) = addChoice(name, value)
+fun OptionData.choice(name: String, value: Float) = addChoice(name, value)
 
 inline fun JDA.updateCommands(builder: CommandListUpdateAction.() -> Unit) = updateCommands().apply(builder)
 inline fun JDA.upsertCommand(name: String, description: String, builder: CommandData.() -> Unit) = upsertCommand(Command(name, description, builder))
