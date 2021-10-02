@@ -18,9 +18,9 @@ The most useful feature of this library is the [CoroutineEventManager][4] which 
 suspending functions in your event handlers.
 
 ```kotlin
-val jda = JDABuilder.createLight("token")
-    .injectKTX() // Sets the coroutine event manager
-    .build()
+val jda = light("token", enableCoroutines=true) { // enableCoroutines (default true) changes the event manager to CoroutineEventManager
+    intents += listOf(GatewayIntent.GUILD_MEMBERS)
+}
 
 // This can only be used with the CoroutineEventManager
 jda.listener<MessageReceivedEvent> {
