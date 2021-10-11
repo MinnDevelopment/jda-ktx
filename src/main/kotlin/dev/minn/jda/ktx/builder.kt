@@ -39,7 +39,7 @@ inline fun Message(
 ): Message {
     return MessageBuilder().run {
         setContent(content)
-        setEmbed(embed)
+        setEmbeds(embed)
         setNonce(nonce)
         setTTS(tts)
         allowedMentionTypes?.let { setAllowedMentions(allowedMentionTypes) }
@@ -93,7 +93,7 @@ inline fun MessageBuilder(
 ): InlineMessage {
     return MessageBuilder().run {
         setContent(content)
-        setEmbed(embed)
+        setEmbeds(embed)
         setNonce(nonce)
         setTTS(tts)
         allowedMentionTypes?.let { setAllowedMentions(allowedMentionTypes) }
@@ -145,7 +145,7 @@ class InlineMessage(val builder: MessageBuilder) {
 
     var embed: MessageEmbed? = null
         set(value) {
-            builder.setEmbed(value)
+            builder.setEmbeds(value)
             field = value
         }
 
