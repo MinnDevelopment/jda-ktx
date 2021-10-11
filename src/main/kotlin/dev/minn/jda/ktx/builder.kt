@@ -145,13 +145,13 @@ class InlineMessage(val builder: MessageBuilder) {
 
     var embed: MessageEmbed? = null
         set(value) {
-            builder.setEmbed(embed)
+            builder.setEmbed(value)
             field = value
         }
 
     var nonce: String? = null
         set(value) {
-            builder.setNonce(nonce)
+            builder.setNonce(value)
             field = value
         }
 
