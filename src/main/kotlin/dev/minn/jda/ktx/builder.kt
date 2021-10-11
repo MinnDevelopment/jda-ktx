@@ -35,19 +35,9 @@ inline fun Message(
     allowedMentionTypes: Collection<Message.MentionType>? = null,
     mentionUsers: Collection<Long>? = null,
     mentionRoles: Collection<Long>? = null,
-    builder: InlineMessage.() -> Unit = {}
+    builder: InlineMessage.() -> Unit = {},
 ): Message {
-    return MessageBuilder().run {
-        setContent(content)
-        setEmbed(embed)
-        setNonce(nonce)
-        setTTS(tts)
-        allowedMentionTypes?.let { setAllowedMentions(allowedMentionTypes) }
-        mentionUsers?.forEach { mentionUsers(it) }
-        mentionRoles?.forEach { mentionRoles(it) }
-        InlineMessage(this).builder()
-        build()
-    }
+    return MessageBuilder(content, embed, nonce, tts, allowedMentionTypes, mentionUsers, mentionRoles, builder).build()
 }
 
 inline fun Embed(
@@ -64,21 +54,11 @@ inline fun Embed(
     image: String? = null,
     thumbnail: String? = null,
     fields: Collection<MessageEmbed.Field> = emptyList(),
-    builder: InlineEmbed.() -> Unit = {}
+    builder: InlineEmbed.() -> Unit = {},
 ): MessageEmbed {
-    return EmbedBuilder().run {
-        setDescription(description)
-        setTitle(title, url)
-        setFooter(footerText, footerIcon)
-        setAuthor(authorName, authorUrl, authorIcon)
-        setTimestamp(timestamp)
-        setThumbnail(thumbnail)
-        setImage(image)
-        fields.map(this::addField)
-        color?.let(this::setColor)
-        InlineEmbed(this).builder()
-        build()
-    }
+    return EmbedBuilder(description, title, url, color, footerText, footerIcon,
+        authorName, authorIcon, authorUrl, timestamp, image, thumbnail, fields, builder
+    ).build()
 }
 
 inline fun MessageBuilder(
@@ -93,7 +73,7 @@ inline fun MessageBuilder(
 ): InlineMessage {
     return MessageBuilder().run {
         setContent(content)
-        setEmbed(embed)
+        setEmbeds(embed)
         setNonce(nonce)
         setTTS(tts)
         allowedMentionTypes?.let { setAllowedMentions(allowedMentionTypes) }
@@ -133,7 +113,6 @@ inline fun EmbedBuilder(
     }
 }
 
-
 class InlineMessage(val builder: MessageBuilder) {
     fun build() = builder.build()
 
@@ -145,13 +124,13 @@ class InlineMessage(val builder: MessageBuilder) {
 
     var embed: MessageEmbed? = null
         set(value) {
-            builder.setEmbed(embed)
+            builder.setEmbeds(value)
             field = value
         }
 
     var nonce: String? = null
         set(value) {
-            builder.setNonce(nonce)
+            builder.setNonce(value)
             field = value
         }
 
@@ -232,7 +211,6 @@ class InlineEmbed(val builder: EmbedBuilder) {
             field = value
         }
 
-
     var image: String? = null
         set(value) {
             builder.setImage(value)
@@ -264,7 +242,6 @@ class InlineEmbed(val builder: EmbedBuilder) {
         val field = InlineField(name, value, inline).apply(build)
         builder.addField(field.name, field.value, field.inline)
     }
-
 
     data class InlineFooter(
         var name: String = "",
