@@ -20,80 +20,80 @@ import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 
-inline fun light(token: String, enableCoroutines: Boolean = true, intent: GatewayIntent, vararg intents: GatewayIntent, builder: JDABuilder.() -> Unit = {})
+inline fun light(token: String, enableCoroutines: Boolean = true, timeout: Long = -1, intent: GatewayIntent, vararg intents: GatewayIntent, builder: JDABuilder.() -> Unit = {})
     = JDABuilder.createLight(token, intent, *intents)
         .apply(builder)
         .apply {
             if (enableCoroutines)
-                injectKTX()
+                injectKTX(timeout=timeout)
         }
         .build()
 
-inline fun light(token: String, enableCoroutines: Boolean = true, intents: Collection<GatewayIntent>, builder: JDABuilder.() -> Unit = {})
+inline fun light(token: String, enableCoroutines: Boolean = true, timeout: Long = -1, intents: Collection<GatewayIntent>, builder: JDABuilder.() -> Unit = {})
     = JDABuilder.createLight(token, intents)
         .apply(builder)
         .apply {
             if (enableCoroutines)
-                injectKTX()
+                injectKTX(timeout=timeout)
         }
         .build()
 
-inline fun light(token: String, enableCoroutines: Boolean = true, builder: JDABuilder.() -> Unit = {})
+inline fun light(token: String, enableCoroutines: Boolean = true, timeout: Long = -1, builder: JDABuilder.() -> Unit = {})
     = JDABuilder.createLight(token)
         .apply(builder)
         .apply {
             if (enableCoroutines)
-                injectKTX()
+                injectKTX(timeout=timeout)
         }
         .build()
 
 
 
 
-inline fun default(token: String, enableCoroutines: Boolean = true, intent: GatewayIntent, vararg intents: GatewayIntent, builder: JDABuilder.() -> Unit = {})
+inline fun default(token: String, enableCoroutines: Boolean = true, timeout: Long = -1, intent: GatewayIntent, vararg intents: GatewayIntent, builder: JDABuilder.() -> Unit = {})
         = JDABuilder.createDefault(token, intent, *intents)
             .apply(builder)
             .apply {
                 if (enableCoroutines)
-                    injectKTX()
+                    injectKTX(timeout=timeout)
             }
             .build()
 
-inline fun default(token: String, enableCoroutines: Boolean = true, intents: Collection<GatewayIntent>, builder: JDABuilder.() -> Unit = {})
+inline fun default(token: String, enableCoroutines: Boolean = true, timeout: Long = -1, intents: Collection<GatewayIntent>, builder: JDABuilder.() -> Unit = {})
         = JDABuilder.createDefault(token, intents)
             .apply(builder)
             .apply {
                 if (enableCoroutines)
-                    injectKTX()
+                    injectKTX(timeout=timeout)
             }
             .build()
 
-inline fun default(token: String, enableCoroutines: Boolean = true, builder: JDABuilder.() -> Unit = {})
+inline fun default(token: String, enableCoroutines: Boolean = true, timeout: Long = -1, builder: JDABuilder.() -> Unit = {})
         = JDABuilder.createDefault(token)
             .apply(builder)
             .apply {
                 if (enableCoroutines)
-                    injectKTX()
+                    injectKTX(timeout=timeout)
             }
             .build()
 
 
 
-inline fun createJDA(token: String, enableCoroutines: Boolean = true, intent: GatewayIntent, vararg intents: GatewayIntent, builder: JDABuilder.() -> Unit = {})
+inline fun createJDA(token: String, enableCoroutines: Boolean = true, timeout: Long = -1, intent: GatewayIntent, vararg intents: GatewayIntent, builder: JDABuilder.() -> Unit = {})
         = JDABuilder.create(token, intent, *intents)
             .apply(builder)
             .apply {
                 if (enableCoroutines)
-                    injectKTX()
+                    injectKTX(timeout=timeout)
             }
             .build()
 
-inline fun createJDA(token: String, enableCoroutines: Boolean = true, intents: Collection<GatewayIntent>, builder: JDABuilder.() -> Unit = {})
+inline fun createJDA(token: String, enableCoroutines: Boolean = true, timeout: Long = -1, intents: Collection<GatewayIntent>, builder: JDABuilder.() -> Unit = {})
         = JDABuilder.create(token, intents)
             .apply(builder)
             .apply {
                 if (enableCoroutines)
-                    injectKTX()
+                    injectKTX(timeout=timeout)
             }
             .build()
 
