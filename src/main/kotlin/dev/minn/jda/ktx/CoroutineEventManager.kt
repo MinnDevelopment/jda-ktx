@@ -26,6 +26,8 @@ import net.dv8tion.jda.api.hooks.IEventManager
 import org.slf4j.Logger
 import java.util.concurrent.CopyOnWriteArrayList
 
+private val log: Logger by SLF4J<CoroutineEventManager>()
+
 /**
  * EventManager implementation which supports both [EventListener] and [CoroutineEventListener].
  *
@@ -36,7 +38,6 @@ class CoroutineEventManager(
     /** Timeout in milliseconds each event listener is allowed to run. Set to -1 for no timeout. Default: -1 */
     var timeout: Long = -1
 ) : IEventManager {
-    private val log: Logger by SLF4J
     private val listeners = CopyOnWriteArrayList<Any>()
 
     override fun handle(event: GenericEvent) {
@@ -57,7 +58,7 @@ class CoroutineEventManager(
         }
     }
 
-    private suspend fun runListener(listener: Any?, event: GenericEvent) {
+    private suspend fun runListener(listener: Any, event: GenericEvent) {
         when (listener) {
             is CoroutineEventListener -> listener.onEvent(event)
             is EventListener -> listener.onEvent(event)
