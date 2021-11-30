@@ -22,9 +22,9 @@ import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 /**
  * Applies the [CoroutineEventManager] to this builder.
  */
-fun JDABuilder.injectKTX() = setEventManager(CoroutineEventManager())
+fun JDABuilder.injectKTX(timeout: Long = -1) = setEventManager(CoroutineEventManager(timeout=timeout))
 
 /**
  * Applies the [CoroutineEventManager] to this builder.
  */
-fun DefaultShardManagerBuilder.injectKTX() = setEventManagerProvider { CoroutineEventManager() }
+fun DefaultShardManagerBuilder.injectKTX(timeout: Long = -1) = setEventManagerProvider { CoroutineEventManager(timeout=timeout) }
