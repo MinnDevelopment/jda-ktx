@@ -24,6 +24,10 @@ import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.Component
 import net.dv8tion.jda.api.interactions.components.ComponentLayout
+import net.dv8tion.jda.api.requests.restaction.MessageAction
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction
+import net.dv8tion.jda.api.requests.restaction.interactions.UpdateInteractionAction
 import net.dv8tion.jda.api.utils.AttachmentOption
 import net.dv8tion.jda.internal.JDAImpl
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl
@@ -38,14 +42,17 @@ typealias Components = Collection<ComponentLayout>
 typealias Embeds = Collection<MessageEmbed>
 typealias Files = Collection<NamedFile>
 
+// Defaults for keyword arguments
 object SendDefaults {
     var content: String? = null
     var embed: MessageEmbed? = null
     var embeds: Embeds = emptyList()
     var components: Components = emptyList()
     var ephemeral: Boolean = false
+    // Not supporting files since input streams are single use and I don't think its worth it
 }
 
+// Custom data class used to make sending files simpler
 data class NamedFile(
     val name: String,
     val data: InputStream,
@@ -58,6 +65,13 @@ fun <T : Component> Collection<T>.into() = listOf(ActionRow.of(this))
 fun Component.into() = listOf(this).into()
 fun ComponentLayout.into() = listOf(this)
 
+// Lots of conversion methods you can use to convert your collections to named files
+//
+// mapOf(
+//   "cat.gif" to File("123.gif"),
+//   "thing.txt" to File("thing.txt")
+// ).into() // -> Collection<NamedFile> = Files
+
 @JvmName("intoNamedFile")
 fun Collection<File>.into() = map { NamedFile(it.name, it.inputStream()) }
 @JvmName("mapFilesIntoNamedFiles")
@@ -67,10 +81,56 @@ fun Map<String, InputStream>.into() = map { NamedFile(it.key, it.value) }
 @JvmName("mapArrayIntoNamedFiles")
 fun Map<String, ByteArray>.into() = map { NamedFile(it.key, it.value.inputStream()) }
 
+
+// fun eval(code: String): EvalResult { ... }
+//
+// val (stdout, stderr) = eval(code)
+// val outputs = listOf(stdout.named("stdout.txt"), stderr.named("stderr.txt"))
+// event.reply_(files=outputs).queue()
+
+fun InputStream.named(name: String, vararg options: AttachmentOption) = NamedFile(name, this, options.toList())
+fun ByteArray.named(name: String, vararg options: AttachmentOption) = NamedFile(name, this.inputStream(), options.toList())
+fun File.named(name: String, vararg options: AttachmentOption) = NamedFile(name, this.inputStream(), options.toList())
+
+// val outputs = listOf("stdout.txt"(stdout), "stderr"(stderr))
+
+operator fun String.invoke(file: InputStream, vararg options: AttachmentOption) = file.named(this, *options)
+operator fun String.invoke(file: ByteArray, vararg options: AttachmentOption) = file.named(this, *options)
+operator fun String.invoke(file: File, vararg options: AttachmentOption) = file.named(this, *options)
+
+// If you want to just use the file name
 fun File.into() = listOf(this).into()
 
+// And you can also just add these to the individual actions easily
 
-fun Interaction.reply(
+fun MessageAction.addFiles(files: Files) {
+    files.forEach {
+        addFile(it.data, it.name, *it.options.toTypedArray())
+    }
+}
+
+fun ReplyAction.addFiles(files: Files) {
+    files.forEach {
+        addFile(it.data, it.name, *it.options.toTypedArray())
+    }
+}
+
+fun UpdateInteractionAction.addFiles(files: Files) {
+    files.forEach {
+        addFile(it.data, it.name, *it.options.toTypedArray())
+    }
+}
+
+fun <T> WebhookMessageAction<T>.addFiles(files: Files) {
+    files.forEach {
+        addFile(it.data, it.name, *it.options.toTypedArray())
+    }
+}
+
+// Using an underscore at the end to prevent overload specialization
+// You can remove it with an import alias (import ... as foo) but i would recommend against it
+
+fun Interaction.reply_(
     content: String? = SendDefaults.content,
     embed: MessageEmbed? = SendDefaults.embed,
     embeds: Embeds = SendDefaults.embeds,
@@ -93,9 +153,7 @@ fun Interaction.reply(
         addEmbeds(embeds)
     }
 
-    files.forEach {
-        addFile(it.data, it.name, *it.options.toTypedArray())
-    }
+    addFiles(files)
 }
 
 @Suppress("MoveLambdaOutsideParentheses")
@@ -127,9 +185,7 @@ fun InteractionHook.send(
         addEmbeds(embeds)
     }
 
-    files.forEach {
-        addFile(it.data, it.name, *it.options.toTypedArray())
-    }
+    addFiles(files)
 }
 
 fun MessageChannel.send(
@@ -153,12 +209,10 @@ fun MessageChannel.send(
         setEmbeds(embeds)
     }
 
-    files.forEach {
-        addFile(it.data, it.name, *it.options.toTypedArray())
-    }
+    addFiles(files)
 }
 
-fun Message.reply(
+fun Message.reply_(
     content: String? = SendDefaults.content,
     embed: MessageEmbed? = SendDefaults.embed,
     embeds: Embeds = SendDefaults.embeds,
