@@ -45,7 +45,6 @@ typealias Files = Collection<NamedFile>
 // Defaults for keyword arguments
 object SendDefaults {
     var content: String? = null
-    var embed: MessageEmbed? = null
     var embeds: Embeds = emptyList()
     var components: Components = emptyList()
     var ephemeral: Boolean = false
@@ -56,8 +55,28 @@ object SendDefaults {
 data class NamedFile(
     val name: String,
     val data: InputStream,
-    val options: Collection<AttachmentOption> = emptyList()
-)
+    val options: Array<out AttachmentOption> = emptyArray()
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as NamedFile
+
+        if (name != other.name) return false
+        if (data != other.data) return false
+        if (!options.contentEquals(other.options)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = name.hashCode()
+        result = 31 * result + data.hashCode()
+        result = 31 * result + options.contentHashCode()
+        return result
+    }
+}
 
 
 @JvmName("intoComponents")
@@ -88,9 +107,9 @@ fun Map<String, ByteArray>.into() = map { NamedFile(it.key, it.value.inputStream
 // val outputs = listOf(stdout.named("stdout.txt"), stderr.named("stderr.txt"))
 // event.reply_(files=outputs).queue()
 
-fun InputStream.named(name: String, vararg options: AttachmentOption) = NamedFile(name, this, options.toList())
-fun ByteArray.named(name: String, vararg options: AttachmentOption) = NamedFile(name, this.inputStream(), options.toList())
-fun File.named(name: String, vararg options: AttachmentOption) = NamedFile(name, this.inputStream(), options.toList())
+fun InputStream.named(name: String, vararg options: AttachmentOption) = NamedFile(name, this, options)
+fun ByteArray.named(name: String, vararg options: AttachmentOption) = NamedFile(name, this.inputStream(), options)
+fun File.named(name: String, vararg options: AttachmentOption) = NamedFile(name, this.inputStream(), options)
 
 // val outputs = listOf("stdout.txt"(stdout), "stderr"(stderr))
 
@@ -105,25 +124,25 @@ fun File.into() = listOf(this).into()
 
 fun MessageAction.addFiles(files: Files) {
     files.forEach {
-        addFile(it.data, it.name, *it.options.toTypedArray())
+        addFile(it.data, it.name, *it.options)
     }
 }
 
 fun ReplyAction.addFiles(files: Files) {
     files.forEach {
-        addFile(it.data, it.name, *it.options.toTypedArray())
+        addFile(it.data, it.name, *it.options)
     }
 }
 
 fun UpdateInteractionAction.addFiles(files: Files) {
     files.forEach {
-        addFile(it.data, it.name, *it.options.toTypedArray())
+        addFile(it.data, it.name, *it.options)
     }
 }
 
 fun <T> WebhookMessageAction<T>.addFiles(files: Files) {
     files.forEach {
-        addFile(it.data, it.name, *it.options.toTypedArray())
+        addFile(it.data, it.name, *it.options)
     }
 }
 
@@ -132,9 +151,10 @@ fun <T> WebhookMessageAction<T>.addFiles(files: Files) {
 
 fun Interaction.reply_(
     content: String? = SendDefaults.content,
-    embed: MessageEmbed? = SendDefaults.embed,
+    embed: MessageEmbed? = null,
     embeds: Embeds = SendDefaults.embeds,
     components: Components = SendDefaults.components,
+    file: NamedFile? = null,
     files: Files = emptyList(),
     ephemeral: Boolean = SendDefaults.ephemeral,
 ) = ReplyActionImpl(hook as InteractionHookImpl).apply {
@@ -153,15 +173,17 @@ fun Interaction.reply_(
         addEmbeds(embeds)
     }
 
+    file?.let { addFile(it.data, it.name, *it.options) }
     addFiles(files)
 }
 
 @Suppress("MoveLambdaOutsideParentheses")
 fun InteractionHook.send(
     content: String? = SendDefaults.content,
-    embed: MessageEmbed? = SendDefaults.embed,
+    embed: MessageEmbed? = null,
     embeds: Embeds = SendDefaults.embeds,
     components: Components = SendDefaults.components,
+    file: NamedFile? = null,
     files: Files = emptyList(),
     ephemeral: Boolean = SendDefaults.ephemeral,
 ) = WebhookMessageActionImpl(
@@ -185,14 +207,16 @@ fun InteractionHook.send(
         addEmbeds(embeds)
     }
 
+    file?.let { addFile(it.data, it.name, *it.options) }
     addFiles(files)
 }
 
 fun MessageChannel.send(
     content: String? = SendDefaults.content,
-    embed: MessageEmbed? = SendDefaults.embed,
+    embed: MessageEmbed? = null,
     embeds: Embeds = SendDefaults.embeds,
     components: Components = SendDefaults.components,
+    file: NamedFile? = null,
     files: Files = emptyList(),
 ) = MessageActionImpl(jda, null, this).apply {
     content(content)
@@ -209,13 +233,15 @@ fun MessageChannel.send(
         setEmbeds(embeds)
     }
 
+    file?.let { addFile(it.data, it.name, *it.options) }
     addFiles(files)
 }
 
 fun Message.reply_(
     content: String? = SendDefaults.content,
-    embed: MessageEmbed? = SendDefaults.embed,
+    embed: MessageEmbed? = null,
     embeds: Embeds = SendDefaults.embeds,
     components: Components = SendDefaults.components,
+    file: NamedFile? = null,
     files: Files = emptyList(),
-) = channel.send(content, embed, embeds, components, files).reference(this)
+) = channel.send(content, embed, embeds, components, file, files).reference(this)
