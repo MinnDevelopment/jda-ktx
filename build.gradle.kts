@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "dev.minn"
-version = "0.7.0"
+version = "0.8.0-alpha.1"
 
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -15,12 +15,11 @@ configure<JavaPluginConvention> {
 
 repositories {
     mavenCentral()
-    maven("https://m2.dv8tion.net/releases")
     maven("https://jitpack.io/")
 }
 
 dependencies {
-    compileOnly("net.dv8tion:JDA:4.3.0_331")
+    compileOnly("net.dv8tion:JDA:5.0.0-alpha.1")
     api(kotlin("stdlib-jdk8"))
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
 }
@@ -52,7 +51,7 @@ tasks {
 }
 
 publishing.publications {
-    register("Release", MavenPublication::class) {
+    register<MavenPublication>("Release") {
         from(components["java"])
         groupId = project.group as String
         artifactId = project.name

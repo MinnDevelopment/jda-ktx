@@ -239,7 +239,6 @@ jda.onButton("accept") { event ->
 ```gradle
 repositories {
     mavenCentral()
-    maven("https://m2.dv8tion.net/releases")
     maven("https://jitpack.io/")
 }
 
@@ -256,11 +255,6 @@ dependencies {
     <id>jitpack</id>
     <name>jitpack</name>
     <url>https://jitpack.io/</url>
-</repository>
-<repository>
-    <id>dv8tion</id>
-    <name>m2-dv8tion</name>
-    <url>https://m2.dv8tion.net/releases</url>
 </repository>
 ```
 
