@@ -230,6 +230,32 @@ jda.onButton("accept") { event ->
 }
 ```
 
+### Sending Messages
+
+This library also adds some more kotlin idiomatic message send/edit extensions which rely on named parameters.
+These named parameters also support defaults, which can be modified by `SendDefaults` and `MessageEditDefaults`.
+
+In order to avoid overload conflicts with methods from JDA, some functions may use a suffixed `_` such as `reply_` or `editMessage_`.
+This is simply done to prevent you from accidentally calling the wrong overload which doesn't use the defaults of this library.
+If you don't care about that, you can simply add an import alias with `import dev.minn.jda.ktx.message.reply_ as reply`.
+
+Example:
+
+```ktx
+SendDefaults.ephemeral = true // <- all reply_ calls set ephemeral=true by default
+MessageEditDefaults.replace = false // <- only apply explicitly set parameters (default behavior)
+jda.onCommand("ban") { event ->
+    if (!event.member.hasPermission(Permission.BAN_MEMBERS))
+        return@onCommand event.reply_("You can't do that!").queue()
+    
+    event.reply_("Are you sure?", components=danger("ban", "Yes!").into())
+    val interaction = event.user.awaitButton("ban")
+    val user = event.getOption("target")!!.asUser
+    event.guild!!.ban(user, 0).queue()
+    interaction.editMessage_("Successfully banned user", components=emptyList()).queue()
+}
+```
+
 
 ## Download
 
