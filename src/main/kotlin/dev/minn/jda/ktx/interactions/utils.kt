@@ -27,7 +27,7 @@ inline fun <reified T> optionType() = when(T::class.java) {
     Role::class.java -> OptionType.ROLE
     java.lang.Boolean::class.java -> OptionType.BOOLEAN
     else -> when {
-        AbstractChannel::class.java.isAssignableFrom(T::class.java) -> OptionType.CHANNEL
+        Channel::class.java.isAssignableFrom(T::class.java) -> OptionType.CHANNEL
         IMentionable::class.java.isAssignableFrom(T::class.java) -> OptionType.MENTIONABLE
         else -> OptionType.UNKNOWN
     }
