@@ -66,7 +66,7 @@ private fun <T> allOf(first: T?, other: Collection<T>?): List<T>? {
     return list
 }
 
-fun Interaction.edit(
+fun Interaction.editMessage_(
     content: String? = null,
     embed: MessageEmbed? = null,
     embeds: Embeds? = null,

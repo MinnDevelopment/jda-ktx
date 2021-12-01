@@ -48,7 +48,7 @@ jda.listener<MessageReceivedEvent> {
 
 jda.onCommand("ban") { event ->
     val user = event.getOption("user")!!.asUser
-    val confirm = Button.danger("${user.id}:ban", "Confirm")
+    val confirm = danger("${user.id}:ban", "Confirm")
     event.reply_(
         "Are you sure you want to ban **${user.asTag}**?",
         components=confirm.into(),
