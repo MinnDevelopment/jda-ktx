@@ -241,7 +241,7 @@ If you don't care about that, you can simply add an import alias with `import de
 
 Example:
 
-```ktx
+```kt
 SendDefaults.ephemeral = true // <- all reply_ calls set ephemeral=true by default
 MessageEditDefaults.replace = false // <- only apply explicitly set parameters (default behavior)
 jda.onCommand("ban") { event ->
