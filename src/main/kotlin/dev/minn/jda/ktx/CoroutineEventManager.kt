@@ -34,7 +34,7 @@ private val log: Logger by SLF4J<CoroutineEventManager>()
  * This enables [the coroutine listener extension][listener].
  */
 class CoroutineEventManager(
-    private val scope: CoroutineScope = GlobalScope,
+    val scope: CoroutineScope = GlobalScope,
     /** Timeout in milliseconds each event listener is allowed to run. Set to -1 for no timeout. Default: -1 */
     var timeout: Long = -1
 ) : IEventManager {

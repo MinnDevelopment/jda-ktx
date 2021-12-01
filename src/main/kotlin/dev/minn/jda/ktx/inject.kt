@@ -16,8 +16,12 @@
 
 package dev.minn.jda.ktx
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
+import net.dv8tion.jda.api.sharding.ShardManager
 
 /**
  * Applies the [CoroutineEventManager] to this builder.
@@ -28,3 +32,17 @@ fun JDABuilder.injectKTX(timeout: Long = -1) = setEventManager(CoroutineEventMan
  * Applies the [CoroutineEventManager] to this builder.
  */
 fun DefaultShardManagerBuilder.injectKTX(timeout: Long = -1) = setEventManagerProvider { CoroutineEventManager(timeout=timeout) }
+
+/**
+ * The coroutine scope used by the underlying [CoroutineEventManager].
+ * If this instance does not use the coroutine event manager, this returns [GlobalScope] instead.
+ */
+val JDA.scope: CoroutineScope get() = (eventManager as? CoroutineEventManager)?.scope ?: GlobalScope
+
+/**
+ * The coroutine scope used by the underlying [CoroutineEventManager].
+ * If this instance does not use the coroutine event manager, this returns [GlobalScope] instead.
+ *
+ * @throws[NoSuchElementException] If no shards are currently available
+ */
+val ShardManager.scope: CoroutineScope get() = (shardCache.first().eventManager as? CoroutineEventManager)?.scope ?: GlobalScope

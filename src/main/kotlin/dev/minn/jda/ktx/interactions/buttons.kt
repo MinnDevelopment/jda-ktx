@@ -17,7 +17,7 @@
 package dev.minn.jda.ktx.interactions
 
 import dev.minn.jda.ktx.onButton
-import kotlinx.coroutines.GlobalScope
+import dev.minn.jda.ktx.scope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.JDA
@@ -188,7 +188,7 @@ fun link(
  *
  * @return[Button] The resulting button instance. You still need to send it with a message!
  */
-suspend fun JDA.button(style: ButtonStyle = ButtonDefaults.STYLE, label: String? = ButtonDefaults.LABEL, emoji: Emoji? = ButtonDefaults.EMOJI,
+fun JDA.button(style: ButtonStyle = ButtonDefaults.STYLE, label: String? = ButtonDefaults.LABEL, emoji: Emoji? = ButtonDefaults.EMOJI,
                        disabled: Boolean = ButtonDefaults.DISABLED,
                        expiration: Long = ButtonDefaults.EXPIRATION, user: User? = null, listener: suspend (ButtonClickEvent) -> Unit
 ): Button {
@@ -202,7 +202,7 @@ suspend fun JDA.button(style: ButtonStyle = ButtonDefaults.STYLE, label: String?
             it.deferEdit().queue()
     }
     if (expiration > 0) {
-        GlobalScope.launch {
+        scope.launch {
             delay(expiration)
             removeEventListener(task)
         }
