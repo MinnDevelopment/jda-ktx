@@ -59,11 +59,11 @@ jda.onCommand("ban") { event ->
         val pressed = event.user.awaitButton(confirm) // await for user to click button
         pressed.deferEdit().queue() // Acknowledge the button press
         event.guild.ban(user, 0).queue() // the button is pressed -> execute action
-    } ?: event.hook.editOriginal("Timed out.").setActionRows(emptyList()).queue()
+    } ?: event.hook.editMessage(/*id="@original" is default */content="Timed out.", components=emptyList()).queue()
 }
 
 jda.onButton("hello") { // Button that says hello
-    it.reply("Hello :)").queue()
+    it.reply_("Hello :)").queue()
 }
 ```
 
@@ -219,7 +219,7 @@ jda.onCommand("ban") { event ->
         butt.hook.deleteOriginal().queue() // automatically acknowledged if callback does not do it
     }
 
-    event.reply("Are you sure?")
+    event.reply_("Are you sure?")
         .addActionRow(accept, deny) // send your buttons
         .queue()
 }
