@@ -38,33 +38,32 @@ jda.listener<MessageReceivedEvent> {
             // Take first result, or null
             matches.firstOrNull()
         }
-        
+
         if (user == null) // unknown user for name
-            channel.sendMessageFormat("%s, I cannot find a user for your query!", it.author).queue()
+            channel.send("${it.author.asMention}, I cannot find a user for your query!").queue()
         else // load profile and send it as embed
-            channel.sendMessageFormat("%s, here is the user profile:", it.author)
-                .embed(profile(user)) // custom profile embed implementation
-                .queue()
+            channel.send("${it.author.asMention}, here is the user profile:", embed=profile(user)).queue()
     }
 }
 
 jda.onCommand("ban") { event ->
     val user = event.getOption("user")!!.asUser
-    val confirm = Button.danger("${user.id}:ban", "Confirm")
-    event.reply("Are you sure you want to ban **${user.asTag}**?")
-        .addActionRow(confirm)
-        .setEphemeral(true)
-        .queue()
-    
+    val confirm = danger("${user.id}:ban", "Confirm")
+    event.reply_(
+        "Are you sure you want to ban **${user.asTag}**?",
+        components=confirm.into(),
+        ephemeral=true
+    ).queue()
+
     withTimeoutOrNull(60000) { // 1 minute timeout
         val pressed = event.user.awaitButton(confirm) // await for user to click button
         pressed.deferEdit().queue() // Acknowledge the button press
         event.guild.ban(user, 0).queue() // the button is pressed -> execute action
-    } ?: event.hook.editOriginal("Timed out.").setActionRows(emptyList()).queue()
+    } ?: event.hook.editMessage(/*id="@original" is default */content="Timed out.", components=emptyList()).queue()
 }
 
 jda.onButton("hello") { // Button that says hello
-    it.reply("Hello :)").queue()
+    it.reply_("Hello :)").queue()
 }
 ```
 
@@ -119,7 +118,7 @@ object Listener : ListenerAdapter() {
     private val log by SLF4J 
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
-        log.info("[{}] {}: {}", event.channel.name, event.author.asTag, event.message.contentDispaly)
+        log.info("[{}] {}: {}", event.channel.name, event.author.asTag, event.message.contentDisplay)
     }
 }
 ```
@@ -220,7 +219,7 @@ jda.onCommand("ban") { event ->
         butt.hook.deleteOriginal().queue() // automatically acknowledged if callback does not do it
     }
 
-    event.reply("Are you sure?")
+    event.reply_("Are you sure?")
         .addActionRow(accept, deny) // send your buttons
         .queue()
 }
@@ -228,6 +227,32 @@ jda.onCommand("ban") { event ->
 // or a global listener
 jda.onButton("accept") { event ->
     event.reply("You accepted :)").queue()
+}
+```
+
+### Sending Messages
+
+This library also adds some more kotlin idiomatic message send/edit extensions which rely on named parameters.
+These named parameters also support defaults, which can be modified by `SendDefaults` and `MessageEditDefaults`.
+
+In order to avoid overload conflicts with methods from JDA, some functions may use a suffixed `_` such as `reply_` or `editMessage_`.
+This is simply done to prevent you from accidentally calling the wrong overload which doesn't use the defaults of this library.
+If you don't care about that, you can simply add an import alias with `import dev.minn.jda.ktx.message.reply_ as reply`.
+
+Example:
+
+```ktx
+SendDefaults.ephemeral = true // <- all reply_ calls set ephemeral=true by default
+MessageEditDefaults.replace = false // <- only apply explicitly set parameters (default behavior)
+jda.onCommand("ban") { event ->
+    if (!event.member.hasPermission(Permission.BAN_MEMBERS))
+        return@onCommand event.reply_("You can't do that!").queue()
+    
+    event.reply_("Are you sure?", components=danger("ban", "Yes!").into())
+    val interaction = event.user.awaitButton("ban")
+    val user = event.getOption("target")!!.asUser
+    event.guild!!.ban(user, 0).queue()
+    interaction.editMessage_("Successfully banned user", components=emptyList()).queue()
 }
 ```
 
