@@ -38,24 +38,23 @@ jda.listener<MessageReceivedEvent> {
             // Take first result, or null
             matches.firstOrNull()
         }
-        
+
         if (user == null) // unknown user for name
-            channel.sendMessageFormat("%s, I cannot find a user for your query!", it.author).queue()
+            channel.send("${it.author.asMention}, I cannot find a user for your query!").queue()
         else // load profile and send it as embed
-            channel.sendMessageFormat("%s, here is the user profile:", it.author)
-                .embed(profile(user)) // custom profile embed implementation
-                .queue()
+            channel.send("${it.author.asMention}, here is the user profile:", embed=profile(user)).queue()
     }
 }
 
 jda.onCommand("ban") { event ->
     val user = event.getOption("user")!!.asUser
     val confirm = Button.danger("${user.id}:ban", "Confirm")
-    event.reply("Are you sure you want to ban **${user.asTag}**?")
-        .addActionRow(confirm)
-        .setEphemeral(true)
-        .queue()
-    
+    event.reply_(
+        "Are you sure you want to ban **${user.asTag}**?",
+        components=confirm.into(),
+        ephemeral=true
+    ).queue()
+
     withTimeoutOrNull(60000) { // 1 minute timeout
         val pressed = event.user.awaitButton(confirm) // await for user to click button
         pressed.deferEdit().queue() // Acknowledge the button press
@@ -119,7 +118,7 @@ object Listener : ListenerAdapter() {
     private val log by SLF4J 
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
-        log.info("[{}] {}: {}", event.channel.name, event.author.asTag, event.message.contentDispaly)
+        log.info("[{}] {}: {}", event.channel.name, event.author.asTag, event.message.contentDisplay)
     }
 }
 ```
