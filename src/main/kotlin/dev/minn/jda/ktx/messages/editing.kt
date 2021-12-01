@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.interactions.Interaction
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.requests.restaction.MessageAction
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction
 import net.dv8tion.jda.api.requests.restaction.interactions.UpdateInteractionAction
 import net.dv8tion.jda.internal.JDAImpl
@@ -31,16 +32,35 @@ import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageUpdateActionImpl
 import net.dv8tion.jda.internal.requests.restaction.interactions.UpdateInteractionActionImpl
 
+/**
+ * Defaults used for edit message extensions provided by this module.
+ * Each function that relies on these defaults, says so explicitly. This does not apply for send functions.
+ *
+ * These can be changed but keep in mind they will apply globally.
+ */
 object MessageEditDefaults {
+    /**
+     * Whether message edits should replace the entire message by default
+     */
     var replace: Boolean = false
 }
 
+/**
+ * Add a collection of [NamedFile] to this request.
+ *
+ * @param[files] The files to add
+ */
 fun UpdateInteractionAction.addFiles(files: Files) {
     files.forEach {
         addFile(it.data, it.name, *it.options)
     }
 }
 
+/**
+ * Add a collection of [NamedFile] to this request.
+ *
+ * @param[files] The files to add
+ */
 fun <T> WebhookMessageUpdateAction<T>.addFiles(files: Files) {
     files.forEach {
         addFile(it.data, it.name, *it.options)
@@ -66,6 +86,23 @@ private fun <T> allOf(first: T?, other: Collection<T>?): List<T>? {
     return list
 }
 
+/**
+ * Edit the original message from this interaction.
+ *
+ * This makes use of [MessageEditDefaults].
+ *
+ * This does not currently replace files but may do so in the future.
+ *
+ * @param[content] The message content
+ * @param[embed] One embed
+ * @param[embeds] Multiple embeds
+ * @param[components] Components for this message
+ * @param[file] One file
+ * @param[files] Multiple files
+ * @param[replace] Whether this should replace the entire message
+ *
+ * @return[UpdateInteractionAction]
+ */
 fun Interaction.editMessage_(
     content: String? = null,
     embed: MessageEmbed? = null,
@@ -74,7 +111,7 @@ fun Interaction.editMessage_(
     file: NamedFile? = null,
     files: Files? = null,
     replace: Boolean = MessageEditDefaults.replace
-) = UpdateInteractionActionImpl(hook as InteractionHookImpl).apply {
+): UpdateInteractionAction = UpdateInteractionActionImpl(hook as InteractionHookImpl).apply {
     content.applyIf(replace) {
         setContent(it)
     }
@@ -95,6 +132,24 @@ fun Interaction.editMessage_(
     }
 }
 
+/**
+ * Edit a message from this interaction.
+ *
+ * This makes use of [MessageEditDefaults].
+ *
+ * This does not currently replace files but may do so in the future.
+ *
+ * @param[id] The message id, defaults to "@original"
+ * @param[content] The message content
+ * @param[embed] One embed
+ * @param[embeds] Multiple embeds
+ * @param[components] Components for this message
+ * @param[file] One file
+ * @param[files] Multiple files
+ * @param[replace] Whether this should replace the entire message
+ *
+ * @return[WebhookMessageUpdateAction]
+ */
 @Suppress("MoveLambdaOutsideParentheses")
 fun InteractionHook.editMessage(
     id: String = "@original",
@@ -105,7 +160,7 @@ fun InteractionHook.editMessage(
     file: NamedFile? = null,
     files: Files? = null,
     replace: Boolean = MessageEditDefaults.replace,
-) = WebhookMessageUpdateActionImpl(
+): WebhookMessageUpdateAction<Message> = WebhookMessageUpdateActionImpl(
     jda,
     Route.Interactions.EDIT_FOLLOWUP.compile(jda.selfUser.applicationId, interaction.token, id),
     { (jda as JDAImpl).entityBuilder.createMessage(it) }
@@ -130,6 +185,24 @@ fun InteractionHook.editMessage(
     }
 }
 
+/**
+ * Edit a message from this channel.
+ *
+ * This makes use of [MessageEditDefaults].
+ *
+ * This does not currently replace files but may do so in the future.
+ *
+ * @param[id] The message id
+ * @param[content] The message content
+ * @param[embed] One embed
+ * @param[embeds] Multiple embeds
+ * @param[components] Components for this message
+ * @param[file] One file
+ * @param[files] Multiple files
+ * @param[replace] Whether this should replace the entire message
+ *
+ * @return[MessageAction]
+ */
 fun MessageChannel.editMessage(
     id: String,
     content: String? = null,
@@ -139,7 +212,7 @@ fun MessageChannel.editMessage(
     file: NamedFile? = null,
     files: Files? = null,
     replace: Boolean = MessageEditDefaults.replace,
-) = MessageActionImpl(jda, id, this).apply {
+): MessageAction = MessageActionImpl(jda, id, this).apply {
     override(replace)
 
     content?.let {
@@ -162,6 +235,23 @@ fun MessageChannel.editMessage(
     }
 }
 
+/**
+ * Edit the message.
+ *
+ * This makes use of [MessageEditDefaults].
+ *
+ * This does not currently replace files but may do so in the future.
+ *
+ * @param[content] The message content
+ * @param[embed] One embed
+ * @param[embeds] Multiple embeds
+ * @param[components] Components for this message
+ * @param[file] One file
+ * @param[files] Multiple files
+ * @param[replace] Whether this should replace the entire message
+ *
+ * @return[MessageAction]
+ */
 fun Message.edit(
     content: String? = null,
     embed: MessageEmbed? = null,
