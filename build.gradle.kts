@@ -13,6 +13,11 @@ configure<JavaPluginConvention> {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
+tasks.withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.freeCompilerArgs = listOf("-Xjvm-default=all")
+}
+
 repositories {
     mavenCentral()
     maven("https://jitpack.io/")
@@ -22,10 +27,6 @@ dependencies {
     compileOnly("net.dv8tion:JDA:5.0.0-alpha.1")
     api(kotlin("stdlib-jdk8"))
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
 }
 
 val javadoc: Javadoc by tasks
