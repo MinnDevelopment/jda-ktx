@@ -7,6 +7,10 @@
 [5]: https://github.com/MinnDevelopment/jda-reactor/tree/master/src/main/java/club/minnced/jda/reactor/ReactiveEventManager.java
 [6]: https://github.com/MinnDevelopment/jda-ktx/tree/master/src/main/kotlin/dev/minn/jda/ktx/builder.kt
 
+[![Kotlin](https://img.shields.io/badge/kotlin-1.6.0-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![kotlinx-coroutines](https://img.shields.io/badge/kotlinx.coroutines-1.6.0--RC-blue.svg?logo=kotlin)][2]
+[![JDA](https://img.shields.io/badge/JDA-5.0.0--alpha.2-blue.svg)][1]
+
 # jda-ktx
 
 Collection of useful Kotlin extensions for [JDA][1].
@@ -15,7 +19,7 @@ Great in combination with [kotlinx-coroutines][2] and [jda-reactor][3].
 ## Required Dependencies
 
 - Kotlin **1.6.0**
-- kotlinx-coroutines **1.5.2**
+- kotlinx.coroutines **1.6.0-RC**
 - JDA **5.0.0-alpha.2**
 
 ## Examples

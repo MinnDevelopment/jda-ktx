@@ -26,7 +26,7 @@ repositories {
 dependencies {
     compileOnly("net.dv8tion:JDA:5.0.0-alpha.2")
     api(kotlin("stdlib-jdk8"))
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-RC") // TODO: Update this when new release is out
 }
 
 val javadoc: Javadoc by tasks

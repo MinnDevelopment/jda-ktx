@@ -48,4 +48,4 @@ fun Long?.toTimeout() = this?.milliseconds?.toTimeout()
 /**
  * Convert this long to [EventTimeout.Limit] or [EventTimeout.Inherit] on null
  */
-fun Duration?.toTimeout() = this?.let { EventTimeout.Limit(it) } ?: EventTimeout.Inherit
+fun Duration?.toTimeout() = this?.let { Limit(it) } ?: Inherit
