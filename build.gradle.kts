@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "dev.minn"
-version = "0.8.1-alpha.1"
+version = "0.8.1-alpha.2"
 
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -24,7 +24,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("net.dv8tion:JDA:5.0.0-alpha.1")
+    compileOnly("net.dv8tion:JDA:5.0.0-alpha.2")
     api(kotlin("stdlib-jdk8"))
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
 }

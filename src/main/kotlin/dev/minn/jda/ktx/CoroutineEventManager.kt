@@ -41,7 +41,7 @@ class CoroutineEventManager(
     private val listeners = CopyOnWriteArrayList<Any>()
 
     private fun timeout(listener: Any) = when {
-        listener is CoroutineEventListener && listener.timeout > 0 -> listener.timeout
+        listener is CoroutineEventListener && listener.timeout != EventTimeout.Inherit -> listener.timeout.milliseconds
         else -> timeout
     }
 

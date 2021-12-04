@@ -41,15 +41,15 @@ import kotlin.coroutines.resume
  * }
  * ```
  *
- * @param[timeout] The timeout (in milliseconds) to use for this listener, or 0 to use the default from the event manager
+ * @param[timeout] The timeout (in milliseconds) to use for this listener, or null to use the default from the event manager
  * @param[consumer] The event consumer function
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun <reified T : GenericEvent> JDA.listener(timeout: Long = 0, crossinline consumer: suspend CoroutineEventListener.(T) -> Unit): CoroutineEventListener {
+inline fun <reified T : GenericEvent> JDA.listener(timeout: Long? = null, crossinline consumer: suspend CoroutineEventListener.(T) -> Unit): CoroutineEventListener {
     return object : CoroutineEventListener {
-        override val timeout: Long
-            get() = timeout
+        override val timeout: EventTimeout
+            get() = timeout.toTimeout()
 
         override fun cancel() {
             return removeEventListener(this)
@@ -75,15 +75,15 @@ inline fun <reified T : GenericEvent> JDA.listener(timeout: Long = 0, crossinlin
  * }
  * ```
  *
- * @param[timeout] The timeout (in milliseconds) to use for this listener, or 0 to use the default from the event manager
+ * @param[timeout] The timeout (in milliseconds) to use for this listener, or null to use the default from the event manager
  * @param[consumer] The event consumer function
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun <reified T : GenericEvent> ShardManager.listener(timeout: Long = 0, crossinline consumer: suspend CoroutineEventListener.(T) -> Unit): CoroutineEventListener {
+inline fun <reified T : GenericEvent> ShardManager.listener(timeout: Long? = null, crossinline consumer: suspend CoroutineEventListener.(T) -> Unit): CoroutineEventListener {
     return object : CoroutineEventListener {
-        override val timeout: Long
-            get() = timeout
+        override val timeout: EventTimeout
+            get() = timeout.toTimeout()
 
         override fun cancel() {
             return removeEventListener(this)
@@ -110,12 +110,12 @@ inline fun <reified T : GenericEvent> ShardManager.listener(timeout: Long = 0, c
  * ```
  *
  * @param[name] The command name
- * @param[timeout] The timeout (in milliseconds) to use for this listener, or 0 to use the default from the event manager
+ * @param[timeout] The timeout (in milliseconds) to use for this listener, or null to use the default from the event manager
  * @param[consumer] The event consumer function
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun JDA.onCommand(name: String, timeout: Long = 0, crossinline consumer: suspend CoroutineEventListener.(SlashCommandEvent) -> Unit) = listener<SlashCommandEvent>(timeout=timeout) {
+inline fun JDA.onCommand(name: String, timeout: Long? = null, crossinline consumer: suspend CoroutineEventListener.(SlashCommandEvent) -> Unit) = listener<SlashCommandEvent>(timeout=timeout) {
     if (it.name == name)
         consumer(it)
 }
@@ -134,12 +134,12 @@ inline fun JDA.onCommand(name: String, timeout: Long = 0, crossinline consumer: 
  * ```
  *
  * @param[name] The command name
- * @param[timeout] The timeout (in milliseconds) to use for this listener, or 0 to use the default from the event manager
+ * @param[timeout] The timeout (in milliseconds) to use for this listener, or null to use the default from the event manager
  * @param[consumer] The event consumer function
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun ShardManager.onCommand(name: String, timeout: Long = 0, crossinline consumer: suspend CoroutineEventListener.(SlashCommandEvent) -> Unit) = listener<SlashCommandEvent>(timeout=timeout) {
+inline fun ShardManager.onCommand(name: String, timeout: Long? = null, crossinline consumer: suspend CoroutineEventListener.(SlashCommandEvent) -> Unit) = listener<SlashCommandEvent>(timeout=timeout) {
     if (it.name == name)
         consumer(it)
 }
@@ -159,12 +159,12 @@ inline fun ShardManager.onCommand(name: String, timeout: Long = 0, crossinline c
  * ```
  *
  * @param[customId] The button id
- * @param[timeout] The timeout (in milliseconds) to use for this listener, or 0 to use the default from the event manager
+ * @param[timeout] The timeout (in milliseconds) to use for this listener, or null to use the default from the event manager
  * @param[consumer] The event consumer function
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun <reified T : GenericComponentInteractionCreateEvent> JDA.onComponent(customId: String, timeout: Long = 0, crossinline consumer: suspend CoroutineEventListener.(T) -> Unit) = listener<T>(timeout=timeout) {
+inline fun <reified T : GenericComponentInteractionCreateEvent> JDA.onComponent(customId: String, timeout: Long? = null, crossinline consumer: suspend CoroutineEventListener.(T) -> Unit) = listener<T>(timeout=timeout) {
     if (it.componentId == customId)
         consumer(it)
 }
@@ -184,12 +184,12 @@ inline fun <reified T : GenericComponentInteractionCreateEvent> JDA.onComponent(
  * ```
  *
  * @param[customId] The button id
- * @param[timeout] The timeout (in milliseconds) to use for this listener, or 0 to use the default from the event manager
+ * @param[timeout] The timeout (in milliseconds) to use for this listener, or null to use the default from the event manager
  * @param[consumer] The event consumer function
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun <reified T : GenericComponentInteractionCreateEvent> ShardManager.onComponent(customId: String, timeout: Long = 0, crossinline consumer: suspend CoroutineEventListener.(T) -> Unit) = listener<T>(timeout=timeout) {
+inline fun <reified T : GenericComponentInteractionCreateEvent> ShardManager.onComponent(customId: String, timeout: Long? = null, crossinline consumer: suspend CoroutineEventListener.(T) -> Unit) = listener<T>(timeout=timeout) {
     if (it.componentId == customId)
         consumer(it)
 }
@@ -209,12 +209,12 @@ inline fun <reified T : GenericComponentInteractionCreateEvent> ShardManager.onC
  * ```
  *
  * @param[id] The button id
- * @param[timeout] The timeout (in milliseconds) to use for this listener, or 0 to use the default from the event manager
+ * @param[timeout] The timeout (in milliseconds) to use for this listener, or null to use the default from the event manager
  * @param[consumer] The event consumer function
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun JDA.onButton(id: String, timeout: Long = 0, crossinline consumer: suspend CoroutineEventListener.(ButtonClickEvent) -> Unit) = onComponent(id, timeout, consumer)
+inline fun JDA.onButton(id: String, timeout: Long? = null, crossinline consumer: suspend CoroutineEventListener.(ButtonClickEvent) -> Unit) = onComponent(id, timeout, consumer)
 
 /**
  * Requires [CoroutineEventManager] to be used!
@@ -231,12 +231,12 @@ inline fun JDA.onButton(id: String, timeout: Long = 0, crossinline consumer: sus
  * ```
  *
  * @param[id] The button id
- * @param[timeout] The timeout (in milliseconds) to use for this listener, or 0 to use the default from the event manager
+ * @param[timeout] The timeout (in milliseconds) to use for this listener, or null to use the default from the event manager
  * @param[consumer] The event consumer function
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun ShardManager.onButton(id: String, timeout: Long = 0, crossinline consumer: suspend CoroutineEventListener.(ButtonClickEvent) -> Unit) = onComponent(id, timeout, consumer)
+inline fun ShardManager.onButton(id: String, timeout: Long? = null, crossinline consumer: suspend CoroutineEventListener.(ButtonClickEvent) -> Unit) = onComponent(id, timeout, consumer)
 
 /**
  * Requires [CoroutineEventManager] to be used!
@@ -253,12 +253,12 @@ inline fun ShardManager.onButton(id: String, timeout: Long = 0, crossinline cons
  * ```
  *
  * @param[id] The selection menu id
- * @param[timeout] The timeout (in milliseconds) to use for this listener, or 0 to use the default from the event manager
+ * @param[timeout] The timeout (in milliseconds) to use for this listener, or null to use the default from the event manager
  * @param[consumer] The event consumer function
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun JDA.onSelection(id: String, timeout: Long = 0, crossinline consumer: suspend CoroutineEventListener.(SelectionMenuEvent) -> Unit) = onComponent(id, timeout, consumer)
+inline fun JDA.onSelection(id: String, timeout: Long? = null, crossinline consumer: suspend CoroutineEventListener.(SelectionMenuEvent) -> Unit) = onComponent(id, timeout, consumer)
 
 /**
  * Requires [CoroutineEventManager] to be used!
@@ -275,12 +275,12 @@ inline fun JDA.onSelection(id: String, timeout: Long = 0, crossinline consumer: 
  * ```
  *
  * @param[id] The selection menu id
- * @param[timeout] The timeout (in milliseconds) to use for this listener, or 0 to use the default from the event manager
+ * @param[timeout] The timeout (in milliseconds) to use for this listener, or null to use the default from the event manager
  * @param[consumer] The event consumer function
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun ShardManager.onSelection(id: String, timeout: Long = 0, crossinline consumer: suspend CoroutineEventListener.(SelectionMenuEvent) -> Unit) = onComponent(id, timeout, consumer)
+inline fun ShardManager.onSelection(id: String, timeout: Long? = null, crossinline consumer: suspend CoroutineEventListener.(SelectionMenuEvent) -> Unit) = onComponent(id, timeout, consumer)
 
 /**
  * Requires an EventManager implementation that supports either [EventListener] or [SubscribeEvent].
