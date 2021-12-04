@@ -12,6 +12,12 @@
 Collection of useful Kotlin extensions for [JDA][1].
 Great in combination with [kotlinx-coroutines][2] and [jda-reactor][3].
 
+## Required Dependencies
+
+- Kotlin **1.6.0**
+- kotlinx-coroutines **1.5.2**
+- JDA **5.0.0-alpha.2**
+
 ## Examples
 
 The most useful feature of this library is the [CoroutineEventManager][4] which adds the ability to use
@@ -46,7 +52,7 @@ jda.listener<MessageReceivedEvent> {
     }
 }
 
-jda.onCommand("ban", timeout=120000) { event -> // 2 minute timeout listener
+jda.onCommand("ban", timeout=2.minutes) { event -> // 2 minute timeout listener
     val user = event.getOption("user")!!.asUser
     val confirm = danger("${user.id}:ban", "Confirm")
     event.reply_(
@@ -55,6 +61,7 @@ jda.onCommand("ban", timeout=120000) { event -> // 2 minute timeout listener
         ephemeral=true
     ).queue()
 
+    // Can anyone explain to me why the overload with Duration is still experimental in 1.6.0?
     withTimeoutOrNull(60000) { // 1 minute timeout
         val pressed = event.user.awaitButton(confirm) // await for user to click button
         pressed.deferEdit().queue() // Acknowledge the button press

@@ -27,7 +27,8 @@ import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
 import net.dv8tion.jda.api.interactions.components.Button
 import net.dv8tion.jda.api.interactions.components.ButtonStyle
 import java.util.concurrent.ThreadLocalRandom
-import java.util.concurrent.TimeUnit
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 
 
 /**
@@ -39,7 +40,7 @@ object ButtonDefaults {
     // Globally configurable defaults, I just chose defaults that I would use in my own bots
 
     /** The default expiration time of a button listener, in milliseconds. */
-    var EXPIRATION: Long = TimeUnit.MINUTES.toMillis(15)
+    var EXPIRATION: Duration = 15.minutes
     /** The default button style. */
     var STYLE: ButtonStyle = ButtonStyle.SECONDARY
     /** The default button labels */
@@ -189,8 +190,8 @@ fun link(
  * @return[Button] The resulting button instance. You still need to send it with a message!
  */
 fun JDA.button(style: ButtonStyle = ButtonDefaults.STYLE, label: String? = ButtonDefaults.LABEL, emoji: Emoji? = ButtonDefaults.EMOJI,
-                       disabled: Boolean = ButtonDefaults.DISABLED,
-                       expiration: Long = ButtonDefaults.EXPIRATION, user: User? = null, listener: suspend (ButtonClickEvent) -> Unit
+               disabled: Boolean = ButtonDefaults.DISABLED, expiration: Duration = ButtonDefaults.EXPIRATION,
+               user: User? = null, listener: suspend (ButtonClickEvent) -> Unit
 ): Button {
     val id = ThreadLocalRandom.current().nextLong().toString()
     val button = button(id, label, emoji, style, disabled)
@@ -201,9 +202,9 @@ fun JDA.button(style: ButtonStyle = ButtonDefaults.STYLE, label: String? = Butto
         if (!it.isAcknowledged)
             it.deferEdit().queue()
     }
-    if (expiration > 0) {
+    if (expiration.isPositive() && expiration.isFinite()) {
         scope.launch {
-            delay(expiration)
+            delay(expiration.inWholeMilliseconds)
             removeEventListener(task)
         }
     }

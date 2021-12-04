@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.hooks.IEventManager
 import org.slf4j.Logger
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.time.Duration
 
 private val log: Logger by SLF4J<CoroutineEventManager>()
 
@@ -35,13 +36,13 @@ private val log: Logger by SLF4J<CoroutineEventManager>()
  */
 class CoroutineEventManager(
     val scope: CoroutineScope = GlobalScope,
-    /** Timeout in milliseconds each event listener is allowed to run. Set to -1 for no timeout. Default: -1 */
-    var timeout: Long = -1
+    /** Timeout [Duration] each event listener is allowed to run. Set to [Duration.ZERO] for no timeout. Default: 0 */
+    var timeout: Duration = Duration.ZERO
 ) : IEventManager {
     private val listeners = CopyOnWriteArrayList<Any>()
 
     private fun timeout(listener: Any) = when {
-        listener is CoroutineEventListener && listener.timeout != EventTimeout.Inherit -> listener.timeout.milliseconds
+        listener is CoroutineEventListener && listener.timeout != EventTimeout.Inherit -> listener.timeout.time
         else -> timeout
     }
 
@@ -49,9 +50,9 @@ class CoroutineEventManager(
         scope.launch {
             for (listener in listeners) {
                 val actualTimeout = timeout(listener)
-                if (actualTimeout > 0) {
+                if (actualTimeout.isPositive() && actualTimeout.isFinite()) {
                     // Timeout only works when the continuations implement a cancellation handler
-                    val result = withTimeoutOrNull(actualTimeout) {
+                    val result = withTimeoutOrNull(actualTimeout.inWholeMilliseconds) {
                         runListener(listener, event)
                     }
                     if (result == null) {

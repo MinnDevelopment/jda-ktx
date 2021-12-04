@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.events.GenericEvent
  */
 interface CoroutineEventListener {
     /**
-     * The timeout (in milliseconds) to use, or [EventTimeout.Inherit] to use event manager default.
+     * The timeout [kotlin.time.Duration] to use, or [EventTimeout.Inherit] to use event manager default.
      *
      * This timeout decides how long a listener function is allowed to run, not when to unregister it.
      */

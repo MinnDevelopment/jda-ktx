@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `maven-publish`
-    kotlin("jvm") version "1.4.32"
+    kotlin("jvm") version "1.6.0"
 }
 
 group = "dev.minn"
@@ -26,7 +26,7 @@ repositories {
 dependencies {
     compileOnly("net.dv8tion:JDA:5.0.0-alpha.2")
     api(kotlin("stdlib-jdk8"))
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
 }
 
 val javadoc: Javadoc by tasks
