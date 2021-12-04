@@ -40,12 +40,18 @@ class CoroutineEventManager(
 ) : IEventManager {
     private val listeners = CopyOnWriteArrayList<Any>()
 
+    private fun timeout(listener: Any) = when {
+        listener is CoroutineEventListener && listener.timeout != EventTimeout.Inherit -> listener.timeout.milliseconds
+        else -> timeout
+    }
+
     override fun handle(event: GenericEvent) {
         scope.launch {
             for (listener in listeners) {
-                if (timeout > 0) {
+                val actualTimeout = timeout(listener)
+                if (actualTimeout > 0) {
                     // Timeout only works when the continuations implement a cancellation handler
-                    val result = withTimeoutOrNull(timeout) {
+                    val result = withTimeoutOrNull(actualTimeout) {
                         runListener(listener, event)
                     }
                     if (result == null) {

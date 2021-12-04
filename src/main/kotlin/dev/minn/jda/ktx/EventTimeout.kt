@@ -16,23 +16,26 @@
 
 package dev.minn.jda.ktx
 
-import net.dv8tion.jda.api.events.GenericEvent
+/**
+ * Utility class to allow for inherited or custom timeouts.
+ *
+ * @see [Inherit]
+ * @see [Milliseconds]
+ * @see [Long.toTimeout]
+ */
+sealed class EventTimeout(val milliseconds: Long) {
+    /**
+     * Inherit the timeout from the event manager
+     */
+    object Inherit : EventTimeout(0)
+
+    /**
+     * Set a custom timeout in milliseconds
+     */
+    class Milliseconds(millis: Long) : EventTimeout(millis)
+}
 
 /**
- * Identical to [EventListener][net.dv8tion.jda.api.hooks.EventListener] but uses suspending function.
+ * Convert this long to [EventTimeout.Milliseconds] or [EventTimeout.Inherit] on null
  */
-interface CoroutineEventListener {
-    /**
-     * The timeout (in milliseconds) to use, or [EventTimeout.Inherit] to use event manager default.
-     *
-     * This timeout decides how long a listener function is allowed to run, not when to unregister it.
-     */
-    val timeout: EventTimeout get() = EventTimeout.Inherit
-
-    suspend fun onEvent(event: GenericEvent)
-
-    /**
-     * Unregisters this listener
-     */
-    fun cancel() {}
-}
+fun Long?.toTimeout() = this?.let { EventTimeout.Milliseconds(it) } ?: EventTimeout.Inherit

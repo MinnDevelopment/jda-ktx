@@ -46,7 +46,7 @@ jda.listener<MessageReceivedEvent> {
     }
 }
 
-jda.onCommand("ban") { event ->
+jda.onCommand("ban", timeout=120000) { event -> // 2 minute timeout listener
     val user = event.getOption("user")!!.asUser
     val confirm = danger("${user.id}:ban", "Confirm")
     event.reply_(

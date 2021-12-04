@@ -194,7 +194,7 @@ fun JDA.button(style: ButtonStyle = ButtonDefaults.STYLE, label: String? = Butto
 ): Button {
     val id = ThreadLocalRandom.current().nextLong().toString()
     val button = button(id, label, emoji, style, disabled)
-    val task = onButton(id) {
+    val task = onButton(id, timeout=expiration) {
         if (user == null || user == it.user)
             listener(it)
         // Always acknowledge regardless of user. You can add custom handling by just not using the user parameter and checking yourself
