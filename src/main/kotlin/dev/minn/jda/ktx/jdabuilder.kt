@@ -19,6 +19,7 @@ package dev.minn.jda.ktx
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.cache.CacheFlag
+import kotlin.time.Duration
 
 /**
  * Convenience method to call [JDABuilder.createLight] and apply a coroutine manager.
@@ -28,7 +29,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag
  * @param enableCoroutines
  *        Whether to set the [CoroutineEventManager] on the JDABuilder instance (Default: true)
  * @param timeout
- *        The timeout in milliseconds that an event listener is allowed to run (Default: -1 <=> unlimited)
+ *        The timeout [Duration] that an event listener is allowed to run (Default: [Duration.INFINITE] <=> unlimited)
  * @param intent
  *        The gateway intents to use
  * @param intents
@@ -38,7 +39,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag
  *
  * @return [JDA][net.dv8tion.jda.api.JDA] instance returned by [JDABuilder.build]
  */
-inline fun light(token: String, enableCoroutines: Boolean = true, timeout: Long = -1, intent: GatewayIntent, vararg intents: GatewayIntent, builder: JDABuilder.() -> Unit = {})
+inline fun light(token: String, enableCoroutines: Boolean = true, timeout: Duration = Duration.INFINITE, intent: GatewayIntent, vararg intents: GatewayIntent, builder: JDABuilder.() -> Unit = {})
     = JDABuilder.createLight(token, intent, *intents)
         .apply(builder)
         .apply {
@@ -55,7 +56,7 @@ inline fun light(token: String, enableCoroutines: Boolean = true, timeout: Long 
  * @param enableCoroutines
  *        Whether to set the [CoroutineEventManager] on the JDABuilder instance (Default: true)
  * @param timeout
- *        The timeout in milliseconds that an event listener is allowed to run (Default: -1 <=> unlimited)
+ *        The timeout [Duration] that an event listener is allowed to run (Default: [Duration.INFINITE] <=> unlimited)
  * @param intents
  *        The gateway intents to use
  * @param builder
@@ -63,7 +64,7 @@ inline fun light(token: String, enableCoroutines: Boolean = true, timeout: Long 
  *
  * @return [JDA][net.dv8tion.jda.api.JDA] instance returned by [JDABuilder.build]
  */
-inline fun light(token: String, enableCoroutines: Boolean = true, timeout: Long = -1, intents: Collection<GatewayIntent>, builder: JDABuilder.() -> Unit = {})
+inline fun light(token: String, enableCoroutines: Boolean = true, timeout: Duration = Duration.INFINITE, intents: Collection<GatewayIntent>, builder: JDABuilder.() -> Unit = {})
     = JDABuilder.createLight(token, intents)
         .apply(builder)
         .apply {
@@ -81,13 +82,13 @@ inline fun light(token: String, enableCoroutines: Boolean = true, timeout: Long 
  * @param enableCoroutines
  *        Whether to set the [CoroutineEventManager] on the JDABuilder instance (Default: true)
  * @param timeout
- *        The timeout in milliseconds that an event listener is allowed to run (Default: -1 <=> unlimited)
+ *        The timeout [Duration] that an event listener is allowed to run (Default: [Duration.INFINITE] <=> unlimited)
  * @param builder
  *        Initialization constructor for the JDABuilder
  *
  * @return [JDA][net.dv8tion.jda.api.JDA] instance returned by [JDABuilder.build]
  */
-inline fun light(token: String, enableCoroutines: Boolean = true, timeout: Long = -1, builder: JDABuilder.() -> Unit = {})
+inline fun light(token: String, enableCoroutines: Boolean = true, timeout: Duration = Duration.INFINITE, builder: JDABuilder.() -> Unit = {})
     = JDABuilder.createLight(token)
         .apply(builder)
         .apply {
@@ -107,7 +108,7 @@ inline fun light(token: String, enableCoroutines: Boolean = true, timeout: Long 
  * @param enableCoroutines
  *        Whether to set the [CoroutineEventManager] on the JDABuilder instance (Default: true)
  * @param timeout
- *        The timeout in milliseconds that an event listener is allowed to run (Default: -1 <=> unlimited)
+ *        The timeout [Duration] that an event listener is allowed to run (Default: [Duration.INFINITE] <=> unlimited)
  * @param intent
  *        The gateway intents to use
  * @param intents
@@ -117,7 +118,7 @@ inline fun light(token: String, enableCoroutines: Boolean = true, timeout: Long 
  *
  * @return [JDA][net.dv8tion.jda.api.JDA] instance returned by [JDABuilder.build]
  */
-inline fun default(token: String, enableCoroutines: Boolean = true, timeout: Long = -1, intent: GatewayIntent, vararg intents: GatewayIntent, builder: JDABuilder.() -> Unit = {})
+inline fun default(token: String, enableCoroutines: Boolean = true, timeout: Duration = Duration.INFINITE, intent: GatewayIntent, vararg intents: GatewayIntent, builder: JDABuilder.() -> Unit = {})
         = JDABuilder.createDefault(token, intent, *intents)
             .apply(builder)
             .apply {
@@ -134,7 +135,7 @@ inline fun default(token: String, enableCoroutines: Boolean = true, timeout: Lon
  * @param enableCoroutines
  *        Whether to set the [CoroutineEventManager] on the JDABuilder instance (Default: true)
  * @param timeout
- *        The timeout in milliseconds that an event listener is allowed to run (Default: -1 <=> unlimited)
+ *        The timeout [Duration] that an event listener is allowed to run (Default: [Duration.INFINITE] <=> unlimited)
  * @param intents
  *        The gateway intents to use
  * @param builder
@@ -142,7 +143,7 @@ inline fun default(token: String, enableCoroutines: Boolean = true, timeout: Lon
  *
  * @return [JDA][net.dv8tion.jda.api.JDA] instance returned by [JDABuilder.build]
  */
-inline fun default(token: String, enableCoroutines: Boolean = true, timeout: Long = -1, intents: Collection<GatewayIntent>, builder: JDABuilder.() -> Unit = {})
+inline fun default(token: String, enableCoroutines: Boolean = true, timeout: Duration = Duration.INFINITE, intents: Collection<GatewayIntent>, builder: JDABuilder.() -> Unit = {})
         = JDABuilder.createDefault(token, intents)
             .apply(builder)
             .apply {
@@ -160,13 +161,13 @@ inline fun default(token: String, enableCoroutines: Boolean = true, timeout: Lon
  * @param enableCoroutines
  *        Whether to set the [CoroutineEventManager] on the JDABuilder instance (Default: true)
  * @param timeout
- *        The timeout in milliseconds that an event listener is allowed to run (Default: -1 <=> unlimited)
+ *        The timeout [Duration] that an event listener is allowed to run (Default: [Duration.INFINITE] <=> unlimited)
  * @param builder
  *        Initialization constructor for the JDABuilder
  *
  * @return [JDA][net.dv8tion.jda.api.JDA] instance returned by [JDABuilder.build]
  */
-inline fun default(token: String, enableCoroutines: Boolean = true, timeout: Long = -1, builder: JDABuilder.() -> Unit = {})
+inline fun default(token: String, enableCoroutines: Boolean = true, timeout: Duration = Duration.INFINITE, builder: JDABuilder.() -> Unit = {})
         = JDABuilder.createDefault(token)
             .apply(builder)
             .apply {
@@ -185,7 +186,7 @@ inline fun default(token: String, enableCoroutines: Boolean = true, timeout: Lon
  * @param enableCoroutines
  *        Whether to set the [CoroutineEventManager] on the JDABuilder instance (Default: true)
  * @param timeout
- *        The timeout in milliseconds that an event listener is allowed to run (Default: -1 <=> unlimited)
+ *        The timeout [Duration] that an event listener is allowed to run (Default: [Duration.INFINITE] <=> unlimited)
  * @param intent
  *        The gateway intents to use
  * @param intents
@@ -195,7 +196,7 @@ inline fun default(token: String, enableCoroutines: Boolean = true, timeout: Lon
  *
  * @return [JDA][net.dv8tion.jda.api.JDA] instance returned by [JDABuilder.build]
  */
-inline fun createJDA(token: String, enableCoroutines: Boolean = true, timeout: Long = -1, intent: GatewayIntent, vararg intents: GatewayIntent, builder: JDABuilder.() -> Unit = {})
+inline fun createJDA(token: String, enableCoroutines: Boolean = true, timeout: Duration = Duration.INFINITE, intent: GatewayIntent, vararg intents: GatewayIntent, builder: JDABuilder.() -> Unit = {})
         = JDABuilder.create(token, intent, *intents)
             .apply(builder)
             .apply {
@@ -212,7 +213,7 @@ inline fun createJDA(token: String, enableCoroutines: Boolean = true, timeout: L
  * @param enableCoroutines
  *        Whether to set the [CoroutineEventManager] on the JDABuilder instance (Default: true)
  * @param timeout
- *        The timeout in milliseconds that an event listener is allowed to run (Default: -1 <=> unlimited)
+ *        The timeout [Duration] that an event listener is allowed to run (Default: [Duration.INFINITE] <=> unlimited)
  * @param intents
  *        The gateway intents to use
  * @param builder
@@ -220,7 +221,7 @@ inline fun createJDA(token: String, enableCoroutines: Boolean = true, timeout: L
  *
  * @return [JDA][net.dv8tion.jda.api.JDA] instance returned by [JDABuilder.build]
  */
-inline fun createJDA(token: String, enableCoroutines: Boolean = true, timeout: Long = -1, intents: Collection<GatewayIntent>, builder: JDABuilder.() -> Unit = {})
+inline fun createJDA(token: String, enableCoroutines: Boolean = true, timeout: Duration = Duration.INFINITE, intents: Collection<GatewayIntent>, builder: JDABuilder.() -> Unit = {})
         = JDABuilder.create(token, intents)
             .apply(builder)
             .apply {

@@ -183,7 +183,7 @@ fun link(
  * @param[label] The button label
  * @param[emoji] The button emoji
  * @param[disabled] Whether the button is disabled
- * @param[expiration] The relative expiration time for the listener in milliseconds
+ * @param[expiration] The relative expiration time for the listener as [Duration], use [Duration.INFINITE] to disable timeout
  * @param[user] The user who is authorized to click the button. If the button is pressed by another user it will just defer edit and ignore.
  * @param[listener] The callback for the button clicks
  *

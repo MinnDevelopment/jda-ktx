@@ -36,8 +36,8 @@ private val log: Logger by SLF4J<CoroutineEventManager>()
  */
 class CoroutineEventManager(
     val scope: CoroutineScope = GlobalScope,
-    /** Timeout [Duration] each event listener is allowed to run. Set to [Duration.ZERO] for no timeout. Default: 0 */
-    var timeout: Duration = Duration.ZERO
+    /** Timeout [Duration] each event listener is allowed to run. Set to [Duration.INFINITE] for no timeout. Default: [Duration.INFINITE] */
+    var timeout: Duration = Duration.INFINITE
 ) : IEventManager {
     private val listeners = CopyOnWriteArrayList<Any>()
 

@@ -35,7 +35,7 @@ sealed class EventTimeout(val time: Duration) {
     object Inherit : EventTimeout(Duration.ZERO)
 
     /**
-     * Set a custom timeout in milliseconds
+     * Set a custom timeout from a [Duration]
      */
     class Limit(time: Duration) : EventTimeout(time)
 }
