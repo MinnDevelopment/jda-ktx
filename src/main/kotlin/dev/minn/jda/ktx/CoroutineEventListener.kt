@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.events.GenericEvent
 /**
  * Identical to [EventListener][net.dv8tion.jda.api.hooks.EventListener] but uses suspending function.
  */
-interface CoroutineEventListener {
+fun interface CoroutineEventListener {
     /**
      * The timeout [kotlin.time.Duration] to use, or [EventTimeout.Inherit] to use event manager default.
      *

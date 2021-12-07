@@ -84,4 +84,36 @@ class CoroutineEventManager(
     override fun unregister(listener: Any) {
         listeners.remove(listener)
     }
+
+    /**
+     * Opens an event listener scope for simple hooking.
+     *
+     * ## Example
+     *
+     * ```kotlin
+     * manager.listener<MessageReceivedEvent> { event ->
+     *     println(event.message.contentRaw)
+     * }
+     * ```
+     *
+     * @param[timeout] The timeout [Duration] to use for this listener, or null to use the default from the event manager
+     * @param[consumer] The event consumer function
+     *
+     * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
+     */
+    inline fun <reified T : GenericEvent> listener(timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(T) -> Unit): CoroutineEventListener {
+        return object : CoroutineEventListener {
+            override val timeout: EventTimeout
+                get() = timeout.toTimeout()
+
+            override fun cancel() {
+                return unregister(this)
+            }
+
+            override suspend fun onEvent(event: GenericEvent) {
+                if (event is T)
+                    consumer(event)
+            }
+        }.also { register(it) }
+    }
 }

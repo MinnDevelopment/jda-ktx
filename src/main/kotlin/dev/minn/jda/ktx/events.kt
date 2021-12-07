@@ -48,19 +48,7 @@ import kotlin.time.Duration
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
 inline fun <reified T : GenericEvent> JDA.listener(timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(T) -> Unit): CoroutineEventListener {
-    return object : CoroutineEventListener {
-        override val timeout: EventTimeout
-            get() = timeout.toTimeout()
-
-        override fun cancel() {
-            return removeEventListener(this)
-        }
-
-        override suspend fun onEvent(event: GenericEvent) {
-            if (event is T)
-                consumer(event)
-        }
-    }.also { addEventListener(it) }
+    return (eventManager as CoroutineEventManager).listener(timeout, consumer)
 }
 
 /**
