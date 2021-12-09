@@ -16,14 +16,8 @@
 
 package dev.minn.jda.ktx
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ClosedSendChannelException
-import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction
 import java.util.*
 
@@ -48,32 +42,4 @@ fun <T, M: PaginationAction<T, M>> M.asFlow(): Flow<T> = flow {
         }
         queue.addAll(await())
     }
-}
-
-/**
- * Converts this PaginationAction to a [ReceiveChannel].
- *
- * Remember to close the channel, or close the coroutine scope, once you don't need it anymore.
- *
- * @return [ReceiveChannel] instance
- */
-suspend fun <T, M: PaginationAction<T, M>> M.produce(): ReceiveChannel<T> = coroutineScope {
-    val channel = Channel<T>(1) // we don't need a buffer
-    cache(false)
-    launch {
-        channel.runCatching {
-            val queue = LinkedList<T>(await())
-            while (queue.isNotEmpty()) {
-                while (queue.isNotEmpty()) {
-                    send(queue.poll())
-                }
-                queue.addAll(await())
-            }
-        }.onFailure {
-            if (it !is ClosedSendChannelException && it !is CancellationException)
-                throw it
-        }
-    }
-
-    channel
 }
