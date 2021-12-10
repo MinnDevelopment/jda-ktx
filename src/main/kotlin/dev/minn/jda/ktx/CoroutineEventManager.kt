@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.hooks.IEventManager
 import org.slf4j.Logger
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.time.Duration
 
 private val log: Logger by SLF4J<CoroutineEventManager>()
 
@@ -34,24 +35,24 @@ private val log: Logger by SLF4J<CoroutineEventManager>()
  * This enables [the coroutine listener extension][listener].
  */
 class CoroutineEventManager(
-    val scope: CoroutineScope = GlobalScope,
-    /** Timeout in milliseconds each event listener is allowed to run. Set to -1 for no timeout. Default: -1 */
-    var timeout: Long = -1
-) : IEventManager {
+    scope: CoroutineScope = GlobalScope,
+    /** Timeout [Duration] each event listener is allowed to run. Set to [Duration.INFINITE] for no timeout. Default: [Duration.INFINITE] */
+    var timeout: Duration = Duration.INFINITE
+) : IEventManager, CoroutineScope by scope {
     private val listeners = CopyOnWriteArrayList<Any>()
 
     private fun timeout(listener: Any) = when {
-        listener is CoroutineEventListener && listener.timeout != EventTimeout.Inherit -> listener.timeout.milliseconds
+        listener is CoroutineEventListener && listener.timeout != EventTimeout.Inherit -> listener.timeout.time
         else -> timeout
     }
 
     override fun handle(event: GenericEvent) {
-        scope.launch {
+        launch {
             for (listener in listeners) {
                 val actualTimeout = timeout(listener)
-                if (actualTimeout > 0) {
+                if (actualTimeout.isPositive() && actualTimeout.isFinite()) {
                     // Timeout only works when the continuations implement a cancellation handler
-                    val result = withTimeoutOrNull(actualTimeout) {
+                    val result = withTimeoutOrNull(actualTimeout.inWholeMilliseconds) {
                         runListener(listener, event)
                     }
                     if (result == null) {
@@ -82,5 +83,37 @@ class CoroutineEventManager(
 
     override fun unregister(listener: Any) {
         listeners.remove(listener)
+    }
+
+    /**
+     * Opens an event listener scope for simple hooking.
+     *
+     * ## Example
+     *
+     * ```kotlin
+     * manager.listener<MessageReceivedEvent> { event ->
+     *     println(event.message.contentRaw)
+     * }
+     * ```
+     *
+     * @param[timeout] The timeout [Duration] to use for this listener, or null to use the default from the event manager
+     * @param[consumer] The event consumer function
+     *
+     * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
+     */
+    inline fun <reified T : GenericEvent> listener(timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(T) -> Unit): CoroutineEventListener {
+        return object : CoroutineEventListener {
+            override val timeout: EventTimeout
+                get() = timeout.toTimeout()
+
+            override fun cancel() {
+                return unregister(this)
+            }
+
+            override suspend fun onEvent(event: GenericEvent) {
+                if (event is T)
+                    consumer(event)
+            }
+        }.also { register(it) }
     }
 }

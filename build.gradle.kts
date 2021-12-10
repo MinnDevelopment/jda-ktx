@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `maven-publish`
-    kotlin("jvm") version "1.4.32"
+    kotlin("jvm") version "1.6.0"
 }
 
 group = "dev.minn"
@@ -15,7 +15,10 @@ configure<JavaPluginConvention> {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
-    kotlinOptions.freeCompilerArgs = listOf("-Xjvm-default=all")
+    kotlinOptions.freeCompilerArgs = listOf(
+        "-Xjvm-default=all",  // use default methods in interfaces
+        "-Xlambdas=indy"      // use invokedynamic lambdas instead of synthetic classes
+    )
 }
 
 repositories {
@@ -26,7 +29,7 @@ repositories {
 dependencies {
     compileOnly("net.dv8tion:JDA:5.0.0-alpha.2")
     api(kotlin("stdlib-jdk8"))
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-RC2")
 }
 
 val javadoc: Javadoc by tasks

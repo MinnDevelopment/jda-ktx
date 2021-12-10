@@ -43,8 +43,7 @@ suspend fun <T> CompletableFuture<T>.await() = suspendCancellableCoroutine<T> {
  *
  * @return Result
  */
-@Suppress("HasPlatformType")
-suspend fun <T> RestAction<T>.await() = submit().await()
+suspend fun <T> RestAction<T>.await(): T = submit().await()
 
 /**
  * Awaits the result of this Task

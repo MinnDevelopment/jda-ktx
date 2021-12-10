@@ -16,26 +16,36 @@
 
 package dev.minn.jda.ktx
 
+import dev.minn.jda.ktx.EventTimeout.Inherit
+import dev.minn.jda.ktx.EventTimeout.Limit
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+
 /**
  * Utility class to allow for inherited or custom timeouts.
  *
  * @see [Inherit]
- * @see [Milliseconds]
+ * @see [Limit]
  * @see [Long.toTimeout]
  */
-sealed class EventTimeout(val milliseconds: Long) {
+sealed class EventTimeout(val time: Duration) {
     /**
      * Inherit the timeout from the event manager
      */
-    object Inherit : EventTimeout(0)
+    object Inherit : EventTimeout(Duration.ZERO)
 
     /**
-     * Set a custom timeout in milliseconds
+     * Set a custom timeout from a [Duration]
      */
-    class Milliseconds(millis: Long) : EventTimeout(millis)
+    class Limit(time: Duration) : EventTimeout(time)
 }
 
 /**
- * Convert this long to [EventTimeout.Milliseconds] or [EventTimeout.Inherit] on null
+ * Convert this long to [EventTimeout.Limit] or [EventTimeout.Inherit] on null
  */
-fun Long?.toTimeout() = this?.let { EventTimeout.Milliseconds(it) } ?: EventTimeout.Inherit
+fun Long?.toTimeout() = this?.milliseconds?.toTimeout()
+
+/**
+ * Convert this long to [EventTimeout.Limit] or [EventTimeout.Inherit] on null
+ */
+fun Duration?.toTimeout() = this?.let { Limit(it) } ?: Inherit
