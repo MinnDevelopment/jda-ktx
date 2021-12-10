@@ -204,7 +204,7 @@ fun JDA.button(style: ButtonStyle = ButtonDefaults.STYLE, label: String? = Butto
     }
     if (expiration.isPositive() && expiration.isFinite()) {
         scope.launch {
-            delay(expiration.inWholeMilliseconds)
+            delay(expiration)
             removeEventListener(task)
         }
     }

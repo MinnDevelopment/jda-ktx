@@ -35,9 +35,7 @@ import net.dv8tion.jda.api.interactions.components.ButtonInteraction
 import net.dv8tion.jda.api.requests.ErrorResponse
 import java.security.SecureRandom
 import java.util.*
-import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
 
 /**
  * Defaults used for paginators.
@@ -53,8 +51,8 @@ object PaginatorDefaults {
     var DELETE: Button = Button.danger("delete", Emoji.fromUnicode("\uD83D\uDEAE"))
 }
 
-class Paginator internal constructor(private val nonce: String, private val ttl: Long): EventListener {
-    private var expiresAt: Long = System.currentTimeMillis() + ttl
+class Paginator internal constructor(private val nonce: String, private val ttl: Duration): EventListener {
+    private var expiresAt: Long = System.currentTimeMillis() + ttl.inWholeMilliseconds
 
     private var index = 0
     private val pageCache = mutableListOf<Message>()
@@ -96,7 +94,7 @@ class Paginator internal constructor(private val nonce: String, private val ttl:
         if (event !is ButtonClickEvent) return
         val buttonId = event.componentId
         if (!buttonId.startsWith(nonce) || !filter(event)) return
-        expiresAt = System.currentTimeMillis() + ttl
+        expiresAt = System.currentTimeMillis() + ttl.inWholeMilliseconds
         val (_, operation) = buttonId.split(":")
         when (operation) {
             "prev" -> {
@@ -127,93 +125,53 @@ class Paginator internal constructor(private val nonce: String, private val ttl:
     }
 }
 
-fun paginator(vararg pages: Message, expireAfter: Long = TimeUnit.MINUTES.toMillis(15)): Paginator {
+fun paginator(vararg pages: Message, expireAfter: Duration): Paginator {
     val nonce = ByteArray(32)
     SecureRandom().nextBytes(nonce)
     return Paginator(Base64.getEncoder().encodeToString(nonce), expireAfter).also { it.addPages(*pages) }
 }
 
-fun paginator(vararg pages: MessageEmbed, expireAfter: Long = TimeUnit.MINUTES.toMillis(15)): Paginator {
-    return paginator(*pages.map { Message(embed=it) }.toTypedArray(), expireAfter=expireAfter)
-}
+fun paginator(vararg pages: MessageEmbed, expireAfter: Duration): Paginator
+    = paginator(*pages.map { Message(embed=it) }.toTypedArray(), expireAfter=expireAfter)
 
-@ExperimentalTime
-fun paginator(vararg pages: Message, expireAfter: Duration): Paginator = paginator(*pages, expireAfter = expireAfter.toLongMilliseconds())
+fun MessageChannel.sendPaginator(paginator: Paginator)
+    = sendMessage(paginator.also { jda.addEventListener(it) }.pages[0]).setActionRows(paginator.controls)
 
-@ExperimentalTime
-fun paginator(vararg pages: MessageEmbed, expireAfter: Duration): Paginator = paginator(*pages, expireAfter = expireAfter.toLongMilliseconds())
+fun InteractionHook.sendPaginator(paginator: Paginator)
+    = sendMessage(paginator.also { jda.addEventListener(it) }.pages[0]).addActionRows(paginator.controls)
 
-fun MessageChannel.sendPaginator(paginator: Paginator) = sendMessage(paginator.also { jda.addEventListener(it) }.pages[0]).setActionRows(paginator.controls)
+fun Interaction.replyPaginator(paginator: Paginator)
+    = reply(paginator.also { user.jda.addEventListener(it) }.pages[0]).addActionRows(paginator.controls)
+
 fun MessageChannel.sendPaginator(
     vararg pages: Message,
-    expireAfter: Long = TimeUnit.MINUTES.toMillis(15),
+    expireAfter: Duration,
     filter: (ButtonInteraction) -> Boolean = {true}
 ) = sendPaginator(paginator(*pages, expireAfter=expireAfter).filterBy(filter))
 fun MessageChannel.sendPaginator(
     vararg pages: MessageEmbed,
-    expireAfter: Long = TimeUnit.MINUTES.toMillis(15),
+    expireAfter: Duration,
     filter: (ButtonInteraction) -> Boolean = {true}
 ) = sendPaginator(paginator(*pages, expireAfter=expireAfter).filterBy(filter))
 
-fun InteractionHook.sendPaginator(paginator: Paginator) = sendMessage(paginator.also { jda.addEventListener(it) }.pages[0]).addActionRows(paginator.controls)
 fun InteractionHook.sendPaginator(
     vararg pages: Message,
-    expireAfter: Long = TimeUnit.MINUTES.toMillis(15),
+    expireAfter: Duration,
     filter: (ButtonInteraction) -> Boolean = {true}
 ) = sendPaginator(paginator(*pages, expireAfter=expireAfter).filterBy(filter))
 fun InteractionHook.sendPaginator(
     vararg pages: MessageEmbed,
-    expireAfter: Long = TimeUnit.MINUTES.toMillis(15),
+    expireAfter: Duration,
     filter: (ButtonInteraction) -> Boolean = {true}
 ) = sendPaginator(paginator(*pages, expireAfter=expireAfter).filterBy(filter))
 
-fun Interaction.replyPaginator(paginator: Paginator) = reply(paginator.also { user.jda.addEventListener(it) }.pages[0]).addActionRows(paginator.controls)
 fun Interaction.replyPaginator(
     vararg pages: Message,
-    expireAfter: Long = TimeUnit.MINUTES.toMillis(15),
+    expireAfter: Duration,
     filter: (ButtonInteraction) -> Boolean = {true}
 ) = replyPaginator(paginator(*pages, expireAfter=expireAfter).filterBy(filter))
 fun Interaction.replyPaginator(
     vararg pages: MessageEmbed,
-    expireAfter: Long = TimeUnit.MINUTES.toMillis(15),
+    expireAfter: Duration,
     filter: (ButtonInteraction) -> Boolean = {true}
 ) = replyPaginator(paginator(*pages, expireAfter=expireAfter).filterBy(filter))
-
-@ExperimentalTime
-fun MessageChannel.sendPaginator(
-    vararg pages: Message,
-    expireAfter: Duration,
-    filter: (ButtonInteraction) -> Boolean = {true}
-) = sendPaginator(paginator(*pages, expireAfter=expireAfter.toLongMilliseconds()).filterBy(filter))
-@ExperimentalTime
-fun MessageChannel.sendPaginator(
-    vararg pages: MessageEmbed,
-    expireAfter: Duration,
-    filter: (ButtonInteraction) -> Boolean = {true}
-) = sendPaginator(paginator(*pages, expireAfter=expireAfter.toLongMilliseconds()).filterBy(filter))
-
-@ExperimentalTime
-fun InteractionHook.sendPaginator(
-    vararg pages: Message,
-    expireAfter: Duration,
-    filter: (ButtonInteraction) -> Boolean = {true}
-) = sendPaginator(paginator(*pages, expireAfter=expireAfter.toLongMilliseconds()).filterBy(filter))
-@ExperimentalTime
-fun InteractionHook.sendPaginator(
-    vararg pages: MessageEmbed,
-    expireAfter: Duration,
-    filter: (ButtonInteraction) -> Boolean = {true}
-) = sendPaginator(paginator(*pages, expireAfter=expireAfter.toLongMilliseconds()).filterBy(filter))
-
-@ExperimentalTime
-fun Interaction.replyPaginator(
-    vararg pages: Message,
-    expireAfter: Duration,
-    filter: (ButtonInteraction) -> Boolean = {true}
-) = replyPaginator(paginator(*pages, expireAfter=expireAfter.toLongMilliseconds()).filterBy(filter))
-@ExperimentalTime
-fun Interaction.replyPaginator(
-    vararg pages: MessageEmbed,
-    expireAfter: Duration,
-    filter: (ButtonInteraction) -> Boolean = {true}
-) = replyPaginator(paginator(*pages, expireAfter=expireAfter.toLongMilliseconds()).filterBy(filter))

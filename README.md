@@ -19,7 +19,7 @@ Great in combination with [kotlinx-coroutines][2] and [jda-reactor][3].
 ## Required Dependencies
 
 - Kotlin **1.6.0**
-- kotlinx.coroutines **1.6.0-RC**
+- kotlinx.coroutines **1.6.0-RC2**
 - JDA **5.0.0-alpha.2**
 
 ## Examples
@@ -65,8 +65,7 @@ jda.onCommand("ban", timeout=2.minutes) { event -> // 2 minute timeout listener
         ephemeral=true
     ).queue()
 
-    // Can anyone explain to me why the overload with Duration is still experimental in 1.6.0?
-    withTimeoutOrNull(60000) { // 1 minute timeout
+    withTimeoutOrNull(1.minutes) { // 1 minute scoped timeout
         val pressed = event.user.awaitButton(confirm) // await for user to click button
         pressed.deferEdit().queue() // Acknowledge the button press
         event.guild.ban(user, 0).queue() // the button is pressed -> execute action
