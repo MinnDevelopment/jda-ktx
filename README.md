@@ -8,7 +8,7 @@
 [6]: https://github.com/MinnDevelopment/jda-ktx/tree/master/src/main/kotlin/dev/minn/jda/ktx/builder.kt
 
 [![Kotlin](https://img.shields.io/badge/kotlin-1.6.0-blue.svg?logo=kotlin)](http://kotlinlang.org)
-[![kotlinx-coroutines](https://img.shields.io/badge/kotlinx.coroutines-1.6.0--RC-blue.svg?logo=kotlin)][2]
+[![kotlinx-coroutines](https://img.shields.io/badge/kotlinx.coroutines-1.6.0--RC2-blue.svg?logo=kotlin)][2]
 [![JDA](https://img.shields.io/badge/JDA-5.0.0--alpha.2-blue.svg)][1]
 
 # jda-ktx
