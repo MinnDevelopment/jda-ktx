@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     `maven-publish`
     kotlin("jvm") version "1.6.0"
+    id("io.gitlab.arturbosch.detekt") version "1.19.0"
 }
 
 group = "dev.minn"
@@ -65,3 +66,13 @@ publishing.publications {
         artifact(sourcesJar)
     }
 }
+
+
+detekt {
+    parallel = true
+    autoCorrect = false
+
+    config = files("detekt.yml")
+}
+
+tasks.test.get().dependsOn(tasks.getByName("detekt"))

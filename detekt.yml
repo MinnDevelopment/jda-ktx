@@ -1,0 +1,42 @@
+output-reports:
+  active: true
+  exclude:
+    - TxtOutputReport
+    - XmlOutputReport
+processors:
+  active: true
+  exclude: []
+complexity:
+  LongParameterList:
+    active: false
+naming:
+  FunctionNaming:
+    active: false
+potential-bugs:
+  active: true
+  MapGetWithNotNullAssertionOperator:
+    active: true
+  UnnecessaryNotNullOperator:
+    active: true
+  UnnecessarySafeCall:
+    active: true
+  UnusedUnaryOperator:
+    active: true
+  ImplicitDefaultLocale:
+    active: true
+  WrongEqualsTypeParameter:
+    active: true
+  Deprecation:
+    active: true
+  IgnoredReturnValue:
+    restrictToAnnotatedMethods: false
+    active: true
+  MissingPackageDeclaration:
+    active: true
+style:
+  ForbiddenMethodCall:
+    active: true
+  NoTabs:
+    active: true
+  TrailingWhitespace:
+    active: true
