@@ -6,6 +6,7 @@
 [4]: https://github.com/MinnDevelopment/jda-ktx/tree/master/src/main/kotlin/dev/minn/jda/ktx/CoroutineEventManager.kt
 [5]: https://github.com/MinnDevelopment/jda-reactor/tree/master/src/main/java/club/minnced/jda/reactor/ReactiveEventManager.java
 [6]: https://github.com/MinnDevelopment/jda-ktx/tree/master/src/main/kotlin/dev/minn/jda/ktx/builder.kt
+[7]: https://github.com/MinnDevelopment/strumbot
 
 [![Kotlin](https://img.shields.io/badge/kotlin-1.6.0-blue.svg?logo=kotlin)](http://kotlinlang.org)
 [![kotlinx-coroutines](https://img.shields.io/badge/kotlinx.coroutines-1.6.0--RC2-blue.svg?logo=kotlin)][2]
@@ -24,11 +25,14 @@ Great in combination with [kotlinx-coroutines][2] and [jda-reactor][3].
 
 ## Examples
 
+You can look at my own bot ([strumbot][7]) for inspiration, or look at the examples listed here.
 The most useful feature of this library is the [CoroutineEventManager][4] which adds the ability to use
 suspending functions in your event handlers.
 
 ```kotlin
-val jda = light("token", enableCoroutines=true) { // enableCoroutines (default true) changes the event manager to CoroutineEventManager
+// enableCoroutines (default true) changes the event manager to CoroutineEventManager
+// this event manager uses the GlobalScope by default but can be configured to use a custom scope if you set it manually
+val jda = light("token", enableCoroutines=true) {
     intents += listOf(GatewayIntent.GUILD_MEMBERS)
 }
 
