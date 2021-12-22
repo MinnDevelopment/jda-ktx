@@ -85,6 +85,9 @@ inline fun <reified T : GenericEvent> ShardManager.listener(timeout: Duration? =
     }.also { addEventListener(it) }
 }
 
+// TODO: Make these inline again after the compiler error is fixed
+// https://youtrack.jetbrains.com/issue/KT-46879
+
 /**
  * Requires [CoroutineEventManager] to be used!
  *
@@ -104,7 +107,7 @@ inline fun <reified T : GenericEvent> ShardManager.listener(timeout: Duration? =
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun JDA.onCommand(name: String, timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(SlashCommandEvent) -> Unit) = listener<SlashCommandEvent>(timeout=timeout) {
+fun JDA.onCommand(name: String, timeout: Duration? = null, consumer: suspend CoroutineEventListener.(SlashCommandEvent) -> Unit) = listener<SlashCommandEvent>(timeout=timeout) {
     if (it.name == name)
         consumer(it)
 }
@@ -128,7 +131,7 @@ inline fun JDA.onCommand(name: String, timeout: Duration? = null, crossinline co
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun ShardManager.onCommand(name: String, timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(SlashCommandEvent) -> Unit) = listener<SlashCommandEvent>(timeout=timeout) {
+fun ShardManager.onCommand(name: String, timeout: Duration? = null, consumer: suspend CoroutineEventListener.(SlashCommandEvent) -> Unit) = listener<SlashCommandEvent>(timeout=timeout) {
     if (it.name == name)
         consumer(it)
 }
