@@ -17,14 +17,14 @@
 package dev.minn.jda.ktx.messages
 
 import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.interactions.components.ActionComponent
 import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.Component
-import net.dv8tion.jda.api.interactions.components.ComponentLayout
+import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.utils.AttachmentOption
 import java.io.File
 import java.io.InputStream
 
-typealias Components = Collection<ComponentLayout>
+typealias Components = Collection<LayoutComponent>
 typealias Embeds = Collection<MessageEmbed>
 typealias Files = Collection<NamedFile>
 
@@ -82,21 +82,31 @@ data class NamedFile(
  * @return[List] of [ActionRow]
  */
 @JvmName("intoComponents")
-fun <T : Component> Collection<T>.into() = listOf(ActionRow.of(this))
+fun <T : ActionComponent> Collection<T>.into() = listOf(this.row())
 
 /**
  * Wraps the component into a collection of a single [ActionRow].
  *
  * @return[List] of [ActionRow]
  */
-fun Component.into() = listOf(this).into()
+fun ActionComponent.into() = row(this).into()
 
 /**
  * Wraps the component layout into a collection of layouts.
  *
- * @return[List] of [ComponentLayout]
+ * @return[List] of [LayoutComponent]
  */
-fun ComponentLayout.into() = listOf(this)
+fun LayoutComponent.into() = listOf(this)
+
+/**
+ * Construct an [ActionRow] from the provided components
+ */
+fun row(vararg components: ActionComponent) = ActionRow.of(*components)
+
+/**
+ * Construct an [ActionRow] from the provided components
+ */
+fun Collection<ActionComponent>.row() = ActionRow.of(this)
 
 // Lots of conversion methods you can use to convert your collections to named files
 //

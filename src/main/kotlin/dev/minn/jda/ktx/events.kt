@@ -19,10 +19,10 @@ package dev.minn.jda.ktx
 import kotlinx.coroutines.suspendCancellableCoroutine
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.events.GenericEvent
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
-import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent
-import net.dv8tion.jda.api.events.interaction.SelectionMenuEvent
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.hooks.SubscribeEvent
 import net.dv8tion.jda.api.sharding.ShardManager
@@ -107,7 +107,7 @@ inline fun <reified T : GenericEvent> ShardManager.listener(timeout: Duration? =
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-fun JDA.onCommand(name: String, timeout: Duration? = null, consumer: suspend CoroutineEventListener.(SlashCommandEvent) -> Unit) = listener<SlashCommandEvent>(timeout=timeout) {
+fun JDA.onCommand(name: String, timeout: Duration? = null, consumer: suspend CoroutineEventListener.(GenericCommandInteractionEvent) -> Unit) = listener<GenericCommandInteractionEvent>(timeout=timeout) {
     if (it.name == name)
         consumer(it)
 }
@@ -131,7 +131,7 @@ fun JDA.onCommand(name: String, timeout: Duration? = null, consumer: suspend Cor
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-fun ShardManager.onCommand(name: String, timeout: Duration? = null, consumer: suspend CoroutineEventListener.(SlashCommandEvent) -> Unit) = listener<SlashCommandEvent>(timeout=timeout) {
+fun ShardManager.onCommand(name: String, timeout: Duration? = null, consumer: suspend CoroutineEventListener.(GenericCommandInteractionEvent) -> Unit) = listener<GenericCommandInteractionEvent>(timeout=timeout) {
     if (it.name == name)
         consumer(it)
 }
@@ -206,7 +206,7 @@ inline fun <reified T : GenericComponentInteractionCreateEvent> ShardManager.onC
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun JDA.onButton(id: String, timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(ButtonClickEvent) -> Unit) = onComponent(id, timeout, consumer)
+inline fun JDA.onButton(id: String, timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(ButtonInteractionEvent) -> Unit) = onComponent(id, timeout, consumer)
 
 /**
  * Requires [CoroutineEventManager] to be used!
@@ -228,7 +228,7 @@ inline fun JDA.onButton(id: String, timeout: Duration? = null, crossinline consu
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun ShardManager.onButton(id: String, timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(ButtonClickEvent) -> Unit) = onComponent(id, timeout, consumer)
+inline fun ShardManager.onButton(id: String, timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(ButtonInteractionEvent) -> Unit) = onComponent(id, timeout, consumer)
 
 /**
  * Requires [CoroutineEventManager] to be used!
@@ -250,7 +250,7 @@ inline fun ShardManager.onButton(id: String, timeout: Duration? = null, crossinl
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun JDA.onSelection(id: String, timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(SelectionMenuEvent) -> Unit) = onComponent(id, timeout, consumer)
+inline fun JDA.onSelection(id: String, timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(SelectMenuInteractionEvent) -> Unit) = onComponent(id, timeout, consumer)
 
 /**
  * Requires [CoroutineEventManager] to be used!
@@ -272,7 +272,7 @@ inline fun JDA.onSelection(id: String, timeout: Duration? = null, crossinline co
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun ShardManager.onSelection(id: String, timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(SelectionMenuEvent) -> Unit) = onComponent(id, timeout, consumer)
+inline fun ShardManager.onSelection(id: String, timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(SelectMenuInteractionEvent) -> Unit) = onComponent(id, timeout, consumer)
 
 /**
  * Requires an EventManager implementation that supports either [EventListener] or [SubscribeEvent].

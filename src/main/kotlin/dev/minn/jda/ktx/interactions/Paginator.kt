@@ -23,15 +23,15 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.GenericEvent
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.hooks.SubscribeEvent
-import net.dv8tion.jda.api.interactions.Interaction
 import net.dv8tion.jda.api.interactions.InteractionHook
+import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.Button
-import net.dv8tion.jda.api.interactions.components.ButtonInteraction
+import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction
 import net.dv8tion.jda.api.requests.ErrorResponse
 import java.security.SecureRandom
 import java.util.*
@@ -91,7 +91,7 @@ class Paginator internal constructor(private val nonce: String, private val ttl:
     override fun onEvent(event: GenericEvent) {
         if (expiresAt < System.currentTimeMillis())
             return unregister(event.jda)
-        if (event !is ButtonClickEvent) return
+        if (event !is ButtonInteractionEvent) return
         val buttonId = event.componentId
         if (!buttonId.startsWith(nonce) || !filter(event)) return
         expiresAt = System.currentTimeMillis() + ttl.inWholeMilliseconds
@@ -140,7 +140,7 @@ fun MessageChannel.sendPaginator(paginator: Paginator)
 fun InteractionHook.sendPaginator(paginator: Paginator)
     = sendMessage(paginator.also { jda.addEventListener(it) }.pages[0]).addActionRows(paginator.controls)
 
-fun Interaction.replyPaginator(paginator: Paginator)
+fun IReplyCallback.replyPaginator(paginator: Paginator)
     = reply(paginator.also { user.jda.addEventListener(it) }.pages[0]).addActionRows(paginator.controls)
 
 fun MessageChannel.sendPaginator(
@@ -165,12 +165,12 @@ fun InteractionHook.sendPaginator(
     filter: (ButtonInteraction) -> Boolean = {true}
 ) = sendPaginator(paginator(*pages, expireAfter=expireAfter).filterBy(filter))
 
-fun Interaction.replyPaginator(
+fun IReplyCallback.replyPaginator(
     vararg pages: Message,
     expireAfter: Duration,
     filter: (ButtonInteraction) -> Boolean = {true}
 ) = replyPaginator(paginator(*pages, expireAfter=expireAfter).filterBy(filter))
-fun Interaction.replyPaginator(
+fun IReplyCallback.replyPaginator(
     vararg pages: MessageEmbed,
     expireAfter: Duration,
     filter: (ButtonInteraction) -> Boolean = {true}

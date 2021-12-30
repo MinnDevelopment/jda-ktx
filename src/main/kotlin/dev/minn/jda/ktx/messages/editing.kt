@@ -19,18 +19,18 @@ package dev.minn.jda.ktx.messages
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.MessageEmbed
-import net.dv8tion.jda.api.interactions.Interaction
 import net.dv8tion.jda.api.interactions.InteractionHook
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.requests.restaction.MessageAction
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction
-import net.dv8tion.jda.api.requests.restaction.interactions.UpdateInteractionAction
+import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
 import net.dv8tion.jda.internal.JDAImpl
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl
 import net.dv8tion.jda.internal.requests.Route
 import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageUpdateActionImpl
-import net.dv8tion.jda.internal.requests.restaction.interactions.UpdateInteractionActionImpl
+import net.dv8tion.jda.internal.requests.restaction.interactions.MessageEditCallbackActionImpl
 
 /**
  * Defaults used for edit message extensions provided by this module.
@@ -50,7 +50,7 @@ object MessageEditDefaults {
  *
  * @param[files] The files to add
  */
-fun UpdateInteractionAction.addFiles(files: Files) {
+fun MessageEditCallbackAction.addFiles(files: Files) {
     files.forEach {
         addFile(it.data, it.name, *it.options)
     }
@@ -101,9 +101,9 @@ private fun <T> allOf(first: T?, other: Collection<T>?): List<T>? {
  * @param[files] Multiple files
  * @param[replace] Whether this should replace the entire message
  *
- * @return[UpdateInteractionAction]
+ * @return[MessageEditCallbackAction]
  */
-fun Interaction.editMessage_(
+fun IMessageEditCallback.editMessage_(
     content: String? = null,
     embed: MessageEmbed? = null,
     embeds: Embeds? = null,
@@ -111,7 +111,9 @@ fun Interaction.editMessage_(
     file: NamedFile? = null,
     files: Files? = null,
     replace: Boolean = MessageEditDefaults.replace
-): UpdateInteractionAction = UpdateInteractionActionImpl(hook as InteractionHookImpl).apply {
+): MessageEditCallbackAction = MessageEditCallbackActionImpl(
+    hook as InteractionHookImpl
+).apply {
     content.applyIf(replace) {
         setContent(it)
     }

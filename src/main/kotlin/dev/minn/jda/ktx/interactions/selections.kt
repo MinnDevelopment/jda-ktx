@@ -17,8 +17,8 @@
 package dev.minn.jda.ktx.interactions
 
 import net.dv8tion.jda.api.entities.Emoji
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
-import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu
 
 fun SelectOption(label: String, value: String, description: String? = null, emoji: Emoji? = null, default: Boolean = false)
     = SelectOption.of(label, value)
@@ -26,7 +26,7 @@ fun SelectOption(label: String, value: String, description: String? = null, emoj
         .withEmoji(emoji)
         .withDefault(default)
 
-fun SelectionMenu.Builder.option(label: String, value: String, description: String? = null, emoji: Emoji? = null, default: Boolean = false)
+fun SelectMenu.Builder.option(label: String, value: String, description: String? = null, emoji: Emoji? = null, default: Boolean = false)
     = addOptions(SelectOption(label, value, description, emoji, default))
 
 inline fun SelectionMenu(
@@ -35,9 +35,9 @@ inline fun SelectionMenu(
     valueRange: IntRange = 1..1,
     disabled: Boolean = false,
     options: Collection<SelectOption> = emptyList(),
-    builder: SelectionMenu.Builder.() -> Unit = {}
-): SelectionMenu {
-    return SelectionMenu.create(customId).let {
+    builder: SelectMenu.Builder.() -> Unit = {}
+): SelectMenu {
+    return SelectMenu.create(customId).let {
         it.placeholder = placeholder
         it.setRequiredRange(valueRange.first, valueRange.last)
         it.isDisabled = disabled
