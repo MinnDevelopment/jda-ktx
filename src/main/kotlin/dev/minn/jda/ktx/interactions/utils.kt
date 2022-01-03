@@ -18,6 +18,7 @@ package dev.minn.jda.ktx.interactions
 
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.interactions.commands.OptionType
+import net.dv8tion.jda.api.interactions.components.LayoutComponent
 
 inline fun <reified T> optionType() = when(T::class.java) {
     java.lang.Float::class.java, java.lang.Double::class.java -> OptionType.NUMBER
@@ -32,3 +33,20 @@ inline fun <reified T> optionType() = when(T::class.java) {
         else -> OptionType.UNKNOWN
     }
 }
+
+/**
+ * Returns new collection instance of this layout with all the components in set to disabled/enabled
+ */
+fun <T : LayoutComponent> Collection<T>.withDisabled(disabled: Boolean) = map {
+    it.withDisabled(disabled)
+}
+
+/**
+ * Returns new collection instance of this layout with all the components in set to disabled
+ */
+fun <T : LayoutComponent> Collection<T>.asDisabled() = withDisabled(true)
+
+/**
+ * Returns new collection instance of this layout with all the components in set to enabled
+ */
+fun <T : LayoutComponent> Collection<T>.asEnabled() = withDisabled(false)

@@ -29,7 +29,7 @@ repositories {
 
 dependencies {
     //compileOnly("net.dv8tion:JDA:5.0.0-alpha.2")
-    compileOnly("com.github.dv8fromtheworld:jda:78e4022e")
+    compileOnly("com.github.dv8fromtheworld:jda:f50379f")
     api(kotlin("stdlib-jdk8"))
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
 }
