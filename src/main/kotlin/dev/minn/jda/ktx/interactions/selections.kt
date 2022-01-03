@@ -29,20 +29,18 @@ fun SelectOption(label: String, value: String, description: String? = null, emoj
 fun SelectMenu.Builder.option(label: String, value: String, description: String? = null, emoji: Emoji? = null, default: Boolean = false)
     = addOptions(SelectOption(label, value, description, emoji, default))
 
-inline fun SelectionMenu(
+inline fun SelectMenu(
     customId: String,
     placeholder: String? = null,
     valueRange: IntRange = 1..1,
     disabled: Boolean = false,
     options: Collection<SelectOption> = emptyList(),
     builder: SelectMenu.Builder.() -> Unit = {}
-): SelectMenu {
-    return SelectMenu.create(customId).let {
-        it.placeholder = placeholder
-        it.setRequiredRange(valueRange.first, valueRange.last)
-        it.isDisabled = disabled
-        it.options.addAll(options)
-        it.apply(builder)
-        it.build()
-    }
+) = SelectMenu.create(customId).let {
+    it.placeholder = placeholder
+    it.setRequiredRange(valueRange.first, valueRange.last)
+    it.isDisabled = disabled
+    it.options.addAll(options)
+    it.apply(builder)
+    it.build()
 }
