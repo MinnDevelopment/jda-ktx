@@ -161,7 +161,7 @@ val embed = Embed {
 }
 ```
 
-### Command and SelectionMenu Builders
+### Command and SelectMenu Builders
 
 ```kotlin
 jda.updateCommands {
