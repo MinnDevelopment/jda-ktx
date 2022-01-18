@@ -73,7 +73,7 @@ inline fun MessageBuilder(
 ): InlineMessage {
     return MessageBuilder().run {
         setContent(content)
-        setEmbeds(embed)
+        embed?.let { setEmbeds(embed) }
         setNonce(nonce)
         setTTS(tts)
         allowedMentionTypes?.let { setAllowedMentions(allowedMentionTypes) }
