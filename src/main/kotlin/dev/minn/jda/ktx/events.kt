@@ -18,15 +18,19 @@ package dev.minn.jda.ktx
 
 import kotlinx.coroutines.suspendCancellableCoroutine
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
+import net.dv8tion.jda.api.events.interaction.command.GenericContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.hooks.SubscribeEvent
 import net.dv8tion.jda.api.interactions.commands.context.ContextInteraction
+import net.dv8tion.jda.api.interactions.commands.context.UserContextInteraction
 import net.dv8tion.jda.api.sharding.ShardManager
 import kotlin.coroutines.resume
 import kotlin.time.Duration
@@ -164,10 +168,10 @@ fun ShardManager.onCommand(name: String, timeout: Duration? = null, consumer: su
 inline fun <reified T> JDA.onContext(
     name: String,
     timeout: Duration? = null,
-    crossinline consumer: suspend CoroutineEventListener.(ContextInteraction<T>) -> Unit
+    crossinline consumer: suspend CoroutineEventListener.(GenericContextInteractionEvent<T>) -> Unit
 ) = (this.eventManager as CoroutineEventManager).listener<GenericCommandInteractionEvent>(timeout=timeout) {
-    if (it.name == name && it is ContextInteraction<*> && it.target is T)
-        consumer(it as ContextInteraction<T>)
+    if (it.name == name && it is GenericContextInteractionEvent<*> && it.target is T)
+        consumer(it as GenericContextInteractionEvent<T>)
 }
 
 /**
@@ -194,10 +198,10 @@ inline fun <reified T> JDA.onContext(
 inline fun <reified T> ShardManager.onContext(
     name: String,
     timeout: Duration? = null,
-    crossinline consumer: suspend CoroutineEventListener.(ContextInteraction<T>) -> Unit
+    crossinline consumer: suspend CoroutineEventListener.(GenericContextInteractionEvent<T>) -> Unit
 ) = listener<GenericCommandInteractionEvent>(timeout=timeout) {
-    if (it.name == name && it is ContextInteraction<*> && it.target is T)
-        consumer(it as ContextInteraction<T>)
+    if (it.name == name && it is GenericContextInteractionEvent<*> && it.target is T)
+        consumer(it as GenericContextInteractionEvent<T>)
 }
 
 
@@ -475,3 +479,13 @@ suspend inline fun <reified T : GenericEvent> ShardManager.await(crossinline fil
     addEventListener(listener)
     it.invokeOnCancellation { removeEventListener(listener) }
 }
+
+/**
+ * If this context menu command was used in a [Guild][net.dv8tion.jda.api.entities.Guild],
+ * this returns the member instance for the target user.
+ *
+ * @return The target member instance, or null if this was not in a guild.
+ *
+ * @see UserContextInteraction.getTargetMember
+ */
+val ContextInteraction<User>.targetMember: Member? get() = (this as UserContextInteraction).targetMember

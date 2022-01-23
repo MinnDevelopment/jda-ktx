@@ -110,12 +110,7 @@ class Paginator internal constructor(private val nonce: String, private val ttl:
             "delete" -> {
                 unregister(event.jda)
                 event.deferEdit().queue()
-                if (event.message == null)
-                    event.hook.editOriginal(pageCache[index])
-                        .setActionRows(emptyList())
-                        .queue()
-                else
-                    event.hook.deleteOriginal().queue(null, ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE))
+                event.hook.deleteOriginal().queue(null, ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE))
             }
         }
     }

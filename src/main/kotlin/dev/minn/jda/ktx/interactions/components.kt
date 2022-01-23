@@ -16,8 +16,8 @@
 
 package dev.minn.jda.ktx.interactions
 
-import net.dv8tion.jda.api.interactions.components.ActionComponent
 import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.ItemComponent
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 
 /**
@@ -57,9 +57,9 @@ fun <T : LayoutComponent> Sequence<T>.asEnabled() = withDisabled(false)
 /**
  * Construct an [ActionRow] from the provided components
  */
-fun row(vararg components: ActionComponent) = ActionRow.of(*components)
+fun row(vararg components: ItemComponent) = ActionRow.of(*components)
 
 /**
  * Construct an [ActionRow] from the provided components
  */
-fun Collection<ActionComponent>.row() = ActionRow.of(this)
+fun Collection<ItemComponent>.row() = ActionRow.of(this)

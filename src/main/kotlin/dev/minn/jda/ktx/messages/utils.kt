@@ -18,8 +18,8 @@ package dev.minn.jda.ktx.messages
 
 import dev.minn.jda.ktx.interactions.row
 import net.dv8tion.jda.api.entities.MessageEmbed
-import net.dv8tion.jda.api.interactions.components.ActionComponent
 import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.ItemComponent
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.utils.AttachmentOption
 import java.io.File
@@ -83,14 +83,14 @@ data class NamedFile(
  * @return[List] of [ActionRow]
  */
 @JvmName("intoComponents")
-fun <T : ActionComponent> Collection<T>.into() = listOf(this.row())
+fun <T : ItemComponent> Collection<T>.into() = listOf(this.row())
 
 /**
  * Wraps the component into a collection of a single [ActionRow].
  *
  * @return[List] of [ActionRow]
  */
-fun ActionComponent.into() = row(this).into()
+fun ItemComponent.into() = row(this).into()
 
 /**
  * Wraps the component layout into a collection of layouts.
