@@ -52,7 +52,7 @@ object PaginatorDefaults {
 }
 
 class Paginator internal constructor(private val nonce: String, private val ttl: Duration): EventListener {
-    private var expiresAt: Long = System.currentTimeMillis() + ttl.inWholeMilliseconds
+    private var expiresAt: Long = Math.addExact(System.currentTimeMillis(), ttl.inWholeMilliseconds)
 
     private var index = 0
     private val pageCache = mutableListOf<Message>()
@@ -94,7 +94,7 @@ class Paginator internal constructor(private val nonce: String, private val ttl:
         if (event !is ButtonInteractionEvent) return
         val buttonId = event.componentId
         if (!buttonId.startsWith(nonce) || !filter(event)) return
-        expiresAt = System.currentTimeMillis() + ttl.inWholeMilliseconds
+        expiresAt = Math.addExact(System.currentTimeMillis(), ttl.inWholeMilliseconds)
         val (_, operation) = buttonId.split(":")
         when (operation) {
             "prev" -> {
