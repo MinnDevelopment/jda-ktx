@@ -10,7 +10,7 @@
 
 [![Kotlin](https://img.shields.io/badge/kotlin-1.6.10-blue.svg?logo=kotlin)](http://kotlinlang.org)
 [![kotlinx-coroutines](https://img.shields.io/badge/kotlinx.coroutines-1.6.0-blue.svg?logo=kotlin)][2]
-[![JDA](https://img.shields.io/badge/JDA-5.0.0--alpha.2-blue.svg)][1]
+[![JDA](https://img.shields.io/badge/JDA-5.0.0--alpha.5-blue.svg)][1]
 
 # jda-ktx
 
@@ -21,7 +21,7 @@ Great in combination with [kotlinx-coroutines][2] and [jda-reactor][3].
 
 - Kotlin **1.6.10**
 - kotlinx.coroutines **1.6.0**
-- JDA **5.0.0-alpha.2**
+- JDA **5.0.0-alpha.5**
 
 ## Examples
 

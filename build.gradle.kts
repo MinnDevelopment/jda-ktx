@@ -30,7 +30,7 @@ repositories {
 dependencies {
     compileOnly("net.dv8tion:JDA:5.0.0-alpha.5")
     compileOnly("ch.qos.logback:logback-classic:1.2.10")
-//    compileOnly("club.minnced:discord-webhooks:0.7.5")
+    compileOnly("club.minnced:discord-webhooks:0.7.5")
     api(kotlin("stdlib-jdk8"))
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
 }
