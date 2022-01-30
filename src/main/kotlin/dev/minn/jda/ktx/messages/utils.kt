@@ -195,3 +195,12 @@ operator fun String.invoke(file: File, vararg options: AttachmentOption) = file.
  * @see[File.named]
  */
 fun File.into() = listOf(this).into()
+
+fun <T> allOf(first: T?, other: Collection<T>?): List<T>? {
+    if (first == null && other == null)
+        return null
+    val list = mutableListOf<T>()
+    first?.let { list.add(it) }
+    other?.let { list.addAll(it) }
+    return list
+}

@@ -77,15 +77,6 @@ private inline fun <T> T.applyIf(check: Boolean, func: (T) -> Unit) {
     }
 }
 
-private fun <T> allOf(first: T?, other: Collection<T>?): List<T>? {
-    if (first == null && other == null)
-        return null
-    val list = mutableListOf<T>()
-    first?.let { list.add(it) }
-    other?.let { list.addAll(it) }
-    return list
-}
-
 /**
  * Edit the original message from this interaction.
  *
