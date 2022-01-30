@@ -20,11 +20,11 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.hooks.SubscribeEvent
-import net.dv8tion.jda.api.interactions.components.Button
+import net.dv8tion.jda.api.interactions.components.buttons.Button
 
 /**
  * Requires an EventManager implementation that supports either [EventListener] or [SubscribeEvent].
@@ -86,9 +86,9 @@ suspend inline fun MessageChannel.awaitMessage(
  * @param[user] A specific user to filter for (optional)
  * @param[filter] A filter function to simplify code flow (optional)
  *
- * @return[ButtonClickEvent]
+ * @return[ButtonInteractionEvent]
  */
-suspend inline fun MessageChannel.awaitButton(id: String, user: User? = null, crossinline filter: (ButtonClickEvent) -> Boolean = { true }) = jda.await<ButtonClickEvent> {
+suspend inline fun MessageChannel.awaitButton(id: String, user: User? = null, crossinline filter: (ButtonInteractionEvent) -> Boolean = { true }) = jda.await<ButtonInteractionEvent> {
     it.channel == this
         && it.componentId == id
         && (user == null || it.user == user)
@@ -120,9 +120,9 @@ suspend inline fun MessageChannel.awaitButton(id: String, user: User? = null, cr
  * @param[user] A specific user to filter for (optional)
  * @param[filter] A filter function to simplify code flow (optional)
  *
- * @return[ButtonClickEvent]
+ * @return[ButtonInteractionEvent]
  */
-suspend inline fun MessageChannel.awaitButton(button: Button, user: User? = null, crossinline filter: (ButtonClickEvent) -> Boolean = { true }) = awaitButton(checkNotNull(button.id), user, filter)
+suspend inline fun MessageChannel.awaitButton(button: Button, user: User? = null, crossinline filter: (ButtonInteractionEvent) -> Boolean = { true }) = awaitButton(checkNotNull(button.id), user, filter)
 
 /**
  * Requires an EventManager implementation that supports either [EventListener] or [SubscribeEvent].
@@ -147,9 +147,9 @@ suspend inline fun MessageChannel.awaitButton(button: Button, user: User? = null
  * @param[id] The button id
  * @param[filter] A filter function to simplify code flow (optional)
  *
- * @return[ButtonClickEvent]
+ * @return[ButtonInteractionEvent]
  */
-suspend inline fun User.awaitButton(id: String, crossinline filter: (ButtonClickEvent) -> Boolean = { true }) = jda.await<ButtonClickEvent> {
+suspend inline fun User.awaitButton(id: String, crossinline filter: (ButtonInteractionEvent) -> Boolean = { true }) = jda.await<ButtonInteractionEvent> {
     it.user == this
         && it.componentId == id
         && filter(it)
@@ -179,9 +179,9 @@ suspend inline fun User.awaitButton(id: String, crossinline filter: (ButtonClick
  * @param[button] The button (must not be link button)
  * @param[filter] A filter function to simplify code flow (optional)
  *
- * @return[ButtonClickEvent]
+ * @return[ButtonInteractionEvent]
  */
-suspend inline fun User.awaitButton(button: Button, crossinline filter: (ButtonClickEvent) -> Boolean = { true }) = awaitButton(checkNotNull(button.id), filter)
+suspend inline fun User.awaitButton(button: Button, crossinline filter: (ButtonInteractionEvent) -> Boolean = { true }) = awaitButton(checkNotNull(button.id), filter)
 
 /**
  * Requires an EventManager implementation that supports either [EventListener] or [SubscribeEvent].
@@ -206,9 +206,9 @@ suspend inline fun User.awaitButton(button: Button, crossinline filter: (ButtonC
  * @param[id] The button id
  * @param[filter] A filter function to simplify code flow (optional)
  *
- * @return[ButtonClickEvent]
+ * @return[ButtonInteractionEvent]
  */
-suspend inline fun Member.awaitButton(id: String, crossinline filter: (ButtonClickEvent) -> Boolean = { true }) = jda.await<ButtonClickEvent> {
+suspend inline fun Member.awaitButton(id: String, crossinline filter: (ButtonInteractionEvent) -> Boolean = { true }) = jda.await<ButtonInteractionEvent> {
     it.member == this
         && it.componentId == id
         && filter(it)
@@ -238,6 +238,6 @@ suspend inline fun Member.awaitButton(id: String, crossinline filter: (ButtonCli
  * @param[button] The button (must not be link button)
  * @param[filter] A filter function to simplify code flow (optional)
  *
- * @return[ButtonClickEvent]
+ * @return[ButtonInteractionEvent]
  */
-suspend inline fun Member.awaitButton(button: Button, crossinline filter: (ButtonClickEvent) -> Boolean = { true }) = awaitButton(checkNotNull(button.id), filter)
+suspend inline fun Member.awaitButton(button: Button, crossinline filter: (ButtonInteractionEvent) -> Boolean = { true }) = awaitButton(checkNotNull(button.id), filter)

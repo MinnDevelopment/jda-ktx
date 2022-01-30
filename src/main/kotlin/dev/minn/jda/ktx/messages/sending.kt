@@ -19,18 +19,16 @@ package dev.minn.jda.ktx.messages
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.MessageEmbed
-import net.dv8tion.jda.api.interactions.Interaction
 import net.dv8tion.jda.api.interactions.InteractionHook
+import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.requests.restaction.MessageAction
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
 import net.dv8tion.jda.internal.JDAImpl
-import net.dv8tion.jda.internal.interactions.InteractionHookImpl
 import net.dv8tion.jda.internal.requests.Route
 import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageActionImpl
-import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyActionImpl
 
 // Defaults for keyword arguments
 /**
@@ -59,7 +57,7 @@ object SendDefaults {
      * The default ephemeral state for interactions
      */
     var ephemeral: Boolean = false
-    // Not supporting files since input streams are single use and I don't think its worth it
+    // Not supporting files since input streams are single use, and I don't think its worth it
 }
 
 // And you can also just add these to the individual actions easily
@@ -80,7 +78,7 @@ fun MessageAction.addFiles(files: Files) = apply {
  *
  * @param[files] The files to add
  */
-fun ReplyAction.addFiles(files: Files) = apply {
+fun ReplyCallbackAction.addFiles(files: Files) = apply {
     files.forEach {
         addFile(it.data, it.name, *it.options)
     }
@@ -113,9 +111,9 @@ fun <T> WebhookMessageAction<T>.addFiles(files: Files) = apply {
  * @param[files] Multiple files
  * @param[ephemeral] Whether this message is ephemeral
  *
- * @see  [Interaction.deferReply]
+ * @see  [IReplyCallback.deferReply]
  */
-fun Interaction.reply_(
+fun IReplyCallback.reply_(
     content: String? = SendDefaults.content,
     embed: MessageEmbed? = null,
     embeds: Embeds = SendDefaults.embeds,
@@ -123,7 +121,7 @@ fun Interaction.reply_(
     file: NamedFile? = null,
     files: Files = emptyList(),
     ephemeral: Boolean = SendDefaults.ephemeral,
-): ReplyAction = ReplyActionImpl(hook as InteractionHookImpl).apply {
+): ReplyCallbackAction = deferReply().apply {
     setContent(content)
     setEphemeral(ephemeral)
 
@@ -158,7 +156,7 @@ fun Interaction.reply_(
  *
  * @return[WebhookMessageAction]
  *
- * @see  [Interaction.deferReply]
+ * @see  [IReplyCallback.deferReply]
  */
 @Suppress("MoveLambdaOutsideParentheses")
 fun InteractionHook.send(
