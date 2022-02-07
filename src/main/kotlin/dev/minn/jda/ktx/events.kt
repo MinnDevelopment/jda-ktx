@@ -18,13 +18,19 @@ package dev.minn.jda.ktx
 
 import kotlinx.coroutines.suspendCancellableCoroutine
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.GenericEvent
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
-import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent
-import net.dv8tion.jda.api.events.interaction.SelectionMenuEvent
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
+import net.dv8tion.jda.api.events.interaction.command.GenericContextInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.hooks.SubscribeEvent
+import net.dv8tion.jda.api.interactions.commands.context.ContextInteraction
+import net.dv8tion.jda.api.interactions.commands.context.UserContextInteraction
 import net.dv8tion.jda.api.sharding.ShardManager
 import kotlin.coroutines.resume
 import kotlin.time.Duration
@@ -85,10 +91,13 @@ inline fun <reified T : GenericEvent> ShardManager.listener(timeout: Duration? =
     }.also { addEventListener(it) }
 }
 
+// TODO: Make these inline again after the compiler error is fixed
+// https://youtrack.jetbrains.com/issue/KT-46879
+
 /**
  * Requires [CoroutineEventManager] to be used!
  *
- * Opens an event listener scope for simple hooking. This is a special listener which is used to listen for slash commands!
+ * Opens an event listener scope for simple hooking. This is a special listener which is used to listen for commands!
  *
  * ## Example
  *
@@ -104,7 +113,7 @@ inline fun <reified T : GenericEvent> ShardManager.listener(timeout: Duration? =
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun JDA.onCommand(name: String, timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(SlashCommandEvent) -> Unit) = listener<SlashCommandEvent>(timeout=timeout) {
+fun JDA.onCommand(name: String, timeout: Duration? = null, consumer: suspend CoroutineEventListener.(GenericCommandInteractionEvent) -> Unit) = listener<GenericCommandInteractionEvent>(timeout=timeout) {
     if (it.name == name)
         consumer(it)
 }
@@ -112,7 +121,7 @@ inline fun JDA.onCommand(name: String, timeout: Duration? = null, crossinline co
 /**
  * Requires [CoroutineEventManager] to be used!
  *
- * Opens an event listener scope for simple hooking. This is a special listener which is used to listen for slash commands!
+ * Opens an event listener scope for simple hooking. This is a special listener which is used to listen for commands!
  *
  * ## Example
  *
@@ -128,10 +137,126 @@ inline fun JDA.onCommand(name: String, timeout: Duration? = null, crossinline co
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun ShardManager.onCommand(name: String, timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(SlashCommandEvent) -> Unit) = listener<SlashCommandEvent>(timeout=timeout) {
+fun ShardManager.onCommand(name: String, timeout: Duration? = null, consumer: suspend CoroutineEventListener.(GenericCommandInteractionEvent) -> Unit) = listener<GenericCommandInteractionEvent>(timeout=timeout) {
     if (it.name == name)
         consumer(it)
 }
+
+
+
+/**
+ * Requires [CoroutineEventManager] to be used!
+ *
+ * Opens an event listener scope for simple hooking. This is a special listener which is used to listen for context menu commands!
+ *
+ * ## Example
+ *
+ * ```kotlin
+ * jda.onContext<Message>("Pin Message") { event ->
+ *     event.target.pin().await()
+ *     event.reply("${event.user.asMention} pinned a message in this channel!").queue()
+ * }
+ * ```
+ *
+ * @param[name] The command name
+ * @param[timeout] The timeout [Duration] to use for this listener, or null to use the default from the event manager
+ * @param[consumer] The event consumer function
+ *
+ * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
+ */
+@Suppress("UNCHECKED_CAST")
+inline fun <reified T> JDA.onContext(
+    name: String,
+    timeout: Duration? = null,
+    crossinline consumer: suspend CoroutineEventListener.(GenericContextInteractionEvent<T>) -> Unit
+) = (this.eventManager as CoroutineEventManager).listener<GenericCommandInteractionEvent>(timeout=timeout) {
+    if (it.name == name && it is GenericContextInteractionEvent<*> && it.target is T)
+        consumer(it as GenericContextInteractionEvent<T>)
+}
+
+/**
+ * Requires [CoroutineEventManager] to be used!
+ *
+ * Opens an event listener scope for simple hooking. This is a special listener which is used to listen for context menu commands!
+ *
+ * ## Example
+ *
+ * ```kotlin
+ * shardManager.onContext<Message>("Pin Message") { event ->
+ *     event.target.pin().await()
+ *     event.reply("${event.user.asMention} pinned a message in this channel!").queue()
+ * }
+ * ```
+ *
+ * @param[name] The command name
+ * @param[timeout] The timeout [Duration] to use for this listener, or null to use the default from the event manager
+ * @param[consumer] The event consumer function
+ *
+ * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
+ */
+@Suppress("UNCHECKED_CAST")
+inline fun <reified T> ShardManager.onContext(
+    name: String,
+    timeout: Duration? = null,
+    crossinline consumer: suspend CoroutineEventListener.(GenericContextInteractionEvent<T>) -> Unit
+) = listener<GenericCommandInteractionEvent>(timeout=timeout) {
+    if (it.name == name && it is GenericContextInteractionEvent<*> && it.target is T)
+        consumer(it as GenericContextInteractionEvent<T>)
+}
+
+
+
+/**
+ * Requires [CoroutineEventManager] to be used!
+ *
+ * Opens an event listener scope for simple hooking. This is a special listener which is used to listen for command autocomplete interactions!
+ *
+ * ## Example
+ *
+ * ```kotlin
+ * jda.onCommandAutocomplete("play", "track") { event ->
+ *     event.replyChoiceStrings(youtube.search(event.focusedOption.value)).queue()
+ * }
+ * ```
+ *
+ * @param[name] The command name
+ * @param[option] The option name (or null to run for all options)
+ * @param[timeout] The timeout [Duration] to use for this listener, or null to use the default from the event manager
+ * @param[consumer] The event consumer function
+ *
+ * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
+ */
+fun JDA.onCommandAutocomplete(name: String, option: String? = null, timeout: Duration? = null, consumer: suspend CoroutineEventListener.(CommandAutoCompleteInteractionEvent) -> Unit) = listener<CommandAutoCompleteInteractionEvent>(timeout=timeout) {
+    if (it.name == name && (option == null || it.focusedOption.name == option))
+        consumer(it)
+}
+
+/**
+ * Requires [CoroutineEventManager] to be used!
+ *
+ * Opens an event listener scope for simple hooking. This is a special listener which is used to listen for command autocomplete interactions!
+ *
+ * ## Example
+ *
+ * ```kotlin
+ * shardManager.onCommandAutocomplete("play", "track") { event ->
+ *     event.replyChoiceStrings(youtube.search(event.focusedOption.value)).queue()
+ * }
+ * ```
+ *
+ * @param[name] The command name
+ * @param[option] The option name (or null to run for all options)
+ * @param[timeout] The timeout [Duration] to use for this listener, or null to use the default from the event manager
+ * @param[consumer] The event consumer function
+ *
+ * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
+ */
+fun ShardManager.onCommandAutocomplete(name: String, option: String? = null, timeout: Duration? = null, consumer: suspend CoroutineEventListener.(CommandAutoCompleteInteractionEvent) -> Unit) = listener<CommandAutoCompleteInteractionEvent>(timeout=timeout) {
+    if (it.name == name && (option == null || it.focusedOption.name == option))
+        consumer(it)
+}
+
+
 
 /**
  * Requires [CoroutineEventManager] to be used!
@@ -183,6 +308,8 @@ inline fun <reified T : GenericComponentInteractionCreateEvent> ShardManager.onC
         consumer(it)
 }
 
+
+
 /**
  * Requires [CoroutineEventManager] to be used!
  *
@@ -203,7 +330,7 @@ inline fun <reified T : GenericComponentInteractionCreateEvent> ShardManager.onC
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun JDA.onButton(id: String, timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(ButtonClickEvent) -> Unit) = onComponent(id, timeout, consumer)
+inline fun JDA.onButton(id: String, timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(ButtonInteractionEvent) -> Unit) = onComponent(id, timeout, consumer)
 
 /**
  * Requires [CoroutineEventManager] to be used!
@@ -225,7 +352,9 @@ inline fun JDA.onButton(id: String, timeout: Duration? = null, crossinline consu
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun ShardManager.onButton(id: String, timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(ButtonClickEvent) -> Unit) = onComponent(id, timeout, consumer)
+inline fun ShardManager.onButton(id: String, timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(ButtonInteractionEvent) -> Unit) = onComponent(id, timeout, consumer)
+
+
 
 /**
  * Requires [CoroutineEventManager] to be used!
@@ -247,7 +376,7 @@ inline fun ShardManager.onButton(id: String, timeout: Duration? = null, crossinl
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun JDA.onSelection(id: String, timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(SelectionMenuEvent) -> Unit) = onComponent(id, timeout, consumer)
+inline fun JDA.onSelection(id: String, timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(SelectMenuInteractionEvent) -> Unit) = onComponent(id, timeout, consumer)
 
 /**
  * Requires [CoroutineEventManager] to be used!
@@ -269,7 +398,9 @@ inline fun JDA.onSelection(id: String, timeout: Duration? = null, crossinline co
  *
  * @return[CoroutineEventListener] The created event listener instance (can be used to remove later)
  */
-inline fun ShardManager.onSelection(id: String, timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(SelectionMenuEvent) -> Unit) = onComponent(id, timeout, consumer)
+inline fun ShardManager.onSelection(id: String, timeout: Duration? = null, crossinline consumer: suspend CoroutineEventListener.(SelectMenuInteractionEvent) -> Unit) = onComponent(id, timeout, consumer)
+
+
 
 /**
  * Requires an EventManager implementation that supports either [EventListener] or [SubscribeEvent].
@@ -348,3 +479,13 @@ suspend inline fun <reified T : GenericEvent> ShardManager.await(crossinline fil
     addEventListener(listener)
     it.invokeOnCancellation { removeEventListener(listener) }
 }
+
+/**
+ * If this context menu command was used in a [Guild][net.dv8tion.jda.api.entities.Guild],
+ * this returns the member instance for the target user.
+ *
+ * @return The target member instance, or null if this was not in a guild.
+ *
+ * @see UserContextInteraction.getTargetMember
+ */
+val ContextInteraction<User>.targetMember: Member? get() = (this as UserContextInteraction).targetMember

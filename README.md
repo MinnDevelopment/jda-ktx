@@ -6,10 +6,11 @@
 [4]: https://github.com/MinnDevelopment/jda-ktx/tree/master/src/main/kotlin/dev/minn/jda/ktx/CoroutineEventManager.kt
 [5]: https://github.com/MinnDevelopment/jda-reactor/tree/master/src/main/java/club/minnced/jda/reactor/ReactiveEventManager.java
 [6]: https://github.com/MinnDevelopment/jda-ktx/tree/master/src/main/kotlin/dev/minn/jda/ktx/builder.kt
+[7]: https://github.com/MinnDevelopment/strumbot
 
-[![Kotlin](https://img.shields.io/badge/kotlin-1.6.0-blue.svg?logo=kotlin)](http://kotlinlang.org)
-[![kotlinx-coroutines](https://img.shields.io/badge/kotlinx.coroutines-1.6.0--RC2-blue.svg?logo=kotlin)][2]
-[![JDA](https://img.shields.io/badge/JDA-5.0.0--alpha.2-blue.svg)][1]
+[![Kotlin](https://img.shields.io/badge/kotlin-1.6.10-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![kotlinx-coroutines](https://img.shields.io/badge/kotlinx.coroutines-1.6.0-blue.svg?logo=kotlin)][2]
+[![JDA](https://img.shields.io/badge/JDA-5.0.0--alpha.5-blue.svg)][1]
 
 # jda-ktx
 
@@ -18,17 +19,20 @@ Great in combination with [kotlinx-coroutines][2] and [jda-reactor][3].
 
 ## Required Dependencies
 
-- Kotlin **1.6.0**
-- kotlinx.coroutines **1.6.0-RC2**
-- JDA **5.0.0-alpha.2**
+- Kotlin **1.6.10**
+- kotlinx.coroutines **1.6.0**
+- JDA **5.0.0-alpha.5**
 
 ## Examples
 
+You can look at my own bot ([strumbot][7]) for inspiration, or look at the examples listed here.
 The most useful feature of this library is the [CoroutineEventManager][4] which adds the ability to use
 suspending functions in your event handlers.
 
 ```kotlin
-val jda = light("token", enableCoroutines=true) { // enableCoroutines (default true) changes the event manager to CoroutineEventManager
+// enableCoroutines (default true) changes the event manager to CoroutineEventManager
+// this event manager uses the GlobalScope by default but can be configured to use a custom scope if you set it manually
+val jda = light("token", enableCoroutines=true) {
     intents += listOf(GatewayIntent.GUILD_MEMBERS)
 }
 
@@ -157,7 +161,7 @@ val embed = Embed {
 }
 ```
 
-### Command and SelectionMenu Builders
+### Command and SelectMenu Builders
 
 ```kotlin
 jda.updateCommands {
@@ -192,7 +196,7 @@ jda.upsertCommand("prune", "Prune messages") {
     option<Int>("amount", "The amount to delete from 2-100, default 50")
 }.queue()
 
-val menu = SelectionMenu("menu:class") {
+val menu = SelectMenu("menu:class") {
     option("Frost Mage", "mage-frost", emoji=FROST_SPEC, default=true)
     option("Fire Mage", "mage-fire", emoji=FIRE_SPEC)
     option("Arcane Mage", "mage-arcane", emoji=ARCANE_SPEC)

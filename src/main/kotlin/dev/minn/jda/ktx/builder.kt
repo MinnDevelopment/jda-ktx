@@ -18,6 +18,7 @@
 
 package dev.minn.jda.ktx
 
+import dev.minn.jda.ktx.messages.allOf
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Message
@@ -30,6 +31,7 @@ import java.time.temporal.TemporalAccessor
 inline fun Message(
     content: String? = null,
     embed: MessageEmbed? = null,
+    embeds: Collection<MessageEmbed>? = null,
     nonce: String? = null,
     tts: Boolean = false,
     allowedMentionTypes: Collection<Message.MentionType>? = null,
@@ -37,7 +39,7 @@ inline fun Message(
     mentionRoles: Collection<Long>? = null,
     builder: InlineMessage.() -> Unit = {},
 ): Message {
-    return MessageBuilder(content, embed, nonce, tts, allowedMentionTypes, mentionUsers, mentionRoles, builder).build()
+    return MessageBuilder(content, embed, embeds, nonce, tts, allowedMentionTypes, mentionUsers, mentionRoles, builder).build()
 }
 
 inline fun Embed(
@@ -64,6 +66,7 @@ inline fun Embed(
 inline fun MessageBuilder(
     content: String? = null,
     embed: MessageEmbed? = null,
+    embeds: Collection<MessageEmbed>? = null,
     nonce: String? = null,
     tts: Boolean = false,
     allowedMentionTypes: Collection<Message.MentionType>? = null,
@@ -73,10 +76,10 @@ inline fun MessageBuilder(
 ): InlineMessage {
     return MessageBuilder().run {
         setContent(content)
-        setEmbeds(embed)
+        allOf(embed, embeds)?.let { setEmbeds(it) }
         setNonce(nonce)
         setTTS(tts)
-        allowedMentionTypes?.let { setAllowedMentions(allowedMentionTypes) }
+        allowedMentionTypes?.let { setAllowedMentions(it) }
         mentionUsers?.forEach { mentionUsers(it) }
         mentionRoles?.forEach { mentionRoles(it) }
         InlineMessage(this).apply(builder)

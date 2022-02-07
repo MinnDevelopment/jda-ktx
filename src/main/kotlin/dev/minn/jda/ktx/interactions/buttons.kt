@@ -23,9 +23,9 @@ import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Emoji
 import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
-import net.dv8tion.jda.api.interactions.components.Button
-import net.dv8tion.jda.api.interactions.components.ButtonStyle
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
@@ -64,11 +64,11 @@ object ButtonDefaults {
  * @return[Button] The resulting button instance.
  */
 fun button(
-   id: String,
-   label: String? = ButtonDefaults.LABEL,
-   emoji: Emoji? = ButtonDefaults.EMOJI,
-   style: ButtonStyle = ButtonDefaults.STYLE,
-   disabled: Boolean = ButtonDefaults.DISABLED,
+    id: String,
+    label: String? = ButtonDefaults.LABEL,
+    emoji: Emoji? = ButtonDefaults.EMOJI,
+    style: ButtonStyle = ButtonDefaults.STYLE,
+    disabled: Boolean = ButtonDefaults.DISABLED,
 ) = Button.of(style, id, label, emoji).withDisabled(disabled)
 
 /**
@@ -191,7 +191,7 @@ fun link(
  */
 fun JDA.button(style: ButtonStyle = ButtonDefaults.STYLE, label: String? = ButtonDefaults.LABEL, emoji: Emoji? = ButtonDefaults.EMOJI,
                disabled: Boolean = ButtonDefaults.DISABLED, expiration: Duration = ButtonDefaults.EXPIRATION,
-               user: User? = null, listener: suspend (ButtonClickEvent) -> Unit
+               user: User? = null, listener: suspend (ButtonInteractionEvent) -> Unit
 ): Button {
     val id = ThreadLocalRandom.current().nextLong().toString()
     val button = button(id, label, emoji, style, disabled)
