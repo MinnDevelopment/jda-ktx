@@ -25,12 +25,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.requests.restaction.MessageAction
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
-import net.dv8tion.jda.internal.JDAImpl
-import net.dv8tion.jda.internal.interactions.InteractionHookImpl
-import net.dv8tion.jda.internal.requests.Route
 import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl
-import net.dv8tion.jda.internal.requests.restaction.WebhookMessageUpdateActionImpl
-import net.dv8tion.jda.internal.requests.restaction.interactions.MessageEditCallbackActionImpl
 
 /**
  * Defaults used for edit message extensions provided by this module.
@@ -102,9 +97,7 @@ fun IMessageEditCallback.editMessage_(
     file: NamedFile? = null,
     files: Files? = null,
     replace: Boolean = MessageEditDefaults.replace
-): MessageEditCallbackAction = MessageEditCallbackActionImpl(
-    hook as InteractionHookImpl
-).apply {
+): MessageEditCallbackAction = deferEdit().apply {
     content.applyIf(replace) {
         setContent(it)
     }
@@ -118,10 +111,14 @@ fun IMessageEditCallback.editMessage_(
     }
 
     allOf(file, files).applyIf(true) {
-        it?.let { addFiles(it) }
-// TODO: waiting for https://github.com/discord/discord-api-docs/discussions/3335
-//        if (replace)
-//            retainFilesById(LongRange(0, it?.size?.toLong() ?: 0L).map(Long::toString).toList())
+        if (it != null) {
+            addFiles(it)
+            if (replace)
+                retainFilesById(LongRange(0, it.size.toLong()).map(Long::toString))
+        }
+        else if (replace) {
+            retainFilesById(emptyList())
+        }
     }
 }
 
@@ -143,7 +140,6 @@ fun IMessageEditCallback.editMessage_(
  *
  * @return[WebhookMessageUpdateAction]
  */
-@Suppress("MoveLambdaOutsideParentheses")
 fun InteractionHook.editMessage(
     id: String = "@original",
     content: String? = null,
@@ -153,11 +149,8 @@ fun InteractionHook.editMessage(
     file: NamedFile? = null,
     files: Files? = null,
     replace: Boolean = MessageEditDefaults.replace,
-): WebhookMessageUpdateAction<Message> = WebhookMessageUpdateActionImpl(
-    jda,
-    Route.Interactions.EDIT_FOLLOWUP.compile(jda.selfUser.applicationId, interaction.token, id),
-    { (jda as JDAImpl).entityBuilder.createMessage(it) }
-).apply {
+): WebhookMessageUpdateAction<Message> = editMessageById(id, "tmp").apply {
+    setContent(null)
     content.applyIf(replace) {
         setContent(it)
     }
@@ -171,10 +164,14 @@ fun InteractionHook.editMessage(
     }
 
     allOf(file, files).applyIf(true) {
-        it?.let { addFiles(it) }
-// TODO: Wait for support in JDA for new attachments behavior
-//        if (replace)
-//            retainFilesById(LongRange(0, it?.size?.toLong() ?: 0L).map(Long::toString).toList())
+        if (it != null) {
+            addFiles(it)
+            if (replace)
+                retainFilesById(LongRange(0, it.size.toLong()).map(Long::toString))
+        }
+        else if (replace) {
+            retainFilesById(emptyList())
+        }
     }
 }
 
@@ -220,11 +217,15 @@ fun MessageChannel.editMessage(
         setEmbeds(it)
     }
 
-    allOf(file, files)?.let {
-        addFiles(it)
-// TODO: Wait for support in JDA for new attachments behavior
-//        if (replace)
-//            retainFilesById(LongRange(0, it.size.toLong()).map(Long::toString).toList())
+    allOf(file, files).applyIf(true) {
+        if (it != null) {
+            addFiles(it)
+            if (replace)
+                retainFilesById(LongRange(0, it.size.toLong()).map(Long::toString))
+        }
+        else if (replace) {
+            retainFilesById(emptyList())
+        }
     }
 }
 
