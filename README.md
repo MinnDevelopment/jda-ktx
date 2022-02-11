@@ -165,7 +165,7 @@ val embed = Embed {
 
 ```kotlin
 jda.updateCommands {
-    command("ban", "Ban a user") {
+    slash("ban", "Ban a user") {
         option<User>("user", "The user to ban", true)
         option<String>("reason", "Why to ban this user")
         option<Int>("duration", "For how long to ban this user") {
@@ -175,7 +175,7 @@ jda.updateCommands {
         }
     }
 
-    command("mod", "Moderation commands") {
+    slash("mod", "Moderation commands") {
         subcommand("ban", "Ban a user") {
             option<User>("user", "The user to ban", true)
             option<String>("reason", "Why to ban this user")
