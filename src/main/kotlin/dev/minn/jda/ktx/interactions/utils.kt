@@ -18,6 +18,7 @@ package dev.minn.jda.ktx.interactions
 
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.interactions.commands.OptionType
+import java.io.File
 
 inline fun <reified T> optionType() = when(T::class.java) {
     java.lang.Float::class.java, java.lang.Double::class.java -> OptionType.NUMBER
@@ -26,6 +27,7 @@ inline fun <reified T> optionType() = when(T::class.java) {
     User::class.java, Member::class.java -> OptionType.USER
     Role::class.java -> OptionType.ROLE
     java.lang.Boolean::class.java -> OptionType.BOOLEAN
+    File::class.java, Message.Attachment::class.java -> OptionType.ATTACHMENT
     else -> when {
         Channel::class.java.isAssignableFrom(T::class.java) -> OptionType.CHANNEL
         IMentionable::class.java.isAssignableFrom(T::class.java) -> OptionType.MENTIONABLE
