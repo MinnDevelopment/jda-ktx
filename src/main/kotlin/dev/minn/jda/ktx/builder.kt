@@ -117,6 +117,8 @@ inline fun EmbedBuilder(
 }
 
 class InlineMessage(val builder: MessageBuilder) {
+    constructor(message: Message) : this(MessageBuilder(message))
+
     fun build() = builder.build()
 
     var content: String? = null
@@ -182,6 +184,8 @@ class InlineMessage(val builder: MessageBuilder) {
 }
 
 class InlineEmbed(val builder: EmbedBuilder) {
+    constructor(embed: MessageEmbed) : this(EmbedBuilder(embed))
+
     fun build() = builder.build()
 
     var description: String? = null
