@@ -61,7 +61,7 @@ jda.listener<MessageReceivedEvent> {
 }
 
 jda.onCommand("ban", timeout=2.minutes) { event -> // 2 minute timeout listener
-    val user = event.getOption("user")!!.asUser
+    val user = event.getOption<User>("user")!!
     val confirm = danger("${user.id}:ban", "Confirm")
     event.reply_(
         "Are you sure you want to ban **${user.asTag}**?",
@@ -215,8 +215,8 @@ jda.upsertCommand("ban", "ban a user") {
 jda.onCommand("ban") { event ->
     if (event.user.asTag != "Minn#6688") return@onCommand
     val guild = event.guild!!
-    val member = event.getOption("member")?.asUser!!
-    val reason = event.getOption("reason")?.asString
+    val member = event.getOption<User>("member")!!
+    val reason = event.getOption<String>("reason")
 
     // Buttons will timeout after 15 minutes by default
     val accept = jda.button(label = "Accept", style = SUCCESS, user = event.user) {
@@ -260,7 +260,7 @@ jda.onCommand("ban") { event ->
     
     event.reply_("Are you sure?", components=danger("ban", "Yes!").into())
     val interaction = event.user.awaitButton("ban")
-    val user = event.getOption("target")!!.asUser
+    val user = event.getOption<User>("target")!!
     event.guild!!.ban(user, 0).queue()
     interaction.editMessage_("Successfully banned user", components=emptyList()).queue()
 }
