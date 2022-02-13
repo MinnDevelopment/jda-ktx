@@ -43,6 +43,7 @@ inline fun <reified T> CommandInteractionPayload.getOption(name: String): T? = w
     Member::class.java -> getOption(name, OptionMapping::getAsMember) as? T
     Role::class.java -> getOption(name, OptionMapping::getAsRole) as? T
     Integer::class.java, Int::class.java -> getOption(name, OptionMapping::getAsInt) as? T
+    Double::class.java -> getOption(name, OptionMapping::getAsDouble) as? T
     Long::class.java, java.lang.Long::class.java -> getOption(name, OptionMapping::getAsLong) as? T
     Boolean::class.java, java.lang.Boolean::class.java -> getOption(name, OptionMapping::getAsBoolean) as? T
     String::class.java -> getOption(name, OptionMapping::getAsString) as? T
