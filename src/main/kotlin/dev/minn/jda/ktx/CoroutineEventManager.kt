@@ -34,14 +34,14 @@ private val log: Logger by SLF4J<CoroutineEventManager>()
  *
  * This enables [the coroutine listener extension][listener].
  */
-class CoroutineEventManager(
+open class CoroutineEventManager(
     scope: CoroutineScope = GlobalScope,
     /** Timeout [Duration] each event listener is allowed to run. Set to [Duration.INFINITE] for no timeout. Default: [Duration.INFINITE] */
     var timeout: Duration = Duration.INFINITE
 ) : IEventManager, CoroutineScope by scope {
-    private val listeners = CopyOnWriteArrayList<Any>()
+    protected val listeners = CopyOnWriteArrayList<Any>()
 
-    private fun timeout(listener: Any) = when {
+    protected fun timeout(listener: Any) = when {
         listener is CoroutineEventListener && listener.timeout != EventTimeout.Inherit -> listener.timeout.time
         else -> timeout
     }
@@ -65,7 +65,7 @@ class CoroutineEventManager(
         }
     }
 
-    private suspend fun runListener(listener: Any, event: GenericEvent) {
+    protected suspend fun runListener(listener: Any, event: GenericEvent) {
         when (listener) {
             is CoroutineEventListener -> listener.onEvent(event)
             is EventListener -> listener.onEvent(event)
