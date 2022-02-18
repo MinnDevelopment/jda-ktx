@@ -65,7 +65,7 @@ open class CoroutineEventManager(
         }
     }
 
-    protected suspend fun runListener(listener: Any, event: GenericEvent) {
+    protected open suspend fun runListener(listener: Any, event: GenericEvent) {
         when (listener) {
             is CoroutineEventListener -> listener.onEvent(event)
             is EventListener -> listener.onEvent(event)
