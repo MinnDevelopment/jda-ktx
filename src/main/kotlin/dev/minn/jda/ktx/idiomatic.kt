@@ -19,8 +19,17 @@ package dev.minn.jda.ktx
 import net.dv8tion.jda.api.entities.Channel
 import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer
 
-inline fun <reified T : Channel> IGuildChannelContainer.getChannelById(id: Long)
-    = getChannelById(T::class.java, id)
+/**
+ * Same as [IGuildChannelContainer.getChannelById] but with a generic type parameter instead.
+ */
+inline fun <reified T : Channel> IGuildChannelContainer.getChannel(id: Long) = getChannelById(T::class.java, id)
 
-inline fun <reified T : Channel> IGuildChannelContainer.getChannelById(id: String)
-    = getChannelById(T::class.java, id)
+/**
+ * Same as [IGuildChannelContainer.getChannelById] but with a generic type parameter instead.
+ */
+inline fun <reified T : Channel> IGuildChannelContainer.getChannel(id: String) = getChannelById(T::class.java, id)
+
+/**
+ * Same as [IGuildChannelContainer.getChannelById] but with a generic type parameter instead.
+ */
+inline fun <reified T : Channel> IGuildChannelContainer.getChannel(id: ULong) = getChannel<T>(id.toLong())
