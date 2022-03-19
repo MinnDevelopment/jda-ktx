@@ -25,10 +25,6 @@ import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.requests.restaction.MessageAction
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
-import net.dv8tion.jda.internal.JDAImpl
-import net.dv8tion.jda.internal.requests.Route
-import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl
-import net.dv8tion.jda.internal.requests.restaction.WebhookMessageActionImpl
 
 // Defaults for keyword arguments
 /**
@@ -156,9 +152,8 @@ fun IReplyCallback.reply_(
  *
  * @return[WebhookMessageAction]
  *
- * @see  [IReplyCallback.deferReply]
+ * @see  [InteractionHook.sendMessage]
  */
-@Suppress("MoveLambdaOutsideParentheses")
 fun InteractionHook.send(
     content: String? = SendDefaults.content,
     embed: MessageEmbed? = null,
@@ -167,12 +162,7 @@ fun InteractionHook.send(
     file: NamedFile? = null,
     files: Files = emptyList(),
     ephemeral: Boolean = SendDefaults.ephemeral,
-): WebhookMessageAction<Message> = WebhookMessageActionImpl(
-    jda,
-    interaction.messageChannel,
-    Route.Interactions.CREATE_FOLLOWUP.compile(jda.selfUser.applicationId, interaction.token),
-    { (jda as JDAImpl).entityBuilder.createMessage(it) }
-).apply {
+): WebhookMessageAction<Message> = sendMessage("tmp").apply {
     setContent(content)
     setEphemeral(ephemeral)
 
@@ -213,7 +203,7 @@ fun MessageChannel.send(
     components: Components = SendDefaults.components,
     file: NamedFile? = null,
     files: Files = emptyList(),
-): MessageAction = MessageActionImpl(jda, null, this).apply {
+): MessageAction = sendMessage("tmp").apply {
     content(content)
 
     if (components.isNotEmpty()) {
