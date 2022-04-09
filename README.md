@@ -159,6 +159,14 @@ val embed = Embed {
     timestamp = Instant.now()
     color = 0xFF0000
 }
+
+val message = Message {
+    embeds += Embed("Ban Confirmation")
+    components += row(
+        success(id="approve:ban:$userId", label="Approve"),
+        danger(id="deny:ban:$userId", label="Deny")
+    )
+}
 ```
 
 ### Command and SelectMenu Builders

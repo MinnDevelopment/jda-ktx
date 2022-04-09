@@ -2,16 +2,24 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `maven-publish`
-    kotlin("jvm") version "1.6.10"
+    kotlin("jvm") version "1.6.20"
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
 }
 
 group = "dev.minn"
-version = "0.8.5-alpha.9"
+version = "0.8.6-alpha.9"
 
 configure<JavaPluginExtension> {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+kotlin {
+    sourceSets.all {
+        languageSettings.apply {
+            languageVersion = "1.7"
+        }
+    }
 }
 
 tasks.withType<KotlinCompile> {
@@ -32,7 +40,7 @@ dependencies {
     compileOnly("ch.qos.logback:logback-classic:1.2.10")
     compileOnly("club.minnced:discord-webhooks:0.7.5")
     api(kotlin("stdlib-jdk8"))
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
 }
 
 val javadoc: Javadoc by tasks

@@ -18,6 +18,9 @@
 
 package dev.minn.jda.ktx
 
+import dev.minn.jda.ktx.interactions.row
+import dev.minn.jda.ktx.messages.Components
+import dev.minn.jda.ktx.messages.Embeds
 import dev.minn.jda.ktx.messages.allOf
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
@@ -25,13 +28,17 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.ItemComponent
+import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.requests.restaction.MessageAction
 import java.time.temporal.TemporalAccessor
 
 inline fun Message(
     content: String? = null,
     embed: MessageEmbed? = null,
-    embeds: Collection<MessageEmbed>? = null,
+    embeds: Embeds? = null,
+    components: Components? = null,
     nonce: String? = null,
     tts: Boolean = false,
     allowedMentionTypes: Collection<Message.MentionType>? = null,
@@ -39,7 +46,7 @@ inline fun Message(
     mentionRoles: Collection<Long>? = null,
     builder: InlineMessage.() -> Unit = {},
 ): Message {
-    return MessageBuilder(content, embed, embeds, nonce, tts, allowedMentionTypes, mentionUsers, mentionRoles, builder).build()
+    return MessageBuilder(content, embed, embeds, components, nonce, tts, allowedMentionTypes, mentionUsers, mentionRoles, builder).build()
 }
 
 inline fun Embed(
@@ -66,7 +73,8 @@ inline fun Embed(
 inline fun MessageBuilder(
     content: String? = null,
     embed: MessageEmbed? = null,
-    embeds: Collection<MessageEmbed>? = null,
+    embeds: Embeds? = null,
+    components: Components? = null,
     nonce: String? = null,
     tts: Boolean = false,
     allowedMentionTypes: Collection<Message.MentionType>? = null,
@@ -76,13 +84,17 @@ inline fun MessageBuilder(
 ): InlineMessage {
     return MessageBuilder().run {
         setContent(content)
-        allOf(embed, embeds)?.let { setEmbeds(it) }
         setNonce(nonce)
         setTTS(tts)
         allowedMentionTypes?.let { setAllowedMentions(it) }
         mentionUsers?.forEach { mentionUsers(it) }
         mentionRoles?.forEach { mentionRoles(it) }
-        InlineMessage(this).apply(builder)
+
+        InlineMessage(this).apply {
+            this.embeds += allOf(embed, embeds) ?: emptyList()
+            this.components += components ?: emptyList()
+            this.builder()
+        }
     }
 }
 
@@ -119,7 +131,13 @@ inline fun EmbedBuilder(
 class InlineMessage(val builder: MessageBuilder) {
     constructor(message: Message) : this(MessageBuilder(message))
 
-    fun build() = builder.build()
+    internal val configuredEmbeds = mutableListOf<MessageEmbed>()
+    internal val configuredComponents = mutableListOf<LayoutComponent>()
+
+    fun build() = builder
+        .setEmbeds(configuredEmbeds)
+        .setActionRows(configuredComponents.mapNotNull { it as? ActionRow })
+        .build()
 
     var content: String? = null
         set(value) {
@@ -127,11 +145,29 @@ class InlineMessage(val builder: MessageBuilder) {
             field = value
         }
 
+    @Deprecated("You should use the embeds property instead, which accepts a collection of embeds", ReplaceWith("embeds"), DeprecationLevel.ERROR)
     var embed: MessageEmbed? = null
         set(value) {
-            builder.setEmbeds(value)
+            configuredEmbeds.clear()
+            value?.let(configuredEmbeds::add)
             field = value
         }
+
+    val embeds = EmbedAccumulator(this)
+
+    inline fun embed(builder: InlineEmbed.() -> Unit) {
+        embeds += EmbedBuilder(description = null).apply(builder).build()
+    }
+
+    val components = ComponentAccumulator(this)
+
+    fun actionRow(vararg components: ItemComponent) {
+        this.components += row(*components)
+    }
+
+    fun actionRow(components: Collection<ItemComponent>) {
+        this.components += components.row()
+    }
 
     var nonce: String? = null
         set(value) {
@@ -266,4 +302,40 @@ class InlineEmbed(val builder: EmbedBuilder) {
         var value: String = EmbedBuilder.ZERO_WIDTH_SPACE,
         var inline: Boolean = true
     )
+}
+
+class EmbedAccumulator(private val builder: InlineMessage) {
+    operator fun plusAssign(embeds: Collection<MessageEmbed>) {
+        builder.configuredEmbeds += embeds
+    }
+
+    operator fun plusAssign(embed: MessageEmbed) {
+        builder.configuredEmbeds += embed
+    }
+
+    operator fun minusAssign(embeds: Collection<MessageEmbed>) {
+        builder.configuredEmbeds -= embeds.toSet()
+    }
+
+    operator fun minusAssign(embed: MessageEmbed) {
+        builder.configuredEmbeds -= embed
+    }
+}
+
+class ComponentAccumulator(private val builder: InlineMessage) {
+    operator fun plusAssign(components: Collection<LayoutComponent>) {
+        builder.configuredComponents += components
+    }
+
+    operator fun plusAssign(component: LayoutComponent) {
+        builder.configuredComponents += component
+    }
+
+    operator fun minusAssign(components: Collection<LayoutComponent>) {
+        builder.configuredComponents -= components.toSet()
+    }
+
+    operator fun minusAssign(component: LayoutComponent) {
+        builder.configuredComponents -= component
+    }
 }
