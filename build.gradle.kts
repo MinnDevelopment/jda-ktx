@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `maven-publish`
-    kotlin("jvm") version "1.6.20"
+    kotlin("jvm") version "1.6.10"
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
 }
 
@@ -14,13 +14,13 @@ configure<JavaPluginExtension> {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-kotlin {
-    sourceSets.all {
-        languageSettings.apply {
-            languageVersion = "1.7"
-        }
-    }
-}
+//kotlin {
+//    sourceSets.all {
+//        languageSettings.apply {
+//            languageVersion = "1.7"
+//        }
+//    }
+//}
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
