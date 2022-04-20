@@ -159,7 +159,7 @@ class InlineMessage(val builder: MessageBuilder) {
         embeds += EmbedBuilder(description = null).apply(builder).build()
     }
 
-    val components = ComponentAccumulator(this)
+    val components = ComponentAccumulator(this.configuredComponents)
 
     fun actionRow(vararg components: ItemComponent) {
         this.components += row(*components)
@@ -322,20 +322,20 @@ class EmbedAccumulator(private val builder: InlineMessage) {
     }
 }
 
-class ComponentAccumulator(private val builder: InlineMessage) {
+class ComponentAccumulator(private val config: MutableList<LayoutComponent>) {
     operator fun plusAssign(components: Collection<LayoutComponent>) {
-        builder.configuredComponents += components
+        config += components
     }
 
     operator fun plusAssign(component: LayoutComponent) {
-        builder.configuredComponents += component
+        config += component
     }
 
     operator fun minusAssign(components: Collection<LayoutComponent>) {
-        builder.configuredComponents -= components.toSet()
+        config -= components.toSet()
     }
 
     operator fun minusAssign(component: LayoutComponent) {
-        builder.configuredComponents -= component
+        config -= component
     }
 }
