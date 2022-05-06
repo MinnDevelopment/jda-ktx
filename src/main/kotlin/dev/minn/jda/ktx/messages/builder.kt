@@ -18,7 +18,7 @@
 
 package dev.minn.jda.ktx.messages
 
-import dev.minn.jda.ktx.interactions.row
+import dev.minn.jda.ktx.interactions.components.row
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Message
