@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package dev.minn.jda.ktx
+package dev.minn.jda.ktx.events
 
+import dev.minn.jda.ktx.util.SLF4J
 import kotlinx.coroutines.*
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.hooks.EventListener
@@ -63,8 +64,8 @@ fun getDefaultScope(
  * This enables [the coroutine listener extension][listener].
  */
 open class CoroutineEventManager(
-    scope: CoroutineScope = getDefaultScope(),
-    /** Timeout [Duration] each event listener is allowed to run. Set to [Duration.INFINITE] for no timeout. Default: [Duration.INFINITE] */
+        scope: CoroutineScope = getDefaultScope(),
+        /** Timeout [Duration] each event listener is allowed to run. Set to [Duration.INFINITE] for no timeout. Default: [Duration.INFINITE] */
     var timeout: Duration = Duration.INFINITE
 ) : IEventManager, CoroutineScope by scope {
     protected val listeners = CopyOnWriteArrayList<Any>()

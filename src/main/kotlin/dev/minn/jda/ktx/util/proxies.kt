@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.minn.jda.ktx
+package dev.minn.jda.ktx.util
 
 import net.dv8tion.jda.api.entities.*
 import org.slf4j.Logger

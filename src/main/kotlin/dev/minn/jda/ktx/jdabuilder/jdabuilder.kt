@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.minn.jda.ktx
+package dev.minn.jda.ktx.jdabuilder
 
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.requests.GatewayIntent

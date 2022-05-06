@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.minn.jda.ktx
+package dev.minn.jda.ktx.generics
 
 import net.dv8tion.jda.api.entities.Channel
 import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer

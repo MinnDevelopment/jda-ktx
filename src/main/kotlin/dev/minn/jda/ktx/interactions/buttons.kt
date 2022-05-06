@@ -16,7 +16,7 @@
 
 package dev.minn.jda.ktx.interactions
 
-import dev.minn.jda.ktx.onButton
+import dev.minn.jda.ktx.events.onButton
 import dev.minn.jda.ktx.scope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

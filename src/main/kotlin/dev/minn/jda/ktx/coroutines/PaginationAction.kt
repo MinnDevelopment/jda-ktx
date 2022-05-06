@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.minn.jda.ktx
+package dev.minn.jda.ktx.coroutines
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

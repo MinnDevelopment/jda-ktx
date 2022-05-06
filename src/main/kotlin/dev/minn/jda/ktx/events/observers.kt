@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.minn.jda.ktx
+package dev.minn.jda.ktx.events
 
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
