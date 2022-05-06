@@ -138,6 +138,14 @@ Adds inline functions to support rectified generics.
 
 Extensions specifically designed to make use of [Interactions](https://jda.wiki/using-jda/interactions/) easier with idiomatic builders.
 
+# Package dev.minn.jda.ktx.interactions.commands
+
+Builders and utilities for application commands.
+
+# Package dev.minn.jda.ktx.interactions.components
+
+Builders and utilities for message and modal components.
+
 # Package dev.minn.jda.ktx.jdabuilder
 
 Adds `JDABuilder` and `DefaultShardManagerBuilder` extensions to quickly get going with coroutines and jda-ktx.

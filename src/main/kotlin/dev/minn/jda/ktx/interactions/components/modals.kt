@@ -15,7 +15,7 @@
  */
 
 
-package dev.minn.jda.ktx.interactions
+package dev.minn.jda.ktx.interactions.components
 
 import dev.minn.jda.ktx.messages.ComponentAccumulator
 import dev.minn.jda.ktx.messages.Components

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.minn.jda.ktx.interactions
+package dev.minn.jda.ktx.interactions.components
 
 import dev.minn.jda.ktx.messages.Message
 import net.dv8tion.jda.api.JDA

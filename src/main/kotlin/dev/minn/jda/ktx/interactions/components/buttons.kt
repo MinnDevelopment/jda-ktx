@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.minn.jda.ktx.interactions
+package dev.minn.jda.ktx.interactions.components
 
 import dev.minn.jda.ktx.events.onButton
 import dev.minn.jda.ktx.jdabuilder.scope
