@@ -17,7 +17,7 @@
 
 package dev.minn.jda.ktx.interactions
 
-import dev.minn.jda.ktx.ComponentAccumulator
+import dev.minn.jda.ktx.messages.ComponentAccumulator
 import dev.minn.jda.ktx.messages.Components
 import net.dv8tion.jda.api.interactions.callbacks.IModalCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow

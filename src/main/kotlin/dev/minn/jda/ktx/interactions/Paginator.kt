@@ -16,7 +16,7 @@
 
 package dev.minn.jda.ktx.interactions
 
-import dev.minn.jda.ktx.Message
+import dev.minn.jda.ktx.messages.Message
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Emoji
 import net.dv8tion.jda.api.entities.Message
