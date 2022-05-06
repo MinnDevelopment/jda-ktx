@@ -1,4 +1,6 @@
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.net.URL
 
 plugins {
     `maven-publish`
@@ -87,3 +89,20 @@ detekt {
 }
 
 tasks.test.get().dependsOn(tasks.getByName("detekt"))
+
+
+tasks.getByName("dokkaHtml", DokkaTask::class) {
+    dokkaSourceSets.configureEach {
+        jdkVersion.set(8)
+        sourceLink {
+            localDirectory.set(file("src/main/kotlin"))
+            remoteUrl.set(URL("https://github.com/MinnDevelopment/jda-ktx/tree/master/src/main/kotlin"))
+            remoteLineSuffix.set("#L")
+        }
+
+        externalDocumentationLink(
+            URL("https://ci.dv8tion.net/job/JDA5/javadoc/"),
+            URL("https://ci.dv8tion.net/job/JDA5/javadoc/element-list")
+        )
+    }
+}
