@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package dev.minn.jda.ktx.interactions
+package dev.minn.jda.ktx.interactions.components
 
-import dev.minn.jda.ktx.onButton
-import dev.minn.jda.ktx.scope
+import dev.minn.jda.ktx.events.onButton
+import dev.minn.jda.ktx.jdabuilder.scope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.JDA

@@ -15,7 +15,7 @@
  */
 
 
-package dev.minn.jda.ktx.interactions
+package dev.minn.jda.ktx.interactions.components
 
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.ItemComponent

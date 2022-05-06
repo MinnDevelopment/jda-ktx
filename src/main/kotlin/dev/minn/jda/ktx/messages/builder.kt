@@ -16,12 +16,9 @@
 
 @file:Suppress("FunctionName")
 
-package dev.minn.jda.ktx
+package dev.minn.jda.ktx.messages
 
-import dev.minn.jda.ktx.interactions.row
-import dev.minn.jda.ktx.messages.Components
-import dev.minn.jda.ktx.messages.Embeds
-import dev.minn.jda.ktx.messages.allOf
+import dev.minn.jda.ktx.interactions.components.row
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Message

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package dev.minn.jda.ktx
+package dev.minn.jda.ktx.events
 
-import dev.minn.jda.ktx.EventTimeout.Inherit
-import dev.minn.jda.ktx.EventTimeout.Limit
+import dev.minn.jda.ktx.events.EventTimeout.Inherit
+import dev.minn.jda.ktx.events.EventTimeout.Limit
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package dev.minn.jda.ktx
+package dev.minn.jda.ktx.events
 
+import dev.minn.jda.ktx.util.SLF4J
 import kotlinx.coroutines.*
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.hooks.EventListener

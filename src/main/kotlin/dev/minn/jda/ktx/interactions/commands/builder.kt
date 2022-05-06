@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.minn.jda.ktx.interactions
+package dev.minn.jda.ktx.interactions.commands
 
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild

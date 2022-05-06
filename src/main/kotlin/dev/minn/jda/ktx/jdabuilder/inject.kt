@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package dev.minn.jda.ktx
+package dev.minn.jda.ktx.jdabuilder
 
+import dev.minn.jda.ktx.events.CoroutineEventManager
+import dev.minn.jda.ktx.events.getDefaultScope
 import kotlinx.coroutines.CoroutineScope
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
