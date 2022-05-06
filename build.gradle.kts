@@ -1,6 +1,14 @@
+import org.jetbrains.dokka.base.DokkaBase
+import org.jetbrains.dokka.base.DokkaBaseConfiguration
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URL
+
+buildscript {
+    dependencies {
+        classpath("org.jetbrains.dokka:dokka-base:1.6.21")
+    }
+}
 
 plugins {
     `maven-publish`
@@ -105,5 +113,10 @@ tasks.getByName("dokkaHtml", DokkaTask::class) {
             URL("https://ci.dv8tion.net/job/JDA5/javadoc/"),
             URL("https://ci.dv8tion.net/job/JDA5/javadoc/element-list")
         )
+
+        pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
+            footerMessage = "Copyright © 2020 Florian Spieß"
+        }
     }
+
 }

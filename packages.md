@@ -110,7 +110,7 @@ dependencies {
 
 The core package containing the event handling code and arbitrary extensions. Take a look around and see what you can do!
 
-Especially interesting are [listener](/jda-ktx/jda-ktx/dev.minn.jda.ktx/listener.html) and [await](/jda-ktx/jda-ktx/dev.minn.jda.ktx/await.html).
+Especially interesting are `listener` and `await`.
 
 # Package dev.minn.jda.ktx.interactions
 
