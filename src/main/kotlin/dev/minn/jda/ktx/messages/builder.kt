@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("FunctionName")
+
 package dev.minn.jda.ktx.messages
 
 import dev.minn.jda.ktx.interactions.row

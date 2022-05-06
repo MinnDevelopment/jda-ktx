@@ -64,8 +64,8 @@ fun getDefaultScope(
  * This enables [the coroutine listener extension][listener].
  */
 open class CoroutineEventManager(
-        scope: CoroutineScope = getDefaultScope(),
-        /** Timeout [Duration] each event listener is allowed to run. Set to [Duration.INFINITE] for no timeout. Default: [Duration.INFINITE] */
+    scope: CoroutineScope = getDefaultScope(),
+    /** Timeout [Duration] each event listener is allowed to run. Set to [Duration.INFINITE] for no timeout. Default: [Duration.INFINITE] */
     var timeout: Duration = Duration.INFINITE
 ) : IEventManager, CoroutineScope by scope {
     protected val listeners = CopyOnWriteArrayList<Any>()
