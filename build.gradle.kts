@@ -93,6 +93,7 @@ tasks.test.get().dependsOn(tasks.getByName("detekt"))
 
 tasks.getByName("dokkaHtml", DokkaTask::class) {
     dokkaSourceSets.configureEach {
+        includes.from("packages.md")
         jdkVersion.set(8)
         sourceLink {
             localDirectory.set(file("src/main/kotlin"))
