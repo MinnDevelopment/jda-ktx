@@ -106,15 +106,41 @@ dependencies {
 </dependency>
 ```
 
-# Package dev.minn.jda.ktx
 
-The core package containing the event handling code and arbitrary extensions. Take a look around and see what you can do!
+# Package dev.minn.jda.ktx.coroutines
 
-Especially interesting are `listener` and `await`.
+Implements extension functions to easily integrate [RestAction](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/requests/RestAction.html), [Task](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/utils/concurrent/Task.html), and [CompletableFuture](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html) into coroutine scopes by adding `await()` for each.
+
+This also adds any other useful extensions like `Flow` integrations.
+
+# Package dev.minn.jda.ktx.events
+
+Adds the `CoroutineEventManager` and coroutine-based event listeners which can be used via the `listener` extension function on any JDA instance.
+
+## Example
+
+```kotlin
+val jda = light(token, enableCoroutines=true)
+
+jda.listener<MessageReceivedEvent> { event ->
+    if (event.message.contentRaw.startsWith("!hello")) {
+        event.channel.sendTyping().await() // <- suspending function
+        event.channel.send("Hello!").queue()
+    }
+}
+```
+
+# Package dev.minn.jda.ktx.generics
+
+Adds inline functions to support rectified generics.
 
 # Package dev.minn.jda.ktx.interactions
 
 Extensions specifically designed to make use of [Interactions](https://jda.wiki/using-jda/interactions/) easier with idiomatic builders.
+
+# Package dev.minn.jda.ktx.jdabuilder
+
+Adds `JDABuilder` and `DefaultShardManagerBuilder` extensions to quickly get going with coroutines and jda-ktx.
 
 # Package dev.minn.jda.ktx.logback
 
@@ -142,3 +168,7 @@ This requires [discord-webhooks](https://github.com/MinnDevelopment/discord-webh
 # Package dev.minn.jda.ktx.messages
 
 Some extensions to handle message sending and editing with named parameters and custom defaults.
+
+# Package dev.minn.jda.ktx.util
+
+Miscellaneous utility extensions.
