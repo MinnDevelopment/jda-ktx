@@ -4,6 +4,7 @@ plugins {
     `maven-publish`
     kotlin("jvm") version "1.6.10"
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
+    id("org.jetbrains.dokka") version "1.6.21"
 }
 
 group = "dev.minn"
