@@ -7,10 +7,12 @@
 [5]: https://github.com/MinnDevelopment/jda-reactor/tree/master/src/main/java/club/minnced/jda/reactor/ReactiveEventManager.java
 [6]: https://github.com/MinnDevelopment/jda-ktx/tree/master/src/main/kotlin/dev/minn/jda/ktx/builder.kt
 [7]: https://github.com/MinnDevelopment/strumbot
+[8]: https://minndevelopment.github.io/jda-ktx/
 
 [![Kotlin](https://img.shields.io/badge/kotlin-1.6.10-blue.svg?logo=kotlin)](http://kotlinlang.org)
 [![kotlinx-coroutines](https://img.shields.io/badge/kotlinx.coroutines-1.6.1-blue.svg?logo=kotlin)][2]
 [![JDA](https://img.shields.io/badge/JDA-5.0.0--alpha.11-blue.svg)][1]
+[![docs](https://img.shields.io/github/deployments/minndevelopment/jda-ktx/github-pages?label=docs)][8]
 
 # jda-ktx
 
