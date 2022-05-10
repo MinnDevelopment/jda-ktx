@@ -77,7 +77,7 @@ open class CoroutineEventManager(
 
     override fun handle(event: GenericEvent) {
         launch {
-            for (listener in listeners) {
+            for (listener in listeners) try {
                 val actualTimeout = timeout(listener)
                 if (actualTimeout.isPositive() && actualTimeout.isFinite()) {
                     // Timeout only works when the continuations implement a cancellation handler
@@ -91,17 +91,16 @@ open class CoroutineEventManager(
                     runListener(listener, event)
                 }
             }
+            catch (ex: Exception) {
+                log.error("Uncaught exception in event listener", ex)
+            }
         }
     }
 
-    protected open suspend fun runListener(listener: Any, event: GenericEvent) = try {
-        when (listener) {
-            is CoroutineEventListener -> listener.onEvent(event)
-            is EventListener -> listener.onEvent(event)
-            else -> Unit
-        }
-    } catch (ex: Exception) {
-        log.error("Uncaught exception in event listener", ex)
+    protected open suspend fun runListener(listener: Any, event: GenericEvent) = when (listener) {
+        is CoroutineEventListener -> listener.onEvent(event)
+        is EventListener -> listener.onEvent(event)
+        else -> Unit
     }
 
     override fun register(listener: Any) {
