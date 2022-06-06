@@ -3,9 +3,9 @@
 [2]: https://github.com/kotlin/kotlinx.coroutines
 [3]: https://github.com/MinnDevelopment/jda-reactor
 
-[4]: https://github.com/MinnDevelopment/jda-ktx/tree/master/src/main/kotlin/dev/minn/jda/ktx/CoroutineEventManager.kt
+[4]: https://github.com/MinnDevelopment/jda-ktx/blob/master/src/main/kotlin/dev/minn/jda/ktx/events/CoroutineEventManager.kt
 [5]: https://github.com/MinnDevelopment/jda-reactor/tree/master/src/main/java/club/minnced/jda/reactor/ReactiveEventManager.java
-[6]: https://github.com/MinnDevelopment/jda-ktx/tree/master/src/main/kotlin/dev/minn/jda/ktx/builder.kt
+[6]: https://github.com/MinnDevelopment/jda-ktx/blob/master/src/main/kotlin/dev/minn/jda/ktx/messages/builder.kt
 [7]: https://github.com/MinnDevelopment/strumbot
 [8]: https://minndevelopment.github.io/jda-ktx/
 
@@ -115,7 +115,7 @@ fun <T, M: PaginationAction<T, M>> M.asFlow(): Flow<T>
 ### Delegates
 
 This library implements [delegate properties](https://kotlinlang.org/docs/reference/delegated-properties.html) which can be used to safely keep references of JDA entities such as users/channels.
-These delegates can be used with the [`ref()`](https://github.com/MinnDevelopment/jda-ktx/tree/master/src/main/kotlin/dev/minn/jda/ktx/proxies.kt) extension function:
+These delegates can be used with the [`ref()`](https://github.com/MinnDevelopment/jda-ktx/blob/master/src/main/kotlin/dev/minn/jda/ktx/util/proxies.kt) extension function:
 
 ```kotlin
 class Foo(guild: Guild) {
