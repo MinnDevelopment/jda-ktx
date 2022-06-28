@@ -17,8 +17,10 @@
 package dev.minn.jda.ktx.interactions.commands
 
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.*
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction
@@ -83,42 +85,30 @@ inline fun Guild.upsertCommand(name: String, description: String, builder: Slash
 
 inline fun Command.editCommand(builder: SlashCommandData.() -> Unit) = editCommand().apply(Commands.slash(name, description).apply(builder))
 
-/*
-
-/// Example usage
-
-fun registerCommands(api: JDA) {
-    api.updateCommands {
-        command("ban", "Ban a user") {
-            option<User>("user", "The user to ban", true)
-            option<String>("reason", "Why to ban this user")
-            option<Int>("duration", "For how long to ban this user") {
-                choice("1 day", 1)
-                choice("1 week", 7)
-                choice("1 month", 31)
-            }
-        }
-
-        command("mod", "Moderation commands") {
-            subcommand("ban", "Ban a user") {
-                option<User>("user", "The user to ban", true)
-                option<String>("reason", "Why to ban this user")
-                option<Int>("duration", "For how long to ban this user") {
-                    choice("1 day", 1)
-                    choice("1 week", 7)
-                    choice("1 month", 31)
-                }
-            }
-
-            subcommand("prune", "Prune messages") {
-                option<Int>("amount", "The amount to delete from 2-100, default 50")
-            }
-        }
-    }.queue()
-
-    api.upsertCommand("prune", "Prune messages") {
-        option<Int>("amount", "The amount to delete from 2-100, default 50")
-    }.queue()
+/**
+ * Restricts the command access
+ *
+ * @param[guild] Whether to make this command only available inside guilds
+ * @param[perms] The [DefaultMemberPermissions] to restrict this command to, by default it is enabled for everyone.
+ *
+ * @receiver[SlashCommandData]
+ */
+fun SlashCommandData.restrict(guild: Boolean, perms: DefaultMemberPermissions? = null) {
+    isGuildOnly = guild
+    perms?.let {
+        defaultPermissions = it
+    }
 }
 
+/**
+ * Restricts the command access
+ *
+ * @param[guild] Whether to make this command only available inside guilds
+ * @param[perm] The first [Permission] to restrict this command to, only members with this permission can use the command in the guild
+ * @param[perms] Any additional [Permission]s to restrict this command to
+ *
+ * @receiver[SlashCommandData]
  */
+fun SlashCommandData.restrict(guild: Boolean, perm: Permission, vararg perms: Permission)
+    = restrict(guild, DefaultMemberPermissions.enabledFor(perm, *perms))
+

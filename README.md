@@ -11,7 +11,7 @@
 
 [![Kotlin](https://img.shields.io/badge/kotlin-1.6.21-blue.svg?logo=kotlin)](http://kotlinlang.org)
 [![kotlinx-coroutines](https://img.shields.io/badge/kotlinx.coroutines-1.6.1-blue.svg?logo=kotlin)][2]
-[![JDA](https://img.shields.io/badge/JDA-5.0.0--alpha.11-blue.svg)][1]
+[![JDA](https://img.shields.io/badge/JDA-5.0.0--alpha.13-blue.svg)][1]
 [![docs](https://img.shields.io/github/deployments/minndevelopment/jda-ktx/github-pages?label=docs)][8]
 
 # jda-ktx
@@ -23,7 +23,7 @@ Great in combination with [kotlinx-coroutines][2] and [jda-reactor][3].
 
 - Kotlin **1.6.21**
 - kotlinx.coroutines **1.6.1**
-- JDA **5.0.0-alpha.11**
+- JDA **5.0.0-alpha.13**
 
 ## Examples
 
@@ -176,6 +176,7 @@ val message = Message {
 ```kotlin
 jda.updateCommands {
     slash("ban", "Ban a user") {
+        restrict(guild=true, Permission.BAN_MEMBERS) // guild only and requires ban permission
         option<User>("user", "The user to ban", true)
         option<String>("reason", "Why to ban this user")
         option<Int>("duration", "For how long to ban this user") {
@@ -186,6 +187,7 @@ jda.updateCommands {
     }
 
     slash("mod", "Moderation commands") {
+        restrict(guild=true, Permission.MODERATE_MEMBERS) // you cannot apply this on subcommands due to discord's design!
         subcommand("ban", "Ban a user") {
             option<User>("user", "The user to ban", true)
             option<String>("reason", "Why to ban this user")
@@ -203,6 +205,7 @@ jda.updateCommands {
 }.queue()
 
 jda.upsertCommand("prune", "Prune messages") {
+    restrict(guild=true, Permission.MESSAGE_MANAGE) // guild only and requires message manage perms
     option<Int>("amount", "The amount to delete from 2-100, default 50")
 }.queue()
 
