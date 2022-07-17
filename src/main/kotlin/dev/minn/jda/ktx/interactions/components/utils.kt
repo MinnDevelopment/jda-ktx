@@ -37,7 +37,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
  * - [Boolean] from [OptionType.BOOLEAN]
  * - [String] from [OptionType.STRING]
  * - [Message.Attachment] from [OptionType.ATTACHMENT]
- * - [IMentionable] from [OptionType.MENTIONABLE]
+ * - [IMentionable] from [OptionType.MENTIONABLE] (exclusive to [User] and [Role])
  * - Any [GuildChannel] type from [OptionType.CHANNEL]
  *
  * @throws[NoSuchElementException]
@@ -58,10 +58,15 @@ inline fun <reified T> CommandInteractionPayload.getOption(name: String): T? = w
     Message.Attachment::class.java -> getOption(name, OptionMapping::getAsAttachment) as? T
     IMentionable::class.java -> getOption(name, OptionMapping::getAsMentionable) as? T
     else -> {
-        val channel = getOption(name, OptionMapping::getAsGuildChannel)
-        if (channel is T)
-            channel
-        else
-            throw NoSuchElementException("Cannot resolve options for type ${T::class.java.simpleName}")
+        if (GuildChannel::class.java.isAssignableFrom(T::class.java)) {
+            val channel = getOption(name, OptionMapping::getAsChannel)
+            when (channel) {
+                is T? -> channel
+                else -> throw NoSuchElementException("Cannot resolve channel of type ${T::class.java.simpleName}")
+            }
+        } else {
+            throw NoSuchElementException("Type ${T::class.java.simpleName} is unsupported for getOption(name) resolution. Try updating or using a different type!")
+        }
     }
+
 }
