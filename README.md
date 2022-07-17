@@ -23,7 +23,7 @@ Great in combination with [kotlinx-coroutines][2] and [jda-reactor][3].
 
 - Kotlin **1.6.21**
 - kotlinx.coroutines **1.6.1**
-- JDA **5.0.0-alpha.13**
+- JDA **5.0.0-alpha.14**
 
 ## Examples
 
