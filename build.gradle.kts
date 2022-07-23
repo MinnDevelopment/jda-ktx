@@ -12,7 +12,7 @@ buildscript {
 
 plugins {
     `maven-publish`
-    kotlin("jvm") version "1.6.21"
+    kotlin("jvm") version "1.7.10"
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
     id("org.jetbrains.dokka") version "1.6.21"
 }
@@ -47,7 +47,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("net.dv8tion:JDA:5.0.0-alpha.14")
+    compileOnly("net.dv8tion:JDA:5.0.0-alpha.17")
     compileOnly("ch.qos.logback:logback-classic:1.2.10")
     compileOnly("club.minnced:discord-webhooks:0.7.5")
     api(kotlin("stdlib-jdk8"))
