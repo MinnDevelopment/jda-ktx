@@ -6,15 +6,15 @@ import java.net.URL
 
 buildscript {
     dependencies {
-        classpath("org.jetbrains.dokka:dokka-base:1.6.21")
+        classpath("org.jetbrains.dokka:dokka-base:1.7.10")
     }
 }
 
 plugins {
     `maven-publish`
     kotlin("jvm") version "1.7.10"
-    id("io.gitlab.arturbosch.detekt") version "1.19.0"
-    id("org.jetbrains.dokka") version "1.6.21"
+    id("io.gitlab.arturbosch.detekt") version "1.21.0"
+    id("org.jetbrains.dokka") version "1.7.10"
 }
 
 group = "dev.minn"
@@ -48,10 +48,10 @@ repositories {
 
 dependencies {
     compileOnly("net.dv8tion:JDA:5.0.0-alpha.17")
-    compileOnly("ch.qos.logback:logback-classic:1.2.10")
-    compileOnly("club.minnced:discord-webhooks:0.7.5")
+    compileOnly("ch.qos.logback:logback-classic:1.2.11")
+    compileOnly("club.minnced:discord-webhooks:0.8.0")
     api(kotlin("stdlib-jdk8"))
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.2")
 }
 
 val javadoc: Javadoc by tasks
