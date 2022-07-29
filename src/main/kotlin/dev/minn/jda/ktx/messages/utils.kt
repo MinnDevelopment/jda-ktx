@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.ItemComponent
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.utils.AttachmentOption
 import java.io.File
 import java.io.InputStream
 
@@ -41,7 +40,6 @@ typealias Files = Collection<NamedFile>
  *
  * @param[name] The filename to use
  * @param[data] The file contents as an input stream
- * @param[options] Attachment options
  *
  * @see  [File.into]
  * @see  [File.named]
@@ -50,8 +48,7 @@ typealias Files = Collection<NamedFile>
  */
 data class NamedFile(
     val name: String,
-    val data: InputStream,
-    val options: Array<out AttachmentOption> = emptyArray()
+    val data: InputStream
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -61,7 +58,6 @@ data class NamedFile(
 
         if (name != other.name) return false
         if (data != other.data) return false
-        if (!options.contentEquals(other.options)) return false
 
         return true
     }
@@ -69,7 +65,6 @@ data class NamedFile(
     override fun hashCode(): Int {
         var result = name.hashCode()
         result = 31 * result + data.hashCode()
-        result = 31 * result + options.contentHashCode()
         return result
     }
 }
@@ -154,17 +149,16 @@ fun Map<String, ByteArray>.into() = map { NamedFile(it.key, it.value.inputStream
  *
  * @return[NamedFile]
  */
-fun InputStream.named(name: String, vararg options: AttachmentOption) = NamedFile(name, this, options)
+fun InputStream.named(name: String) = NamedFile(name, this)
 
 /**
  * Wraps this ByteArray in a [NamedFile]
  *
  * @param[name] The name of the file
- * @param[options] The attachment options
  *
  * @return[NamedFile]
  */
-fun ByteArray.named(name: String, vararg options: AttachmentOption) = NamedFile(name, this.inputStream(), options)
+fun ByteArray.named(name: String) = NamedFile(name, this.inputStream())
 
 /**
  * Wraps this File in a [NamedFile]
@@ -176,14 +170,14 @@ fun ByteArray.named(name: String, vararg options: AttachmentOption) = NamedFile(
  *
  * @see[File.into]
  */
-fun File.named(name: String, vararg options: AttachmentOption) = NamedFile(name, this.inputStream(), options)
+fun File.named(name: String) = NamedFile(name, this.inputStream())
 
 // val outputs = listOf("stdout.txt"(stdout), "stderr"(stderr))
 // there are kind of a meme, no need to document tbh
 
-operator fun String.invoke(file: InputStream, vararg options: AttachmentOption) = file.named(this, *options)
-operator fun String.invoke(file: ByteArray, vararg options: AttachmentOption) = file.named(this, *options)
-operator fun String.invoke(file: File, vararg options: AttachmentOption) = file.named(this, *options)
+operator fun String.invoke(file: InputStream) = file.named(this)
+operator fun String.invoke(file: ByteArray) = file.named(this)
+operator fun String.invoke(file: File) = file.named(this)
 
 // If you want to just use the file name
 

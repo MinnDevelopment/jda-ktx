@@ -22,10 +22,11 @@ import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.requests.restaction.MessageAction
-import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
-import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl
+import net.dv8tion.jda.api.utils.FileUpload
+import net.dv8tion.jda.api.utils.messages.MessageCreateRequest
+import net.dv8tion.jda.api.utils.messages.MessageEditBuilder
 
 /**
  * Defaults used for edit message extensions provided by this module.
@@ -45,20 +46,9 @@ object MessageEditDefaults {
  *
  * @param[files] The files to add
  */
-fun MessageEditCallbackAction.addFiles(files: Files) {
+fun MessageCreateRequest<*>.addFiles(files: Files) {
     files.forEach {
-        addFile(it.data, it.name, *it.options)
-    }
-}
-
-/**
- * Add a collection of [NamedFile] to this request.
- *
- * @param[files] The files to add
- */
-fun <T> WebhookMessageUpdateAction<T>.addFiles(files: Files) {
-    files.forEach {
-        addFile(it.data, it.name, *it.options)
+        addFiles(FileUpload.fromData(it.data, it.name))
     }
 }
 
@@ -103,23 +93,23 @@ fun IMessageEditCallback.editMessage_(
     }
 
     components.applyIf(replace) {
-        setActionRows(it?.mapNotNull { k -> k as? ActionRow } ?: emptyList())
+        setComponents(it?.mapNotNull { k -> k as? ActionRow } ?: emptyList())
     }
 
     allOf(embed, embeds).applyIf(replace) {
         setEmbeds(it ?: emptyList())
     }
 
-    allOf(file, files).applyIf(true) {
-        if (it != null) {
-            addFiles(it)
-            if (replace)
-                retainFilesById(LongRange(0, it.size.toLong()).map(Long::toString))
-        }
-        else if (replace) {
-            retainFilesById(emptyList())
-        }
-    }
+//    allOf(file, files).applyIf(true) {
+//        if (it != null) {
+//            setFiles(it)
+//            if (replace)
+//                setAttachments(LongRange(0, it.size.toLong()).map(Long::toString).map(AttachedFile::fromAttachment))
+//        }
+//        else if (replace) {
+//            setAttachments(emptyList())
+//        }
+//    }
 }
 
 /**
@@ -138,7 +128,7 @@ fun IMessageEditCallback.editMessage_(
  * @param[files] Multiple files
  * @param[replace] Whether this should replace the entire message
  *
- * @return[WebhookMessageUpdateAction]
+ * @return[WebhookMessageEditAction]
  */
 fun InteractionHook.editMessage(
     id: String = "@original",
@@ -149,30 +139,30 @@ fun InteractionHook.editMessage(
     file: NamedFile? = null,
     files: Files? = null,
     replace: Boolean = MessageEditDefaults.replace,
-): WebhookMessageUpdateAction<Message> = editMessageById(id, "tmp").apply {
+) = editMessageById(id, "tmp").apply {
     setContent(null)
     content.applyIf(replace) {
         setContent(it)
     }
 
     components.applyIf(replace) {
-        setActionRows(it?.mapNotNull { k -> k as? ActionRow } ?: emptyList())
+        setComponents(it ?: emptyList())
     }
 
     allOf(embed, embeds).applyIf(replace) {
         setEmbeds(it ?: emptyList())
     }
 
-    allOf(file, files).applyIf(true) {
-        if (it != null) {
-            addFiles(it)
-            if (replace)
-                retainFilesById(LongRange(0, it.size.toLong()).map(Long::toString))
-        }
-        else if (replace) {
-            retainFilesById(emptyList())
-        }
-    }
+//    allOf(file, files).applyIf(true) {
+//        if (it != null) {
+//            addFiles(it)
+//            if (replace)
+//                setAttachments(LongRange(0, it.size.toLong()).map(Long::toString).map(AttachedFile::fromAttachment))
+//        }
+//        else if (replace) {
+//            setAttachments(emptyList())
+//        }
+//    }
 }
 
 /**
@@ -202,32 +192,32 @@ fun MessageChannel.editMessage(
     file: NamedFile? = null,
     files: Files? = null,
     replace: Boolean = MessageEditDefaults.replace,
-): MessageAction = MessageActionImpl(jda, id, this).apply {
-    override(replace)
+) = editMessageById(id, MessageEditBuilder().apply {
+    replace(replace)
 
     content?.let {
-        content(it)
+        setContent(it)
     }
 
     components?.let {
-        setActionRows(it.mapNotNull { k -> k as? ActionRow })
+        setComponents(it.mapNotNull { k -> k as? ActionRow })
     }
 
     allOf(embed, embeds)?.let {
         setEmbeds(it)
     }
 
-    allOf(file, files).applyIf(true) {
-        if (it != null) {
-            addFiles(it)
-            if (replace)
-                retainFilesById(LongRange(0, it.size.toLong()).map(Long::toString))
-        }
-        else if (replace) {
-            retainFilesById(emptyList())
-        }
-    }
-}
+//    allOf(file, files).applyIf(true) {
+//        if (it != null) {
+//            addFiles(it)
+//            if (replace)
+//                retainFilesById(LongRange(0, it.size.toLong()).map(Long::toString))
+//        }
+//        else if (replace) {
+//            retainFilesById(emptyList())
+//        }
+//    }
+}.build())
 
 /**
  * Edit the message.
@@ -254,4 +244,4 @@ fun Message.edit(
     file: NamedFile? = null,
     files: Files? = null,
     replace: Boolean = MessageEditDefaults.replace,
-) = channel.editMessage(id, content, embed, embeds, components, file, files, replace).reference(this)
+) = channel.editMessage(id, content, embed, embeds, components, file, files, replace)

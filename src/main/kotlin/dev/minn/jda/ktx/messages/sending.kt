@@ -22,9 +22,10 @@ import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.requests.restaction.MessageAction
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
+import net.dv8tion.jda.api.utils.FileUpload
 
 // Defaults for keyword arguments
 /**
@@ -58,38 +59,38 @@ object SendDefaults {
 
 // And you can also just add these to the individual actions easily
 
-/**
- * Add a collection of [NamedFile] to this request.
- *
- * @param[files] The files to add
- */
-fun MessageAction.addFiles(files: Files) = apply {
-    files.forEach {
-        addFile(it.data, it.name, *it.options)
-    }
-}
-
-/**
- * Add a collection of [NamedFile] to this request.
- *
- * @param[files] The files to add
- */
-fun ReplyCallbackAction.addFiles(files: Files) = apply {
-    files.forEach {
-        addFile(it.data, it.name, *it.options)
-    }
-}
-
-/**
- * Add a collection of [NamedFile] to this request.
- *
- * @param[files] The files to add
- */
-fun <T> WebhookMessageAction<T>.addFiles(files: Files) = apply {
-    files.forEach {
-        addFile(it.data, it.name, *it.options)
-    }
-}
+///**
+// * Add a collection of [NamedFile] to this request.
+// *
+// * @param[files] The files to add
+// */
+//fun MessageAction.addFiles(files: Files) = apply {
+//    files.forEach {
+//        addFile(it.data, it.name, *it.options)
+//    }
+//}
+//
+///**
+// * Add a collection of [NamedFile] to this request.
+// *
+// * @param[files] The files to add
+// */
+//fun ReplyCallbackAction.addFiles(files: Files) = apply {
+//    files.forEach {
+//        addFile(it.data, it.name, *it.options)
+//    }
+//}
+//
+///**
+// * Add a collection of [NamedFile] to this request.
+// *
+// * @param[files] The files to add
+// */
+//fun <T> WebhookMessageAction<T>.addFiles(files: Files) = apply {
+//    files.forEach {
+//        addFile(it.data, it.name, *it.options)
+//    }
+//}
 
 // Using an underscore at the end to prevent overload specialization
 // You can remove it with an import alias (import ... as foo) but i would recommend against it
@@ -122,7 +123,7 @@ fun IReplyCallback.reply_(
     setEphemeral(ephemeral)
 
     if (components.isNotEmpty()) {
-        addActionRows(components.mapNotNull { it as? ActionRow })
+        addComponents(components.mapNotNull { it as? ActionRow })
     }
 
     if (embed != null) {
@@ -133,7 +134,7 @@ fun IReplyCallback.reply_(
         addEmbeds(embeds)
     }
 
-    file?.let { addFile(it.data, it.name, *it.options) }
+    file?.let { addFiles(FileUpload.fromData(it.data, it.name)) }
     addFiles(files)
 }
 
@@ -162,12 +163,12 @@ fun InteractionHook.send(
     file: NamedFile? = null,
     files: Files = emptyList(),
     ephemeral: Boolean = SendDefaults.ephemeral,
-): WebhookMessageAction<Message> = sendMessage("tmp").apply {
+) = sendMessage("tmp").apply {
     setContent(content)
     setEphemeral(ephemeral)
 
     if (components.isNotEmpty()) {
-        addActionRows(components.mapNotNull { it as? ActionRow })
+        addComponents(components)
     }
 
     if (embed != null) {
@@ -178,7 +179,7 @@ fun InteractionHook.send(
         addEmbeds(embeds)
     }
 
-    file?.let { addFile(it.data, it.name, *it.options) }
+    file?.let { addFiles(FileUpload.fromData(it.data, it.name)) }
     addFiles(files)
 }
 
@@ -203,11 +204,11 @@ fun MessageChannel.send(
     components: Components = SendDefaults.components,
     file: NamedFile? = null,
     files: Files = emptyList(),
-): MessageAction = sendMessage("tmp").apply {
-    content(content)
+): MessageCreateAction = sendMessage("tmp").apply {
+    setContent(content)
 
     if (components.isNotEmpty()) {
-        setActionRows(components.mapNotNull { it as? ActionRow })
+        addComponents(components.mapNotNull { it as? ActionRow })
     }
 
     if (embed != null) {
@@ -218,7 +219,7 @@ fun MessageChannel.send(
         setEmbeds(embeds)
     }
 
-    file?.let { addFile(it.data, it.name, *it.options) }
+    file?.let { addFiles(FileUpload.fromData(it.data, it.name)) }
     addFiles(files)
 }
 
@@ -243,4 +244,4 @@ fun Message.reply_(
     components: Components = SendDefaults.components,
     file: NamedFile? = null,
     files: Files = emptyList(),
-) = channel.send(content, embed, embeds, components, file, files).reference(this)
+) = channel.send(content, embed, embeds, components, file, files).setMessageReference(this)
