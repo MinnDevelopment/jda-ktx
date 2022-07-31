@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
-import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
 import net.dv8tion.jda.api.utils.FileUpload
 
@@ -151,7 +151,7 @@ fun IReplyCallback.reply_(
  * @param[files] Multiple files
  * @param[ephemeral] Whether this message is ephemeral
  *
- * @return[WebhookMessageAction]
+ * @return[WebhookMessageCreateAction]
  *
  * @see  [InteractionHook.sendMessage]
  */
