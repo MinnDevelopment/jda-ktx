@@ -89,7 +89,7 @@ inline fun MessageEditBuilder(
     mentions?.apply(this)
     isReplace = replace
     InlineMessage(this).apply {
-        this.content = content
+        content?.let { this.content = it }
         embeds?.let { this.embeds += it }
         components?.let { this.components += it }
         files?.let { this.files += it }

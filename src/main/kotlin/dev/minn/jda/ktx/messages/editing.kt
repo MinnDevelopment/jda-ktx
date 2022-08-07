@@ -21,12 +21,10 @@ import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
 import net.dv8tion.jda.api.utils.AttachedFile
-import net.dv8tion.jda.api.utils.messages.MessageEditBuilder
 
 /**
  * Defaults used for edit message extensions provided by this module.
@@ -43,12 +41,6 @@ object MessageEditDefaults {
 
 // Using an underscore at the end to prevent overload specialization
 // You can remove it with an import alias (import ... as foo) but i would recommend against it
-
-private inline fun <T> T.applyIf(check: Boolean, func: (T) -> Unit) {
-    if (check || this != null) {
-        func(this)
-    }
-}
 
 /**
  * Edit the original message from this interaction.
@@ -71,25 +63,7 @@ fun IMessageEditCallback.editMessage_(
     components: Collection<LayoutComponent>? = null,
     attachments: Collection<AttachedFile>? = null,
     replace: Boolean = MessageEditDefaults.replace
-): MessageEditCallbackAction = deferEdit().apply {
-    setReplace(replace)
-
-    content.applyIf(replace) {
-        setContent(it)
-    }
-
-    components.applyIf(replace) {
-        setComponents(it?.mapNotNull { k -> k as? ActionRow } ?: emptyList())
-    }
-
-    embeds.applyIf(replace) {
-        setEmbeds(it ?: emptyList())
-    }
-
-    attachments.applyIf(replace) {
-        setAttachments(attachments)
-    }
-}
+): MessageEditCallbackAction = deferEdit().applyData(MessageEdit(content, embeds, attachments, components, null, replace))
 
 /**
  * Edit a message from this interaction.
@@ -114,25 +88,7 @@ fun InteractionHook.editMessage(
     components: Collection<LayoutComponent>? = null,
     attachments: Collection<AttachedFile>? = null,
     replace: Boolean = MessageEditDefaults.replace,
-) = editMessageById(id, "tmp").apply {
-    setReplace(replace)
-
-    content.applyIf(replace) {
-        setContent(it)
-    }
-
-    components.applyIf(replace) {
-        setComponents(it ?: emptyList())
-    }
-
-    embeds.applyIf(replace) {
-        setEmbeds(it ?: emptyList())
-    }
-
-    attachments.applyIf(replace) {
-        setAttachments(attachments)
-    }
-}
+) = editMessageById(id, "tmp").applyData(MessageEdit(content, embeds, attachments, components, null, replace))
 
 /**
  * Edit a message from this channel.
@@ -157,25 +113,7 @@ fun MessageChannel.editMessage(
     components: Collection<LayoutComponent>? = null,
     attachments: Collection<AttachedFile>? = null,
     replace: Boolean = MessageEditDefaults.replace,
-) = editMessageById(id, MessageEditBuilder().apply {
-    setReplace(replace)
-
-    content?.let {
-        setContent(it)
-    }
-
-    components?.let {
-        setComponents(it.mapNotNull { k -> k as? ActionRow })
-    }
-
-    embeds.applyIf(replace) {
-        setEmbeds(it ?: emptyList())
-    }
-
-    attachments.applyIf(replace) {
-        setAttachments(attachments)
-    }
-}.build())
+) = editMessageById(id, MessageEdit(content, embeds, attachments, components, null, replace))
 
 /**
  * Edit the message.

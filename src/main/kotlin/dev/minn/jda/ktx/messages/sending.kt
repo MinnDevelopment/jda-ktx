@@ -38,7 +38,7 @@ object SendDefaults {
     /**
      * The default message content.
      */
-    var content: String? = null
+    var content: String = ""
 
     /**
      * The default message embeds
@@ -76,18 +76,14 @@ object SendDefaults {
  * @see  [IReplyCallback.deferReply]
  */
 fun IReplyCallback.reply_(
-    content: String? = SendDefaults.content,
+    content: String = SendDefaults.content,
     embeds: Collection<MessageEmbed> = SendDefaults.embeds,
     components: Collection<LayoutComponent> = SendDefaults.components,
     files: Collection<FileUpload> = emptyList(),
+    tts: Boolean = false,
+    mentions: Mentions = Mentions.default(),
     ephemeral: Boolean = SendDefaults.ephemeral,
-): ReplyCallbackAction = deferReply().apply {
-    setContent(content)
-    setEphemeral(ephemeral)
-    addComponents(components)
-    addEmbeds(embeds)
-    addFiles(files)
-}
+): ReplyCallbackAction = deferReply(ephemeral).applyData(MessageCreate(content, embeds, files, components, tts, mentions))
 
 /**
  * Send a reply to this interaction.
@@ -105,18 +101,14 @@ fun IReplyCallback.reply_(
  * @see  [InteractionHook.sendMessage]
  */
 fun InteractionHook.send(
-    content: String? = SendDefaults.content,
+    content: String = SendDefaults.content,
     embeds: Collection<MessageEmbed> = SendDefaults.embeds,
     components: Collection<LayoutComponent> = SendDefaults.components,
     files: Collection<FileUpload> = emptyList(),
+    tts: Boolean = false,
+    mentions: Mentions = Mentions.default(),
     ephemeral: Boolean = SendDefaults.ephemeral,
-) = sendMessage("tmp").apply {
-    setContent(content)
-    setEphemeral(ephemeral)
-    addComponents(components)
-    addEmbeds(embeds)
-    addFiles(files)
-}
+) = sendMessage(MessageCreate(content, embeds, files, components, tts, mentions)).setEphemeral(ephemeral)
 
 /**
  * Send a message in this channel.
@@ -131,16 +123,13 @@ fun InteractionHook.send(
  * @return[MessageCreateAction]
  */
 fun MessageChannel.send(
-    content: String? = SendDefaults.content,
+    content: String = SendDefaults.content,
     embeds: Collection<MessageEmbed> = SendDefaults.embeds,
     components: Collection<LayoutComponent> = SendDefaults.components,
     files: Collection<FileUpload> = emptyList(),
-): MessageCreateAction = sendMessage("tmp").apply {
-    setContent(content)
-    addComponents(components)
-    addEmbeds(embeds)
-    addFiles(files)
-}
+    tts: Boolean = false,
+    mentions: Mentions = Mentions.default(),
+): MessageCreateAction = sendMessage(MessageCreate(content, embeds, files, components, tts, mentions))
 
 /**
  * Send a reply to this message in the same channel.
@@ -155,8 +144,10 @@ fun MessageChannel.send(
  * @return[MessageCreateAction]
  */
 fun Message.reply_(
-    content: String? = SendDefaults.content,
+    content: String = SendDefaults.content,
     embeds: Collection<MessageEmbed> = SendDefaults.embeds,
     components: Collection<LayoutComponent> = SendDefaults.components,
     files: Collection<FileUpload> = emptyList(),
-) = channel.send(content, embeds, components, files).setMessageReference(this)
+    tts: Boolean = false,
+    mentions: Mentions = Mentions.default(),
+) = channel.send(content, embeds, components, files, tts, mentions).setMessageReference(this)
