@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
-import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
@@ -43,12 +43,12 @@ object SendDefaults {
     /**
      * The default message embeds
      */
-    var embeds: Embeds = emptyList()
+    var embeds: Collection<MessageEmbed> = emptyList()
 
     /**
      * The default message components
      */
-    var components: Components = emptyList()
+    var components: Collection<LayoutComponent> = emptyList()
 
     /**
      * The default ephemeral state for interactions
@@ -56,41 +56,6 @@ object SendDefaults {
     var ephemeral: Boolean = false
     // Not supporting files since input streams are single use, and I don't think its worth it
 }
-
-// And you can also just add these to the individual actions easily
-
-///**
-// * Add a collection of [NamedFile] to this request.
-// *
-// * @param[files] The files to add
-// */
-//fun MessageAction.addFiles(files: Files) = apply {
-//    files.forEach {
-//        addFile(it.data, it.name, *it.options)
-//    }
-//}
-//
-///**
-// * Add a collection of [NamedFile] to this request.
-// *
-// * @param[files] The files to add
-// */
-//fun ReplyCallbackAction.addFiles(files: Files) = apply {
-//    files.forEach {
-//        addFile(it.data, it.name, *it.options)
-//    }
-//}
-//
-///**
-// * Add a collection of [NamedFile] to this request.
-// *
-// * @param[files] The files to add
-// */
-//fun <T> WebhookMessageAction<T>.addFiles(files: Files) = apply {
-//    files.forEach {
-//        addFile(it.data, it.name, *it.options)
-//    }
-//}
 
 // Using an underscore at the end to prevent overload specialization
 // You can remove it with an import alias (import ... as foo) but i would recommend against it
@@ -101,40 +66,26 @@ object SendDefaults {
  * This makes use of [SendDefaults].
  *
  * @param[content] The message content
- * @param[embed] One embed
  * @param[embeds] Multiple embeds
  * @param[components] Components for this message
- * @param[file] One file
  * @param[files] Multiple files
  * @param[ephemeral] Whether this message is ephemeral
+ *
+ * @return[ReplyCallbackAction]
  *
  * @see  [IReplyCallback.deferReply]
  */
 fun IReplyCallback.reply_(
     content: String? = SendDefaults.content,
-    embed: MessageEmbed? = null,
-    embeds: Embeds = SendDefaults.embeds,
-    components: Components = SendDefaults.components,
-    file: NamedFile? = null,
-    files: Files = emptyList(),
+    embeds: Collection<MessageEmbed> = SendDefaults.embeds,
+    components: Collection<LayoutComponent> = SendDefaults.components,
+    files: Collection<FileUpload> = emptyList(),
     ephemeral: Boolean = SendDefaults.ephemeral,
 ): ReplyCallbackAction = deferReply().apply {
     setContent(content)
     setEphemeral(ephemeral)
-
-    if (components.isNotEmpty()) {
-        addComponents(components.mapNotNull { it as? ActionRow })
-    }
-
-    if (embed != null) {
-        addEmbeds(embed)
-    }
-
-    if (embeds.isNotEmpty()) {
-        addEmbeds(embeds)
-    }
-
-    file?.let { addFiles(FileUpload.fromData(it.data, it.name)) }
+    addComponents(components)
+    addEmbeds(embeds)
     addFiles(files)
 }
 
@@ -144,10 +95,8 @@ fun IReplyCallback.reply_(
  * This makes use of [SendDefaults].
  *
  * @param[content] The message content
- * @param[embed] One embed
  * @param[embeds] Multiple embeds
  * @param[components] Components for this message
- * @param[file] One file
  * @param[files] Multiple files
  * @param[ephemeral] Whether this message is ephemeral
  *
@@ -157,29 +106,15 @@ fun IReplyCallback.reply_(
  */
 fun InteractionHook.send(
     content: String? = SendDefaults.content,
-    embed: MessageEmbed? = null,
-    embeds: Embeds = SendDefaults.embeds,
-    components: Components = SendDefaults.components,
-    file: NamedFile? = null,
-    files: Files = emptyList(),
+    embeds: Collection<MessageEmbed> = SendDefaults.embeds,
+    components: Collection<LayoutComponent> = SendDefaults.components,
+    files: Collection<FileUpload> = emptyList(),
     ephemeral: Boolean = SendDefaults.ephemeral,
 ) = sendMessage("tmp").apply {
     setContent(content)
     setEphemeral(ephemeral)
-
-    if (components.isNotEmpty()) {
-        addComponents(components)
-    }
-
-    if (embed != null) {
-        addEmbeds(embed)
-    }
-
-    if (embeds.isNotEmpty()) {
-        addEmbeds(embeds)
-    }
-
-    file?.let { addFiles(FileUpload.fromData(it.data, it.name)) }
+    addComponents(components)
+    addEmbeds(embeds)
     addFiles(files)
 }
 
@@ -189,37 +124,21 @@ fun InteractionHook.send(
  * This makes use of [SendDefaults].
  *
  * @param[content] The message content
- * @param[embed] One embed
  * @param[embeds] Multiple embeds
  * @param[components] Components for this message
- * @param[file] One file
  * @param[files] Multiple files
  *
- * @return[MessageAction]
+ * @return[MessageCreateAction]
  */
 fun MessageChannel.send(
     content: String? = SendDefaults.content,
-    embed: MessageEmbed? = null,
-    embeds: Embeds = SendDefaults.embeds,
-    components: Components = SendDefaults.components,
-    file: NamedFile? = null,
-    files: Files = emptyList(),
+    embeds: Collection<MessageEmbed> = SendDefaults.embeds,
+    components: Collection<LayoutComponent> = SendDefaults.components,
+    files: Collection<FileUpload> = emptyList(),
 ): MessageCreateAction = sendMessage("tmp").apply {
     setContent(content)
-
-    if (components.isNotEmpty()) {
-        addComponents(components.mapNotNull { it as? ActionRow })
-    }
-
-    if (embed != null) {
-        setEmbeds(embed)
-    }
-
-    if (embeds.isNotEmpty()) {
-        setEmbeds(embeds)
-    }
-
-    file?.let { addFiles(FileUpload.fromData(it.data, it.name)) }
+    addComponents(components)
+    addEmbeds(embeds)
     addFiles(files)
 }
 
@@ -229,19 +148,15 @@ fun MessageChannel.send(
  * This makes use of [SendDefaults].
  *
  * @param[content] The message content
- * @param[embed] One embed
  * @param[embeds] Multiple embeds
  * @param[components] Components for this message
- * @param[file] One file
  * @param[files] Multiple files
  *
- * @return[MessageAction]
+ * @return[MessageCreateAction]
  */
 fun Message.reply_(
     content: String? = SendDefaults.content,
-    embed: MessageEmbed? = null,
-    embeds: Embeds = SendDefaults.embeds,
-    components: Components = SendDefaults.components,
-    file: NamedFile? = null,
-    files: Files = emptyList(),
-) = channel.send(content, embed, embeds, components, file, files).setMessageReference(this)
+    embeds: Collection<MessageEmbed> = SendDefaults.embeds,
+    components: Collection<LayoutComponent> = SendDefaults.components,
+    files: Collection<FileUpload> = emptyList(),
+) = channel.send(content, embeds, components, files).setMessageReference(this)
