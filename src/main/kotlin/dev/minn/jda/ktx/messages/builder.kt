@@ -47,11 +47,11 @@ inline fun MessageCreateBuilder(
     mentions: Mentions = Mentions.default(),
     builder: InlineMessage<MessageCreateData>.() -> Unit = {}
 ) = MessageCreateBuilder().run {
-    setContent(content)
     setTTS(tts)
     mentions.apply(this)
 
     InlineMessage(this).apply {
+        this.content = content
         this.embeds += embeds
         this.components += components
         this.files += files
@@ -83,9 +83,11 @@ inline fun MessageEditBuilder(
     files: Collection<AttachedFile>? = null,
     components: Collection<LayoutComponent>? = null,
     mentions: Mentions? = null,
+    replace: Boolean = false,
     builder: InlineMessage<MessageEditData>.() -> Unit = {}
 ) = MessageEditBuilder().run {
     mentions?.apply(this)
+    isReplace = replace
     InlineMessage(this).apply {
         this.content = content
         embeds?.let { this.embeds += it }
@@ -95,12 +97,13 @@ inline fun MessageEditBuilder(
     }
 }
 
-inline fun MessageEdi(
+inline fun MessageEdit(
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
     files: Collection<AttachedFile>? = null,
     components: Collection<LayoutComponent>? = null,
     mentions: Mentions? = null,
+    replace: Boolean = false,
     builder: InlineMessage<MessageEditData>.() -> Unit = {}
 ) = MessageEditBuilder(
     content,
@@ -108,6 +111,7 @@ inline fun MessageEdi(
     files,
     components,
     mentions,
+    replace,
     builder
 ).build()
 

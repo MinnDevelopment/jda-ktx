@@ -58,7 +58,7 @@ jda.listener<MessageReceivedEvent> {
         if (user == null) // unknown user for name
             channel.send("${it.author.asMention}, I cannot find a user for your query!").queue()
         else // load profile and send it as embed
-            channel.send("${it.author.asMention}, here is the user profile:", embed=profile(user)).queue()
+            channel.send("${it.author.asMention}, here is the user profile:", embeds=profile(user).into()).queue()
     }
 }
 
@@ -150,7 +150,7 @@ val embed = Embed(title="Hello Friend", description="Goodbye Friend")
 Or the builder function style:
 
 ```kotlin
-val embed = Embed {
+val embed = Embed { // Builds a MessageEmbed
     title = "Hello Friend"
     description = "Goodbye Friend"
     field {
@@ -162,7 +162,7 @@ val embed = Embed {
     color = 0xFF0000
 }
 
-val message = Message {
+val message = MessageCreate { // Builds MessageCreateData
     embeds += Embed("Ban Confirmation")
     components += row(
         success(id="approve:ban:$userId", label="Approve"),

@@ -17,6 +17,7 @@
 package dev.minn.jda.ktx.messages
 
 import dev.minn.jda.ktx.interactions.components.row
+import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.ItemComponent
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
@@ -47,6 +48,20 @@ fun ItemComponent.into() = row(this).into()
  * @return[List] of [LayoutComponent]
  */
 fun LayoutComponent.into() = listOf(this)
+
+/**
+ * Wraps the embed into a collection of embeds.
+ *
+ * @return[List] of [MessageEmbed]
+ */
+fun MessageEmbed.into() = listOf(this)
+
+/**
+ * Wraps the file upload into a collection of file uploads.
+ *
+ * @return[List] of [FileUpload]
+ */
+fun FileUpload.into() = listOf(this)
 
 // Lots of conversion methods you can use to convert your collections to named files
 //
