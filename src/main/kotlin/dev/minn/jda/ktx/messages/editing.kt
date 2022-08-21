@@ -21,11 +21,10 @@ import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.requests.restaction.MessageAction
-import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction
+import net.dv8tion.jda.api.interactions.components.LayoutComponent
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
-import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl
+import net.dv8tion.jda.api.utils.AttachedFile
 
 /**
  * Defaults used for edit message extensions provided by this module.
@@ -40,37 +39,8 @@ object MessageEditDefaults {
     var replace: Boolean = false
 }
 
-/**
- * Add a collection of [NamedFile] to this request.
- *
- * @param[files] The files to add
- */
-fun MessageEditCallbackAction.addFiles(files: Files) {
-    files.forEach {
-        addFile(it.data, it.name, *it.options)
-    }
-}
-
-/**
- * Add a collection of [NamedFile] to this request.
- *
- * @param[files] The files to add
- */
-fun <T> WebhookMessageUpdateAction<T>.addFiles(files: Files) {
-    files.forEach {
-        addFile(it.data, it.name, *it.options)
-    }
-}
-
-
 // Using an underscore at the end to prevent overload specialization
 // You can remove it with an import alias (import ... as foo) but i would recommend against it
-
-private inline fun <T> T.applyIf(check: Boolean, func: (T) -> Unit) {
-    if (check || this != null) {
-        func(this)
-    }
-}
 
 /**
  * Edit the original message from this interaction.
@@ -80,47 +50,20 @@ private inline fun <T> T.applyIf(check: Boolean, func: (T) -> Unit) {
  * This does not currently replace files but may do so in the future.
  *
  * @param[content] The message content
- * @param[embed] One embed
  * @param[embeds] Multiple embeds
  * @param[components] Components for this message
- * @param[file] One file
- * @param[files] Multiple files
+ * @param[attachments] Multiple files
  * @param[replace] Whether this should replace the entire message
  *
  * @return[MessageEditCallbackAction]
  */
 fun IMessageEditCallback.editMessage_(
     content: String? = null,
-    embed: MessageEmbed? = null,
-    embeds: Embeds? = null,
-    components: Components? = null,
-    file: NamedFile? = null,
-    files: Files? = null,
+    embeds: Collection<MessageEmbed>? = null,
+    components: Collection<LayoutComponent>? = null,
+    attachments: Collection<AttachedFile>? = null,
     replace: Boolean = MessageEditDefaults.replace
-): MessageEditCallbackAction = deferEdit().apply {
-    content.applyIf(replace) {
-        setContent(it)
-    }
-
-    components.applyIf(replace) {
-        setActionRows(it?.mapNotNull { k -> k as? ActionRow } ?: emptyList())
-    }
-
-    allOf(embed, embeds).applyIf(replace) {
-        setEmbeds(it ?: emptyList())
-    }
-
-    allOf(file, files).applyIf(true) {
-        if (it != null) {
-            addFiles(it)
-            if (replace)
-                retainFilesById(LongRange(0, it.size.toLong()).map(Long::toString))
-        }
-        else if (replace) {
-            retainFilesById(emptyList())
-        }
-    }
-}
+): MessageEditCallbackAction = deferEdit().applyData(MessageEdit(content, embeds, attachments, components, null, replace))
 
 /**
  * Edit a message from this interaction.
@@ -131,49 +74,21 @@ fun IMessageEditCallback.editMessage_(
  *
  * @param[id] The message id, defaults to "@original"
  * @param[content] The message content
- * @param[embed] One embed
  * @param[embeds] Multiple embeds
  * @param[components] Components for this message
- * @param[file] One file
- * @param[files] Multiple files
+ * @param[attachments] Multiple files
  * @param[replace] Whether this should replace the entire message
  *
- * @return[WebhookMessageUpdateAction]
+ * @return[WebhookMessageEditAction]
  */
 fun InteractionHook.editMessage(
     id: String = "@original",
     content: String? = null,
-    embed: MessageEmbed? = null,
-    embeds: Embeds? = null,
-    components: Components? = null,
-    file: NamedFile? = null,
-    files: Files? = null,
+    embeds: Collection<MessageEmbed>? = null,
+    components: Collection<LayoutComponent>? = null,
+    attachments: Collection<AttachedFile>? = null,
     replace: Boolean = MessageEditDefaults.replace,
-): WebhookMessageUpdateAction<Message> = editMessageById(id, "tmp").apply {
-    setContent(null)
-    content.applyIf(replace) {
-        setContent(it)
-    }
-
-    components.applyIf(replace) {
-        setActionRows(it?.mapNotNull { k -> k as? ActionRow } ?: emptyList())
-    }
-
-    allOf(embed, embeds).applyIf(replace) {
-        setEmbeds(it ?: emptyList())
-    }
-
-    allOf(file, files).applyIf(true) {
-        if (it != null) {
-            addFiles(it)
-            if (replace)
-                retainFilesById(LongRange(0, it.size.toLong()).map(Long::toString))
-        }
-        else if (replace) {
-            retainFilesById(emptyList())
-        }
-    }
-}
+) = editMessageById(id, "tmp").applyData(MessageEdit(content, embeds, attachments, components, null, replace))
 
 /**
  * Edit a message from this channel.
@@ -184,50 +99,21 @@ fun InteractionHook.editMessage(
  *
  * @param[id] The message id
  * @param[content] The message content
- * @param[embed] One embed
  * @param[embeds] Multiple embeds
  * @param[components] Components for this message
- * @param[file] One file
- * @param[files] Multiple files
+ * @param[attachments] Multiple files
  * @param[replace] Whether this should replace the entire message
  *
- * @return[MessageAction]
+ * @return[net.dv8tion.jda.api.requests.restaction.MessageEditAction]
  */
 fun MessageChannel.editMessage(
     id: String,
     content: String? = null,
-    embed: MessageEmbed? = null,
-    embeds: Embeds? = null,
-    components: Components? = null,
-    file: NamedFile? = null,
-    files: Files? = null,
+    embeds: Collection<MessageEmbed>? = null,
+    components: Collection<LayoutComponent>? = null,
+    attachments: Collection<AttachedFile>? = null,
     replace: Boolean = MessageEditDefaults.replace,
-): MessageAction = MessageActionImpl(jda, id, this).apply {
-    override(replace)
-
-    content?.let {
-        content(it)
-    }
-
-    components?.let {
-        setActionRows(it.mapNotNull { k -> k as? ActionRow })
-    }
-
-    allOf(embed, embeds)?.let {
-        setEmbeds(it)
-    }
-
-    allOf(file, files).applyIf(true) {
-        if (it != null) {
-            addFiles(it)
-            if (replace)
-                retainFilesById(LongRange(0, it.size.toLong()).map(Long::toString))
-        }
-        else if (replace) {
-            retainFilesById(emptyList())
-        }
-    }
-}
+) = editMessageById(id, MessageEdit(content, embeds, attachments, components, null, replace))
 
 /**
  * Edit the message.
@@ -237,21 +123,17 @@ fun MessageChannel.editMessage(
  * This does not currently replace files but may do so in the future.
  *
  * @param[content] The message content
- * @param[embed] One embed
  * @param[embeds] Multiple embeds
  * @param[components] Components for this message
- * @param[file] One file
- * @param[files] Multiple files
+ * @param[attachments] Multiple files
  * @param[replace] Whether this should replace the entire message
  *
- * @return[MessageAction]
+ * @return[net.dv8tion.jda.api.requests.restaction.MessageEditAction]
  */
 fun Message.edit(
     content: String? = null,
-    embed: MessageEmbed? = null,
-    embeds: Embeds? = null,
-    components: Components? = null,
-    file: NamedFile? = null,
-    files: Files? = null,
+    embeds: Collection<MessageEmbed>? = null,
+    components: Collection<LayoutComponent>? = null,
+    attachments: Collection<AttachedFile>? = null,
     replace: Boolean = MessageEditDefaults.replace,
-) = channel.editMessage(id, content, embed, embeds, components, file, files, replace).reference(this)
+) = channel.editMessage(id, content, embeds, components, attachments, replace)

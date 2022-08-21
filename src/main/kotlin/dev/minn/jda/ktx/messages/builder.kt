@@ -20,31 +20,100 @@ package dev.minn.jda.ktx.messages
 
 import dev.minn.jda.ktx.interactions.components.row
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.MessageBuilder
-import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.Message.MentionType
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.Role
-import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.interactions.components.ItemComponent
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.requests.restaction.MessageAction
+import net.dv8tion.jda.api.utils.AttachedFile
+import net.dv8tion.jda.api.utils.FileUpload
+import net.dv8tion.jda.api.utils.messages.AbstractMessageBuilder
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import net.dv8tion.jda.api.utils.messages.MessageCreateData
+import net.dv8tion.jda.api.utils.messages.MessageEditBuilder
+import net.dv8tion.jda.api.utils.messages.MessageEditData
+import net.dv8tion.jda.api.utils.messages.MessageRequest
 import java.time.temporal.TemporalAccessor
+import java.util.*
 
-inline fun Message(
-    content: String? = null,
-    embed: MessageEmbed? = null,
-    embeds: Embeds? = null,
-    components: Components? = null,
-    nonce: String? = null,
+
+inline fun MessageCreateBuilder(
+    content: String = "",
+    embeds: Collection<MessageEmbed> = emptyList(),
+    files: Collection<FileUpload> = emptyList(),
+    components: Collection<LayoutComponent> = emptyList(),
     tts: Boolean = false,
-    allowedMentionTypes: Collection<Message.MentionType>? = null,
-    mentionUsers: Collection<Long>? = null,
-    mentionRoles: Collection<Long>? = null,
-    builder: InlineMessage.() -> Unit = {},
-): Message {
-    return MessageBuilder(content, embed, embeds, components, nonce, tts, allowedMentionTypes, mentionUsers, mentionRoles, builder).build()
+    mentions: Mentions = Mentions.default(),
+    builder: InlineMessage<MessageCreateData>.() -> Unit = {}
+) = MessageCreateBuilder().run {
+    setTTS(tts)
+    mentions.apply(this)
+
+    InlineMessage(this).apply {
+        this.content = content
+        this.embeds += embeds
+        this.components += components
+        this.files += files
+        this.builder()
+    }
 }
+
+inline fun MessageCreate(
+    content: String = "",
+    embeds: Collection<MessageEmbed> = emptyList(),
+    files: Collection<FileUpload> = emptyList(),
+    components: Collection<LayoutComponent> = emptyList(),
+    tts: Boolean = false,
+    mentions: Mentions = Mentions.default(),
+    builder: InlineMessage<MessageCreateData>.() -> Unit = {}
+) = MessageCreateBuilder(
+    content,
+    embeds,
+    files,
+    components,
+    tts,
+    mentions,
+    builder
+).build()
+
+inline fun MessageEditBuilder(
+    content: String? = null,
+    embeds: Collection<MessageEmbed>? = null,
+    files: Collection<AttachedFile>? = null,
+    components: Collection<LayoutComponent>? = null,
+    mentions: Mentions? = null,
+    replace: Boolean = false,
+    builder: InlineMessage<MessageEditData>.() -> Unit = {}
+) = MessageEditBuilder().run {
+    mentions?.apply(this)
+    isReplace = replace
+    InlineMessage(this).apply {
+        content?.let { this.content = it }
+        embeds?.let { this.embeds += it }
+        components?.let { this.components += it }
+        files?.let { this.files += it }
+        this.builder()
+    }
+}
+
+inline fun MessageEdit(
+    content: String? = null,
+    embeds: Collection<MessageEmbed>? = null,
+    files: Collection<AttachedFile>? = null,
+    components: Collection<LayoutComponent>? = null,
+    mentions: Mentions? = null,
+    replace: Boolean = false,
+    builder: InlineMessage<MessageEditData>.() -> Unit = {}
+) = MessageEditBuilder(
+    content,
+    embeds,
+    files,
+    components,
+    mentions,
+    replace,
+    builder
+).build()
 
 inline fun Embed(
     description: String? = null,
@@ -67,33 +136,6 @@ inline fun Embed(
     ).build()
 }
 
-inline fun MessageBuilder(
-    content: String? = null,
-    embed: MessageEmbed? = null,
-    embeds: Embeds? = null,
-    components: Components? = null,
-    nonce: String? = null,
-    tts: Boolean = false,
-    allowedMentionTypes: Collection<Message.MentionType>? = null,
-    mentionUsers: Collection<Long>? = null,
-    mentionRoles: Collection<Long>? = null,
-    builder: InlineMessage.() -> Unit = {}
-): InlineMessage {
-    return MessageBuilder().run {
-        setContent(content)
-        setNonce(nonce)
-        setTTS(tts)
-        allowedMentionTypes?.let { setAllowedMentions(it) }
-        mentionUsers?.forEach { mentionUsers(it) }
-        mentionRoles?.forEach { mentionRoles(it) }
-
-        InlineMessage(this).apply {
-            this.embeds += allOf(embed, embeds) ?: emptyList()
-            this.components += components ?: emptyList()
-            this.builder()
-        }
-    }
-}
 
 inline fun EmbedBuilder(
     description: String? = null,
@@ -125,16 +167,31 @@ inline fun EmbedBuilder(
     }
 }
 
-class InlineMessage(val builder: MessageBuilder) {
-    constructor(message: Message) : this(MessageBuilder(message))
+internal object SetFlags {
+    const val EMBEDS     = 1 shl 0
+    const val FILES      = 1 shl 1
+    const val COMPONENTS = 1 shl 2
+}
 
+class InlineMessage<T>(val builder: AbstractMessageBuilder<T, *>) {
     internal val configuredEmbeds = mutableListOf<MessageEmbed>()
     internal val configuredComponents = mutableListOf<LayoutComponent>()
+    internal val configuredFiles = mutableListOf<AttachedFile>()
+    internal var set = 0
 
-    fun build() = builder
-        .setEmbeds(configuredEmbeds)
-        .setActionRows(configuredComponents.mapNotNull { it as? ActionRow })
-        .build()
+    fun build() = builder.apply {
+        if (set and SetFlags.EMBEDS != 0) {
+            setEmbeds(configuredEmbeds)
+        }
+        if (set and SetFlags.COMPONENTS != 0) {
+            setComponents(configuredComponents)
+        }
+
+        if (this is MessageEditBuilder && set and SetFlags.FILES != 0)
+            setAttachments(configuredFiles)
+        else
+            setFiles(configuredFiles.mapNotNull { it as? FileUpload })
+    }.build()
 
     var content: String? = null
         set(value) {
@@ -142,13 +199,7 @@ class InlineMessage(val builder: MessageBuilder) {
             field = value
         }
 
-    @Deprecated("You should use the embeds property instead, which accepts a collection of embeds", ReplaceWith("embeds"), DeprecationLevel.ERROR)
-    var embed: MessageEmbed? = null
-        set(value) {
-            configuredEmbeds.clear()
-            value?.let(configuredEmbeds::add)
-            field = value
-        }
+    val files = FileAccumulator(this)
 
     val embeds = EmbedAccumulator(this)
 
@@ -156,7 +207,7 @@ class InlineMessage(val builder: MessageBuilder) {
         embeds += EmbedBuilder(description = null).apply(builder).build()
     }
 
-    val components = ComponentAccumulator(this.configuredComponents)
+    val components = ComponentAccumulator(this.configuredComponents, this)
 
     fun actionRow(vararg components: ItemComponent) {
         this.components += row(*components)
@@ -166,19 +217,7 @@ class InlineMessage(val builder: MessageBuilder) {
         this.components += components.row()
     }
 
-    var nonce: String? = null
-        set(value) {
-            builder.setNonce(value)
-            field = value
-        }
-
-    var tts: Boolean = false
-        set(value) {
-            builder.setTTS(value)
-            field = value
-        }
-
-    var allowedMentionTypes = MessageAction.getDefaultMentions()
+    var allowedMentionTypes = MessageRequest.getDefaultMentions()
         set(value) {
             builder.setAllowedMentions(value)
             field = value
@@ -194,7 +233,7 @@ class InlineMessage(val builder: MessageBuilder) {
         val users = mutableListOf<Long>()
         val roles = mutableListOf<Long>()
 
-        fun user(user: User) {
+        fun user(user: UserSnowflake) {
             users.add(user.idLong)
         }
         fun user(id: String) {
@@ -215,6 +254,7 @@ class InlineMessage(val builder: MessageBuilder) {
         }
     }
 }
+
 
 class InlineEmbed(val builder: EmbedBuilder) {
     constructor(embed: MessageEmbed) : this(EmbedBuilder(embed))
@@ -301,38 +341,138 @@ class InlineEmbed(val builder: EmbedBuilder) {
     )
 }
 
-class EmbedAccumulator(private val builder: InlineMessage) {
+class EmbedAccumulator(private val builder: InlineMessage<*>) {
     operator fun plusAssign(embeds: Collection<MessageEmbed>) {
+        builder.set = builder.set or SetFlags.EMBEDS
         builder.configuredEmbeds += embeds
     }
 
     operator fun plusAssign(embed: MessageEmbed) {
+        builder.set = builder.set or SetFlags.EMBEDS
         builder.configuredEmbeds += embed
     }
 
     operator fun minusAssign(embeds: Collection<MessageEmbed>) {
+        builder.set = builder.set or SetFlags.EMBEDS
         builder.configuredEmbeds -= embeds.toSet()
     }
 
     operator fun minusAssign(embed: MessageEmbed) {
+        builder.set = builder.set or SetFlags.EMBEDS
         builder.configuredEmbeds -= embed
     }
 }
 
-class ComponentAccumulator(private val config: MutableList<LayoutComponent>) {
+class ComponentAccumulator(private val config: MutableList<LayoutComponent>, private val builder: InlineMessage<*>? = null) {
     operator fun plusAssign(components: Collection<LayoutComponent>) {
+        builder?.let { it.set = it.set or SetFlags.COMPONENTS }
         config += components
     }
 
     operator fun plusAssign(component: LayoutComponent) {
+        builder?.let { it.set = it.set or SetFlags.COMPONENTS }
         config += component
     }
 
     operator fun minusAssign(components: Collection<LayoutComponent>) {
+        builder?.let { it.set = it.set or SetFlags.COMPONENTS }
         config -= components.toSet()
     }
 
     operator fun minusAssign(component: LayoutComponent) {
+        builder?.let { it.set = it.set or SetFlags.COMPONENTS }
         config -= component
+    }
+}
+
+class FileAccumulator(private val builder: InlineMessage<*>) {
+    operator fun plusAssign(files: Collection<AttachedFile>) {
+        builder.set = builder.set or SetFlags.FILES
+        builder.configuredFiles += files
+    }
+
+    operator fun plusAssign(file: AttachedFile) {
+        builder.set = builder.set or SetFlags.FILES
+        builder.configuredFiles += file
+    }
+
+    operator fun minusAssign(files: Collection<AttachedFile>) {
+        builder.set = builder.set or SetFlags.FILES
+        builder.configuredFiles -= files.toSet()
+    }
+
+    operator fun minusAssign(file: AttachedFile) {
+        builder.set = builder.set or SetFlags.FILES
+        builder.configuredFiles -= file
+    }
+}
+
+
+class MentionConfig internal constructor(
+    val any: Boolean,
+    val list: List<Long>,
+    val type: MentionType
+) {
+    companion object {
+        val USERS = MentionConfig(true, emptyList(), MentionType.USER)
+        val ROLES = MentionConfig(true, emptyList(), MentionType.ROLE)
+        val EVERYONE = MentionConfig(true, emptyList(), MentionType.EVERYONE)
+        val HERE = MentionConfig(true, emptyList(), MentionType.HERE)
+
+        fun users(list: Collection<Long>) = MentionConfig(false, list.toList(), MentionType.USER)
+        fun roles(list: Collection<Long>) = MentionConfig(false, list.toList(), MentionType.ROLE)
+    }
+}
+
+data class Mentions(
+    var users: MentionConfig,
+    var roles: MentionConfig,
+    var everyone: Boolean,
+    var here: Boolean
+) {
+    fun apply(request: MessageRequest<*>) {
+        val types = EnumSet.noneOf(MentionType::class.java)
+        if (everyone) types.add(MentionType.EVERYONE)
+        if (here) types.add(MentionType.HERE)
+        if (users.any) types.add(MentionType.USER)
+        if (roles.any) types.add(MentionType.ROLE)
+
+        request.setAllowedMentions(types)
+        if (!users.any)
+            users.list.forEach(request::mentionUsers)
+        if (!roles.any)
+            roles.list.forEach(request::mentionRoles)
+    }
+
+    operator fun plusAssign(config: MentionConfig) {
+        when (config.type) {
+            MentionType.EVERYONE -> everyone = config.any
+            MentionType.HERE -> here = config.any
+            MentionType.USER -> users = config
+            MentionType.ROLE -> roles = config
+            else -> {}
+        }
+    }
+
+    companion object {
+        fun default(): Mentions {
+            val defaultTypes = MessageRequest.getDefaultMentions()
+
+            return Mentions(
+                MentionConfig(MentionType.USER in defaultTypes, emptyList(), MentionType.USER),
+                MentionConfig(MentionType.ROLE in defaultTypes, emptyList(), MentionType.ROLE),
+                MentionType.EVERYONE in defaultTypes,
+                MentionType.HERE in defaultTypes
+            )
+        }
+
+        fun of(vararg configs: MentionConfig): Mentions {
+            val allowedMentions = default()
+
+            for (config in configs)
+                allowedMentions += config
+
+            return allowedMentions
+        }
     }
 }

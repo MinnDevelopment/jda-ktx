@@ -11,7 +11,7 @@
 
 [![Kotlin](https://img.shields.io/badge/kotlin-1.6.21-blue.svg?logo=kotlin)](http://kotlinlang.org)
 [![kotlinx-coroutines](https://img.shields.io/badge/kotlinx.coroutines-1.6.1-blue.svg?logo=kotlin)][2]
-[![JDA](https://img.shields.io/badge/JDA-5.0.0--alpha.14-blue.svg)][1]
+[![JDA](https://img.shields.io/badge/JDA-5.0.0--alpha.18-blue.svg)][1]
 [![docs](https://img.shields.io/github/deployments/minndevelopment/jda-ktx/github-pages?label=docs)][8]
 
 # jda-ktx
@@ -23,7 +23,7 @@ Great in combination with [kotlinx-coroutines][2] and [jda-reactor][3].
 
 - Kotlin **1.6.21**
 - kotlinx.coroutines **1.6.1**
-- JDA **5.0.0-alpha.14**
+- JDA **5.0.0-alpha.18**
 
 ## Examples
 
@@ -58,7 +58,7 @@ jda.listener<MessageReceivedEvent> {
         if (user == null) // unknown user for name
             channel.send("${it.author.asMention}, I cannot find a user for your query!").queue()
         else // load profile and send it as embed
-            channel.send("${it.author.asMention}, here is the user profile:", embed=profile(user)).queue()
+            channel.send("${it.author.asMention}, here is the user profile:", embeds=profile(user).into()).queue()
     }
 }
 
@@ -150,7 +150,7 @@ val embed = Embed(title="Hello Friend", description="Goodbye Friend")
 Or the builder function style:
 
 ```kotlin
-val embed = Embed {
+val embed = Embed { // Builds a MessageEmbed
     title = "Hello Friend"
     description = "Goodbye Friend"
     field {
@@ -162,7 +162,7 @@ val embed = Embed {
     color = 0xFF0000
 }
 
-val message = Message {
+val message = MessageCreate { // Builds MessageCreateData
     embeds += Embed("Ban Confirmation")
     components += row(
         success(id="approve:ban:$userId", label="Approve"),

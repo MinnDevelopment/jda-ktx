@@ -18,7 +18,6 @@
 package dev.minn.jda.ktx.interactions.components
 
 import dev.minn.jda.ktx.messages.ComponentAccumulator
-import dev.minn.jda.ktx.messages.Components
 import net.dv8tion.jda.api.interactions.callbacks.IModalCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
@@ -40,7 +39,7 @@ import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction
 fun IModalCallback.replyModal(
     id: String,
     title: String,
-    components: Components = emptyList(),
+    components: Collection<LayoutComponent> = emptyList(),
     builder: InlineModal.() -> Unit = {}
 ): ModalCallbackAction {
     return replyModal(Modal(id, title, components, builder))
@@ -61,7 +60,7 @@ fun IModalCallback.replyModal(
 fun ModalBuilder(
     id: String,
     title: String,
-    components: Components = emptyList(),
+    components: Collection<LayoutComponent> = emptyList(),
     builder: InlineModal.() -> Unit = {}
 ) = InlineModal(Modal.create(id, title)).also {
     it.configuredComponents.addAll(components)
@@ -81,7 +80,7 @@ fun ModalBuilder(
 fun Modal(
     id: String,
     title: String,
-    components: Components = emptyList(),
+    components: Collection<LayoutComponent> = emptyList(),
     builder: InlineModal.() -> Unit = {}
 ) = ModalBuilder(id, title, components, builder).build()
 
