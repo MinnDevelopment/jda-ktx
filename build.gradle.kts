@@ -18,7 +18,7 @@ plugins {
 }
 
 group = "dev.minn"
-version = "0.9.4-alpha.18"
+version = "0.9.5-alpha.19"
 
 configure<JavaPluginExtension> {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -47,7 +47,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("net.dv8tion:JDA:5.0.0-alpha.18")
+    compileOnly("net.dv8tion:JDA:5.0.0-alpha.19")
     compileOnly("ch.qos.logback:logback-classic:1.2.10")
     compileOnly("club.minnced:discord-webhooks:0.7.5")
     api(kotlin("stdlib-jdk8"))

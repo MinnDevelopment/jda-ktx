@@ -17,6 +17,7 @@
 package dev.minn.jda.ktx.interactions.commands
 
 import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.channel.Channel
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.io.File
 

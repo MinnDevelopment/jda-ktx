@@ -16,8 +16,8 @@
 
 package dev.minn.jda.ktx.messages
 
-import net.dv8tion.jda.api.entities.GuildChannel
 import net.dv8tion.jda.api.entities.Mentions
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 
 /**
  * Generics equivalent to [Mentions.getChannels].

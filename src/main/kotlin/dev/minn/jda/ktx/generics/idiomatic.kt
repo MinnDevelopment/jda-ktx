@@ -16,8 +16,8 @@
 
 package dev.minn.jda.ktx.generics
 
-import net.dv8tion.jda.api.entities.Channel
-import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer
+import net.dv8tion.jda.api.entities.channel.Channel
+import net.dv8tion.jda.api.entities.channel.attribute.IGuildChannelContainer
 
 /**
  * Same as [IGuildChannelContainer.getChannelById] but with a generic type parameter instead.
