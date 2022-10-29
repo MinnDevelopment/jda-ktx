@@ -47,8 +47,8 @@ repositories {
 }
 
 dependencies {
-//    compileOnly("net.dv8tion:JDA:5.0.0-alpha.22")
-    compileOnly("com.github.dv8fromtheworld:JDA:8571e62")
+    compileOnly("net.dv8tion:JDA:5.0.0-alpha.22")
+//    compileOnly("com.github.dv8fromtheworld:JDA:8571e62")
     compileOnly("ch.qos.logback:logback-classic:1.2.10")
     compileOnly("club.minnced:discord-webhooks:0.7.5")
     api(kotlin("stdlib-jdk8"))
