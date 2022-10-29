@@ -18,7 +18,7 @@ plugins {
 }
 
 group = "dev.minn"
-version = "0.9.5-alpha.19"
+version = "0.9.6-alpha.22"
 
 configure<JavaPluginExtension> {
     sourceCompatibility = JavaVersion.VERSION_1_8
