@@ -18,7 +18,7 @@ plugins {
 }
 
 group = "dev.minn"
-version = "0.9.6-alpha.22"
+version = "0.10.0-beta.1"
 
 configure<JavaPluginExtension> {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -47,7 +47,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("net.dv8tion:JDA:5.0.0-alpha.22")
+    compileOnly("net.dv8tion:JDA:5.0.0-beta.1")
 //    compileOnly("com.github.dv8fromtheworld:JDA:8571e62")
     compileOnly("ch.qos.logback:logback-classic:1.2.10")
     compileOnly("club.minnced:discord-webhooks:0.7.5")
