@@ -187,10 +187,11 @@ class InlineMessage<T>(val builder: AbstractMessageBuilder<T, *>) {
             setComponents(configuredComponents)
         }
 
-        if (this is MessageEditBuilder && set and SetFlags.FILES != 0)
-            setAttachments(configuredFiles)
-        else
-            setFiles(configuredFiles.mapNotNull { it as? FileUpload })
+        if (set and SetFlags.FILES != 0) {
+            if (this is MessageEditBuilder)
+                setAttachments(configuredFiles)
+            else setFiles(configuredFiles.mapNotNull { it as? FileUpload })
+        }
     }.build()
 
     var content: String? = null
