@@ -20,6 +20,6 @@ jobs:
         java-version: 11
     - name: Make gradlew executable
       run: chmod u+x gradlew
-    - uses: gradle/gradle-build-action@v2
+    - uses: gradle/gradle-build-action@v2.4.2
       with:
         arguments: build test dokkaHtml
