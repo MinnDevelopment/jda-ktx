@@ -6,32 +6,64 @@ import java.net.URL
 
 buildscript {
     dependencies {
-        classpath("org.jetbrains.dokka:dokka-base:1.6.21")
+        classpath("org.jetbrains.dokka:dokka-base:1.+")
     }
+
+    dependencyLocking.lockAllConfigurations()
 }
 
 plugins {
     `maven-publish`
-    kotlin("jvm") version "1.6.21"
-    id("io.gitlab.arturbosch.detekt") version "1.19.0"
-    id("org.jetbrains.dokka") version "1.6.21"
+    kotlin("jvm") version "1.+"
+    id("io.gitlab.arturbosch.detekt") version "1.+"
+    id("org.jetbrains.dokka") version "1.+"
 }
 
 group = "dev.minn"
-version = "0.10.0-beta.1"
+version = "0.10.0-beta.19"
+val jdaVersion = "5.0.0-beta.19"
+
+
+
+////////////////////////////////
+// Dependency Version Locking //
+////////////////////////////////
+
+fun ComponentSelectionRules.notRc() {
+    all {
+        if (candidate.version.contains("RC", ignoreCase = true))
+            reject("not a release version")
+    }
+}
+
+// To update lockfile, run ./gradlew dependencies --update-locks '<group id>:<artifact id>'
+// To update all locks use ./gradlew dependencies --write-locks
+
+configurations {
+    compileClasspath {
+        resolutionStrategy.activateDependencyLocking()
+        resolutionStrategy.componentSelection.notRc()
+    }
+    runtimeClasspath {
+        resolutionStrategy.activateDependencyLocking()
+        resolutionStrategy.componentSelection.notRc()
+    }
+}
+
+dependencyLocking {
+    lockMode.set(LockMode.STRICT)
+}
+
+
+
+///////////////////////////
+// Compile Configuration //
+///////////////////////////
 
 configure<JavaPluginExtension> {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
-
-//kotlin {
-//    sourceSets.all {
-//        languageSettings.apply {
-//            languageVersion = "1.7"
-//        }
-//    }
-//}
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
@@ -41,19 +73,32 @@ tasks.withType<KotlinCompile> {
     )
 }
 
+
+
+////////////////////////////
+// Dependency Declaration //
+////////////////////////////
+
 repositories {
     mavenCentral()
-    maven("https://jitpack.io/")
 }
 
 dependencies {
-    compileOnly("net.dv8tion:JDA:5.0.0-beta.1")
-//    compileOnly("com.github.dv8fromtheworld:JDA:8571e62")
-    compileOnly("ch.qos.logback:logback-classic:1.2.10")
-    compileOnly("club.minnced:discord-webhooks:0.7.5")
-    api(kotlin("stdlib-jdk8"))
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
+    compileOnly("ch.qos.logback:logback-classic:latest.release")
+    compileOnly("club.minnced:discord-webhooks:latest.release")
+
+    api(kotlin("stdlib"))
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.+")
+
+    implementation("net.dv8tion:JDA:$jdaVersion")
 }
+
+
+
+
+////////////////////////
+// Task Configuration //
+////////////////////////
 
 val javadoc: Javadoc by tasks
 
@@ -77,6 +122,12 @@ tasks {
     }
 }
 
+
+
+////////////////
+// Publishing //
+////////////////
+
 publishing.publications {
     register<MavenPublication>("Release") {
         from(components["java"])
@@ -86,19 +137,41 @@ publishing.publications {
 
         artifact(javadocJar)
         artifact(sourcesJar)
+
+        // Uses the resolved version instead of the 1.+ wildcards
+        // See https://docs.gradle.org/current/userguide/publishing_maven.html#publishing_maven:resolved_dependencies
+        versionMapping {
+            usage("java-api") {
+                fromResolutionOf("runtimeClasspath")
+            }
+            usage("java-runtime") {
+                fromResolutionResult()
+            }
+        }
     }
 }
+
+
+
+/////////////
+// Linting //
+/////////////
 
 
 detekt {
     parallel = true
     autoCorrect = false
 
-    config = files("detekt.yml")
+    config.from(files("detekt.yml"))
 }
 
 tasks.test.get().dependsOn(tasks.getByName("detekt"))
 
+
+
+///////////////////
+// Documentation //
+///////////////////
 
 tasks.getByName("dokkaHtml", DokkaTask::class) {
     dokkaSourceSets.configureEach {
@@ -119,5 +192,4 @@ tasks.getByName("dokkaHtml", DokkaTask::class) {
             footerMessage = "Copyright © 2020 Florian Spieß"
         }
     }
-
 }
