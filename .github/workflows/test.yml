@@ -17,7 +17,8 @@ jobs:
     - uses: actions/checkout@v4
     - uses: actions/setup-java@v4
       with:
-        java-version: 11
+        java-version: 17
+        distribution: temurin
     - name: Make gradlew executable
       run: chmod u+x gradlew
     - uses: gradle/gradle-build-action@v2
