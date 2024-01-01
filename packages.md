@@ -74,24 +74,15 @@ jda.onButton("hello") { // Button that says hello
 ```gradle
 repositories {
     mavenCentral()
-    maven("https://jitpack.io/")
 }
 
 dependencies {
     implementation("net.dv8tion:JDA:${JDA_VERSION}")
-    implementation("com.github.minndevelopment:jda-ktx:${COMMIT}")
+    implementation("club.minnced:jda-ktx:${VERSION}")
 }
 ```
 
 ### Maven
-
-```xml
-<repository>
-    <id>jitpack</id>
-    <name>jitpack</name>
-    <url>https://jitpack.io/</url>
-</repository>
-```
 
 ```xml
 <dependency>
@@ -100,9 +91,9 @@ dependencies {
   <version>$JDA_VERSION</version>
 </dependency>
 <dependency>
-  <groupId>com.github.minndevelopment</groupId>
+  <groupId>club.minnced</groupId>
   <artifactId>jda-ktx</artifactId>
-  <version>$COMMIT</version>
+  <version>$VERSION</version>
 </dependency>
 ```
 
