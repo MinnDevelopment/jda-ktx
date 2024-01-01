@@ -14,7 +14,10 @@ buildscript {
 
 plugins {
     `maven-publish`
+    signing
+
     kotlin("jvm") version "1.+"
+    id("io.github.gradle-nexus.publish-plugin") version "1.+"
     id("io.gitlab.arturbosch.detekt") version "1.+"
     id("org.jetbrains.dokka") version "1.+"
 }
@@ -95,7 +98,6 @@ dependencies {
 
 
 
-
 ////////////////////////
 // Task Configuration //
 ////////////////////////
@@ -119,35 +121,6 @@ tasks {
         dependsOn(javadocJar)
         dependsOn(sourcesJar)
         dependsOn(jar)
-    }
-}
-
-
-
-////////////////
-// Publishing //
-////////////////
-
-publishing.publications {
-    register<MavenPublication>("Release") {
-        from(components["java"])
-        groupId = project.group as String
-        artifactId = project.name
-        version = project.version as String
-
-        artifact(javadocJar)
-        artifact(sourcesJar)
-
-        // Uses the resolved version instead of the 1.+ wildcards
-        // See https://docs.gradle.org/current/userguide/publishing_maven.html#publishing_maven:resolved_dependencies
-        versionMapping {
-            usage("java-api") {
-                fromResolutionOf("runtimeClasspath")
-            }
-            usage("java-runtime") {
-                fromResolutionResult()
-            }
-        }
     }
 }
 
@@ -192,4 +165,112 @@ tasks.getByName("dokkaHtml", DokkaTask::class) {
             footerMessage = "Copyright © 2020 Florian Spieß"
         }
     }
+}
+
+
+
+////////////////
+// Publishing //
+////////////////
+
+
+fun getProjectProperty(name: String) = project.properties[name] as? String
+
+
+// Generate pom file for maven central
+
+fun generatePom(): MavenPom.() -> Unit {
+    return {
+        packaging = "jar"
+        name.set(project.name)
+        description.set("Collection of useful Kotlin extensions for JDA")
+        url.set("https://github.com/MinnDevelopment/jda-ktx")
+        scm {
+            url.set("https://github.com/MinnDevelopment/jda-ktx")
+            connection.set("scm:git:git://github.com/MinnDevelopment/jda-ktx")
+            developerConnection.set("scm:git:ssh:git@github.com:MinnDevelopment/jda-ktx")
+        }
+        licenses {
+            license {
+                name.set("The Apache Software License, Version 2.0")
+                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                distribution.set("repo")
+            }
+        }
+        developers {
+            developer {
+                id.set("Minn")
+                name.set("Florian Spieß")
+                email.set("business@minn.dev")
+            }
+        }
+    }
+}
+
+
+publishing.publications {
+    register<MavenPublication>("Release") {
+        from(components["java"])
+        artifactId = project.name
+        groupId = project.group as String
+        version = project.version as String
+
+        artifact(javadocJar)
+        artifact(sourcesJar)
+
+        pom.apply(generatePom())
+
+        // Uses the resolved version instead of the 1.+ wildcards
+        // See https://docs.gradle.org/current/userguide/publishing_maven.html#publishing_maven:resolved_dependencies
+        versionMapping {
+            usage("java-api") {
+                fromResolutionOf("runtimeClasspath")
+            }
+            usage("java-runtime") {
+                fromResolutionResult()
+            }
+        }
+    }
+}
+
+val signingKey: String? by project
+
+if (signingKey != null) {
+    signing {
+        useInMemoryPgpKeys(signingKey, null)
+        sign(*publishing.publications.toTypedArray())
+    }
+}
+
+val ossrhUser: String? by project
+val ossrhPassword: String? by project
+val stagingProfile: String? by project
+
+val enablePublishing = ossrhUser != null && ossrhPassword != null && stagingProfile != null
+
+if (enablePublishing) {
+    nexusPublishing {
+        repositories.sonatype {
+            username.set(ossrhUser)
+            password.set(ossrhPassword)
+            stagingProfileId.set(stagingProfile)
+        }
+    }
+}
+
+val build by tasks
+val clean by tasks
+
+build.mustRunAfter(clean)
+
+val rebuild = tasks.register<Task>("rebuild") {
+    group = "build"
+    dependsOn(clean, build)
+}
+
+// Only enable publishing task for properly configured projects
+val publishingTasks = tasks.withType<PublishToMavenRepository> {
+    enabled = ossrhUser?.isNotEmpty() == true || name.contains("local", true)
+    mustRunAfter(rebuild)
+    dependsOn(rebuild)
 }
