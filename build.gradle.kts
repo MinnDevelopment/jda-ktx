@@ -173,10 +173,6 @@ tasks.getByName("dokkaHtml", DokkaTask::class) {
 // Publishing //
 ////////////////
 
-
-fun getProjectProperty(name: String) = project.properties[name] as? String
-
-
 // Generate pom file for maven central
 
 fun generatePom(): MavenPom.() -> Unit {
@@ -234,19 +230,18 @@ publishing.publications {
 }
 
 val signingKey: String? by project
-
-if (signingKey != null) {
-    signing {
-        useInMemoryPgpKeys(signingKey, null)
-        sign(*publishing.publications.toTypedArray())
-    }
-}
-
+val signingKeyId: String? by project
 val ossrhUser: String? by project
 val ossrhPassword: String? by project
 val stagingProfile: String? by project
 
 val enablePublishing = ossrhUser != null && ossrhPassword != null && stagingProfile != null
+
+signing {
+    useInMemoryPgpKeys(signingKeyId, signingKey, "")
+    sign(*publishing.publications.toTypedArray())
+    isRequired = enablePublishing
+}
 
 if (enablePublishing) {
     nexusPublishing {
@@ -270,7 +265,7 @@ val rebuild = tasks.register<Task>("rebuild") {
 
 // Only enable publishing task for properly configured projects
 val publishingTasks = tasks.withType<PublishToMavenRepository> {
-    enabled = ossrhUser?.isNotEmpty() == true || name.contains("local", true)
+    enabled = ossrhUser?.isNotEmpty() == true
     mustRunAfter(rebuild)
     dependsOn(rebuild)
 }
