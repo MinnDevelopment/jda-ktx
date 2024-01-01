@@ -20,7 +20,7 @@ plugins {
 }
 
 group = "dev.minn"
-version = "0.10.0-beta.19"
+version = "0.11.0-beta.19"
 val jdaVersion = "5.0.0-beta.19"
 
 
