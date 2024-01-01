@@ -13,6 +13,7 @@
 [![kotlinx-coroutines](https://img.shields.io/badge/kotlinx.coroutines-1.7.3-blue.svg?logo=kotlin)][2]
 [![JDA](https://img.shields.io/badge/JDA-5.0.0--beta.19-blue.svg)][1]
 [![docs](https://img.shields.io/github/deployments/minndevelopment/jda-ktx/github-pages?label=docs)][8]
+[ ![](https://img.shields.io/maven-central/v/club.minnced/jda-ktx) ](https://search.maven.org/artifact/club.minnced/jda-ktx)
 
 # jda-ktx
 
@@ -282,29 +283,26 @@ jda.onCommand("ban") { event ->
 
 ## Download
 
+[ ![](https://img.shields.io/maven-central/v/net.dv8tion/JDA?color=blue&label=JDA) ](https://search.maven.org/artifact/net.dv8tion/JDA) 
+[ ![](https://img.shields.io/maven-central/v/club.minnced/jda-ktx?label=jda-ktx) ](https://search.maven.org/artifact/club.minnced/jda-ktx)
+
+This project is available on maven central.
+
 ### Gradle
 
 ```gradle
 repositories {
     mavenCentral()
-    maven("https://jitpack.io/")
 }
 
 dependencies {
     implementation("net.dv8tion:JDA:${JDA_VERSION}")
-    implementation("com.github.minndevelopment:jda-ktx:${COMMIT}")
+    implementation("club.minnced:jda-ktx:${VERSION}")
 }
 ```
 
 ### Maven
 
-```xml
-<repository>
-    <id>jitpack</id>
-    <name>jitpack</name>
-    <url>https://jitpack.io/</url>
-</repository>
-```
 
 ```xml
 <dependency>
@@ -315,6 +313,6 @@ dependencies {
 <dependency>
   <groupId>com.github.minndevelopment</groupId>
   <artifactId>jda-ktx</artifactId>
-  <version>$COMMIT</version>
+  <version>$VERSION</version>
 </dependency>
 ```
