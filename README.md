@@ -311,7 +311,7 @@ dependencies {
   <version>$JDA_VERSION</version>
 </dependency>
 <dependency>
-  <groupId>com.github.minndevelopment</groupId>
+  <groupId>club.minnced</groupId>
   <artifactId>jda-ktx</artifactId>
   <version>$VERSION</version>
 </dependency>
