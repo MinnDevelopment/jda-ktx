@@ -156,5 +156,5 @@ class InlineModal(val builder: Modal.Builder) {
      *
      * @return The [Modal] instance
      */
-    fun build(): Modal = builder.addActionRows(configuredComponents.mapNotNull { it as? ActionRow }).build()
+    fun build(): Modal = builder.addComponents(configuredComponents.mapNotNull { it as? ActionRow }).build()
 }
