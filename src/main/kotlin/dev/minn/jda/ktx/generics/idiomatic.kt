@@ -22,14 +22,14 @@ import net.dv8tion.jda.api.entities.channel.attribute.IGuildChannelContainer
 /**
  * Same as [IGuildChannelContainer.getChannelById] but with a generic type parameter instead.
  */
-inline fun <reified T : Channel> IGuildChannelContainer.getChannel(id: Long) = getChannelById(T::class.java, id)
+inline fun <reified T : Channel> IGuildChannelContainer<in T>.getChannel(id: Long) = getChannelById(T::class.java, id)
 
 /**
  * Same as [IGuildChannelContainer.getChannelById] but with a generic type parameter instead.
  */
-inline fun <reified T : Channel> IGuildChannelContainer.getChannel(id: String) = getChannelById(T::class.java, id)
+inline fun <reified T : Channel> IGuildChannelContainer<in T>.getChannel(id: String) = getChannelById(T::class.java, id)
 
 /**
  * Same as [IGuildChannelContainer.getChannelById] but with a generic type parameter instead.
  */
-inline fun <reified T : Channel> IGuildChannelContainer.getChannel(id: ULong) = getChannel<T>(id.toLong())
+inline fun <reified T : Channel> IGuildChannelContainer<in T>.getChannel(id: ULong) = getChannel<T>(id.toLong())

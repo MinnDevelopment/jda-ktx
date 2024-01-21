@@ -1,5 +1,5 @@
 
-[1]: https://github.com/dv8fromtheworld/jda
+[1]: https://github.com/discord-jda/jda
 [2]: https://github.com/kotlin/kotlinx.coroutines
 [3]: https://github.com/MinnDevelopment/jda-reactor
 
@@ -11,7 +11,7 @@
 
 [![Kotlin](https://img.shields.io/badge/kotlin-1.9.22-blue.svg?logo=kotlin)](http://kotlinlang.org)
 [![kotlinx-coroutines](https://img.shields.io/badge/kotlinx.coroutines-1.7.3-blue.svg?logo=kotlin)][2]
-[![JDA](https://img.shields.io/badge/JDA-5.0.0--beta.19-blue.svg)][1]
+[![JDA](https://img.shields.io/badge/JDA-5.0.0--beta.20-blue.svg)][1]
 [![docs](https://img.shields.io/github/deployments/minndevelopment/jda-ktx/github-pages?label=docs)][8]
 [ ![](https://img.shields.io/maven-central/v/club.minnced/jda-ktx) ](https://search.maven.org/artifact/club.minnced/jda-ktx)
 
@@ -24,7 +24,7 @@ Great in combination with [kotlinx-coroutines][2] and [jda-reactor][3].
 
 - Kotlin **1.9.22**
 - kotlinx.coroutines **1.7.3**
-- JDA **5.0.0-beta.19**
+- JDA **5.0.0-beta.20**
 
 ## Examples
 
