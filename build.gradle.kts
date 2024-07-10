@@ -23,8 +23,8 @@ plugins {
 }
 
 group = "club.minnced"
-version = "0.11.0-beta.20"
-val jdaVersion = "5.0.0-beta.20"
+version = "0.11.0"
+val jdaVersion = "5.0.0"
 
 
 
