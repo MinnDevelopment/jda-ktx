@@ -9,9 +9,9 @@
 [7]: https://github.com/MinnDevelopment/strumbot
 [8]: https://minndevelopment.github.io/jda-ktx/
 
-[![Kotlin](https://img.shields.io/badge/kotlin-1.9.22-blue.svg?logo=kotlin)](http://kotlinlang.org)
-[![kotlinx-coroutines](https://img.shields.io/badge/kotlinx.coroutines-1.7.3-blue.svg?logo=kotlin)][2]
-[![JDA](https://img.shields.io/badge/JDA-5.0.0--beta.20-blue.svg)][1]
+[![Kotlin](https://img.shields.io/badge/kotlin-2.0.0-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![kotlinx-coroutines](https://img.shields.io/badge/kotlinx.coroutines-1.8.1-blue.svg?logo=kotlin)][2]
+[![JDA](https://img.shields.io/badge/JDA-5.0.0-blue.svg)][1]
 [![docs](https://img.shields.io/github/deployments/minndevelopment/jda-ktx/github-pages?label=docs)][8]
 [ ![](https://img.shields.io/maven-central/v/club.minnced/jda-ktx) ](https://search.maven.org/artifact/club.minnced/jda-ktx)
 
@@ -22,9 +22,9 @@ Great in combination with [kotlinx-coroutines][2] and [jda-reactor][3].
 
 ## Required Dependencies
 
-- Kotlin **1.9.22**
-- kotlinx.coroutines **1.7.3**
-- JDA **5.0.0-beta.20**
+- Kotlin **2.0.0**
+- kotlinx.coroutines **1.8.1**
+- JDA **5.0.0**
 
 ## Examples
 
