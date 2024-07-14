@@ -16,6 +16,7 @@
 
 package dev.minn.jda.ktx.coroutines
 
+import kotlinx.coroutines.future.await
 import kotlinx.coroutines.suspendCancellableCoroutine
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.utils.concurrent.Task
@@ -28,15 +29,11 @@ import kotlin.coroutines.resumeWithException
  *
  * @return Result
  */
-suspend fun <T> CompletableFuture<T>.await() = suspendCancellableCoroutine<T> {
-    it.invokeOnCancellation { cancel(true) }
-    whenComplete { r, e ->
-        when {
-            e != null -> it.resumeWithException(e)
-            else -> it.resume(r)
-        }
-    }
-}
+@Deprecated(
+    "This is obsolete, kotlin coroutines already provide awaiting futures.",
+    replaceWith = ReplaceWith(expression = "this.await()", imports = ["kotlinx.coroutines.future.await"]),
+    level = DeprecationLevel.WARNING)
+suspend fun <T> CompletableFuture<T>.await(): T = this.await()
 
 /**
  * Awaits the result of this RestAction

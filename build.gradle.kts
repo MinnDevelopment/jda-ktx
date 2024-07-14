@@ -16,15 +16,15 @@ plugins {
     `maven-publish`
     signing
 
-    kotlin("jvm") version "1.+"
+    kotlin("jvm") version "2.0.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.+"
     id("io.gitlab.arturbosch.detekt") version "1.+"
     id("org.jetbrains.dokka") version "1.+"
 }
 
 group = "club.minnced"
-version = "0.11.0-beta.20"
-val jdaVersion = "5.0.0-beta.20"
+version = "0.12.0"
+val jdaVersion = "5.0.0"
 
 
 
@@ -69,10 +69,10 @@ configure<JavaPluginExtension> {
 }
 
 tasks.withType<KotlinCompile> {
+    kotlinOptions.allWarningsAsErrors = true
     kotlinOptions.jvmTarget = "1.8"
     kotlinOptions.freeCompilerArgs = listOf(
         "-Xjvm-default=all",  // use default methods in interfaces
-        "-Xlambdas=indy"      // use invokedynamic lambdas instead of synthetic classes
     )
 }
 
