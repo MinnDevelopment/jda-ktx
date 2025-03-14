@@ -20,12 +20,12 @@ package dev.minn.jda.ktx.messages
 
 import dev.minn.jda.ktx.interactions.components.row
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent
 import net.dv8tion.jda.api.entities.Message.MentionType
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.UserSnowflake
-import net.dv8tion.jda.api.interactions.components.ItemComponent
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.utils.AttachedFile
 import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.messages.AbstractMessageBuilder
@@ -42,13 +42,15 @@ inline fun MessageCreateBuilder(
     content: String = "",
     embeds: Collection<MessageEmbed> = emptyList(),
     files: Collection<FileUpload> = emptyList(),
-    components: Collection<LayoutComponent> = emptyList(),
+    components: Collection<MessageTopLevelComponent> = emptyList(),
+    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
     builder: InlineMessage<MessageCreateData>.() -> Unit = {}
 ) = MessageCreateBuilder().run {
     setTTS(tts)
     mentions.apply(this)
+    useComponentsV2(useComponentsV2)
 
     InlineMessage(this).apply {
         this.content = content
@@ -63,7 +65,8 @@ inline fun MessageCreate(
     content: String = "",
     embeds: Collection<MessageEmbed> = emptyList(),
     files: Collection<FileUpload> = emptyList(),
-    components: Collection<LayoutComponent> = emptyList(),
+    components: Collection<MessageTopLevelComponent> = emptyList(),
+    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
     builder: InlineMessage<MessageCreateData>.() -> Unit = {}
@@ -72,6 +75,7 @@ inline fun MessageCreate(
     embeds,
     files,
     components,
+    useComponentsV2,
     tts,
     mentions,
     builder
@@ -81,13 +85,15 @@ inline fun MessageEditBuilder(
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
     files: Collection<AttachedFile>? = null,
-    components: Collection<LayoutComponent>? = null,
+    components: Collection<MessageTopLevelComponent>? = null,
+    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
     mentions: Mentions? = null,
     replace: Boolean = false,
     builder: InlineMessage<MessageEditData>.() -> Unit = {}
 ) = MessageEditBuilder().run {
     mentions?.apply(this)
     isReplace = replace
+    useComponentsV2(useComponentsV2)
     InlineMessage(this).apply {
         content?.let { this.content = it }
         embeds?.let { this.embeds += it }
@@ -101,7 +107,8 @@ inline fun MessageEdit(
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
     files: Collection<AttachedFile>? = null,
-    components: Collection<LayoutComponent>? = null,
+    components: Collection<MessageTopLevelComponent>? = null,
+    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
     mentions: Mentions? = null,
     replace: Boolean = false,
     builder: InlineMessage<MessageEditData>.() -> Unit = {}
@@ -110,6 +117,7 @@ inline fun MessageEdit(
     embeds,
     files,
     components,
+    useComponentsV2,
     mentions,
     replace,
     builder
@@ -175,7 +183,7 @@ internal object SetFlags {
 
 class InlineMessage<T>(val builder: AbstractMessageBuilder<T, *>) {
     internal val configuredEmbeds = mutableListOf<MessageEmbed>()
-    internal val configuredComponents = mutableListOf<LayoutComponent>()
+    internal val configuredComponents = mutableListOf<MessageTopLevelComponent>()
     internal val configuredFiles = mutableListOf<AttachedFile>()
     internal var set = 0
 
@@ -208,13 +216,17 @@ class InlineMessage<T>(val builder: AbstractMessageBuilder<T, *>) {
         embeds += EmbedBuilder(description = null).apply(builder).build()
     }
 
-    val components = ComponentAccumulator(this.configuredComponents, this)
+    val components = MessageComponentAccumulator(this.configuredComponents, this)
 
-    fun actionRow(vararg components: ItemComponent) {
+    var useComponentsV2: Boolean
+        set(value) { builder.useComponentsV2(value) }
+        get() = builder.isUsingComponentsV2
+
+    fun actionRow(vararg components: ActionRowChildComponent) {
         this.components += row(*components)
     }
 
-    fun actionRow(components: Collection<ItemComponent>) {
+    fun actionRow(components: Collection<ActionRowChildComponent>) {
         this.components += components.row()
     }
 
@@ -364,24 +376,24 @@ class EmbedAccumulator(private val builder: InlineMessage<*>) {
     }
 }
 
-class ComponentAccumulator(private val config: MutableList<LayoutComponent>, private val builder: InlineMessage<*>? = null) {
-    operator fun plusAssign(components: Collection<LayoutComponent>) {
-        builder?.let { it.set = it.set or SetFlags.COMPONENTS }
+class MessageComponentAccumulator(private val config: MutableList<MessageTopLevelComponent>, private val builder: InlineMessage<*>) {
+    operator fun plusAssign(components: Collection<MessageTopLevelComponent>) {
+        builder.let { it.set = it.set or SetFlags.COMPONENTS }
         config += components
     }
 
-    operator fun plusAssign(component: LayoutComponent) {
-        builder?.let { it.set = it.set or SetFlags.COMPONENTS }
+    operator fun plusAssign(component: MessageTopLevelComponent) {
+        builder.let { it.set = it.set or SetFlags.COMPONENTS }
         config += component
     }
 
-    operator fun minusAssign(components: Collection<LayoutComponent>) {
-        builder?.let { it.set = it.set or SetFlags.COMPONENTS }
+    operator fun minusAssign(components: Collection<MessageTopLevelComponent>) {
+        builder.let { it.set = it.set or SetFlags.COMPONENTS }
         config -= components.toSet()
     }
 
-    operator fun minusAssign(component: LayoutComponent) {
-        builder?.let { it.set = it.set or SetFlags.COMPONENTS }
+    operator fun minusAssign(component: MessageTopLevelComponent) {
+        builder.let { it.set = it.set or SetFlags.COMPONENTS }
         config -= component
     }
 }

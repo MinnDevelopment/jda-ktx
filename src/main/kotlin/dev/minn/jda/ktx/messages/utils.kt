@@ -17,10 +17,9 @@
 package dev.minn.jda.ktx.messages
 
 import dev.minn.jda.ktx.interactions.components.row
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent
 import net.dv8tion.jda.api.entities.MessageEmbed
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.ItemComponent
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.utils.FileUpload
 import java.io.File
 import java.io.InputStream
@@ -33,21 +32,21 @@ import java.io.InputStream
  * @return[List] of [ActionRow]
  */
 @JvmName("intoComponents")
-fun <T : ItemComponent> Collection<T>.into() = listOf(this.row())
+fun <T : ActionRowChildComponent> Collection<T>.into() = listOf(this.row())
 
 /**
  * Wraps the component into a collection of a single [ActionRow].
  *
  * @return[List] of [ActionRow]
  */
-fun ItemComponent.into() = row(this).into()
+fun ActionRowChildComponent.into() = row(this).into()
 
 /**
  * Wraps the component layout into a collection of layouts.
  *
- * @return[List] of [LayoutComponent]
+ * @return[List] of [ActionRow]
  */
-fun LayoutComponent.into() = listOf(this)
+fun ActionRow.into() = listOf(this)
 
 /**
  * Wraps the embed into a collection of embeds.

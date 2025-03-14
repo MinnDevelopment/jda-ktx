@@ -17,8 +17,8 @@
 
 package dev.minn.jda.ktx.interactions.components
 
-import net.dv8tion.jda.api.interactions.components.text.TextInput
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.components.textinput.TextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 
 /**
  * Defaults used for text inputs.
@@ -106,7 +106,7 @@ inline fun TextInput(
 class InlineTextInput(val builder: TextInput.Builder) {
     /** Delegated property for [TextInput.Builder.setId] */
     var id: String
-        get() = builder.id
+        get() = builder.customId
         set(value) {
             builder.id = value
         }
