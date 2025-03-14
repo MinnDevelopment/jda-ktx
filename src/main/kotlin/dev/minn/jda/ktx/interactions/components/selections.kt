@@ -16,11 +16,11 @@
 
 package dev.minn.jda.ktx.interactions.components
 
+import net.dv8tion.jda.api.components.selects.EntitySelectMenu
+import net.dv8tion.jda.api.components.selects.EntitySelectMenu.SelectTarget
+import net.dv8tion.jda.api.components.selects.SelectOption
+import net.dv8tion.jda.api.components.selects.StringSelectMenu
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
 fun SelectOption(label: String, value: String, description: String? = null, emoji: Emoji? = null, default: Boolean = false)
     = SelectOption.of(label, value)

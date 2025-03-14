@@ -17,13 +17,12 @@
 
 package dev.minn.jda.ktx.interactions.components
 
-import dev.minn.jda.ktx.messages.ComponentAccumulator
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.textinput.TextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.interactions.callbacks.IModalCallback
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.text.TextInput
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction
 
 /**
@@ -39,7 +38,7 @@ import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction
 fun IModalCallback.replyModal(
     id: String,
     title: String,
-    components: Collection<LayoutComponent> = emptyList(),
+    components: Collection<ModalTopLevelComponent> = emptyList(),
     builder: InlineModal.() -> Unit = {}
 ): ModalCallbackAction {
     return replyModal(Modal(id, title, components, builder))
@@ -60,7 +59,7 @@ fun IModalCallback.replyModal(
 fun ModalBuilder(
     id: String,
     title: String,
-    components: Collection<LayoutComponent> = emptyList(),
+    components: Collection<ModalTopLevelComponent> = emptyList(),
     builder: InlineModal.() -> Unit = {}
 ) = InlineModal(Modal.create(id, title)).also {
     it.configuredComponents.addAll(components)
@@ -80,7 +79,7 @@ fun ModalBuilder(
 fun Modal(
     id: String,
     title: String,
-    components: Collection<LayoutComponent> = emptyList(),
+    components: Collection<ModalTopLevelComponent> = emptyList(),
     builder: InlineModal.() -> Unit = {}
 ) = ModalBuilder(id, title, components, builder).build()
 
@@ -88,14 +87,14 @@ fun Modal(
  * Kotlin idiomatic builder for [Modals][Modal].
  */
 class InlineModal(val builder: Modal.Builder) {
-    internal val configuredComponents = mutableListOf<LayoutComponent>()
+    internal val configuredComponents = mutableListOf<ModalTopLevelComponent>()
 
     /**
      * Components added to the modal.
      *
      * Allows `+=` syntax for adding components.
      */
-    val components: ComponentAccumulator = ComponentAccumulator(configuredComponents)
+    val components: ModalComponentAccumulator = ModalComponentAccumulator(configuredComponents)
 
     /** Delegated property for [Modal.Builder.setId] */
     var id: String
@@ -157,4 +156,22 @@ class InlineModal(val builder: Modal.Builder) {
      * @return The [Modal] instance
      */
     fun build(): Modal = builder.addComponents(configuredComponents.mapNotNull { it as? ActionRow }).build()
+}
+
+class ModalComponentAccumulator(private val config: MutableList<ModalTopLevelComponent>) {
+    operator fun plusAssign(components: Collection<ModalTopLevelComponent>) {
+        config += components
+    }
+
+    operator fun plusAssign(component: ModalTopLevelComponent) {
+        config += component
+    }
+
+    operator fun minusAssign(components: Collection<ModalTopLevelComponent>) {
+        config -= components.toSet()
+    }
+
+    operator fun minusAssign(component: ModalTopLevelComponent) {
+        config -= component
+    }
 }

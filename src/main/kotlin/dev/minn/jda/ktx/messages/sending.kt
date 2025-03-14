@@ -16,16 +16,17 @@
 
 package dev.minn.jda.ktx.messages
 
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
 import net.dv8tion.jda.api.utils.FileUpload
+import net.dv8tion.jda.api.utils.messages.MessageRequest
 
 // Defaults for keyword arguments
 /**
@@ -48,7 +49,7 @@ object SendDefaults {
     /**
      * The default message components
      */
-    var components: Collection<LayoutComponent> = emptyList()
+    var components: Collection<MessageTopLevelComponent> = emptyList()
 
     /**
      * The default ephemeral state for interactions
@@ -78,12 +79,13 @@ object SendDefaults {
 fun IReplyCallback.reply_(
     content: String = SendDefaults.content,
     embeds: Collection<MessageEmbed> = SendDefaults.embeds,
-    components: Collection<LayoutComponent> = SendDefaults.components,
+    components: Collection<MessageTopLevelComponent> = SendDefaults.components,
+    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
     files: Collection<FileUpload> = emptyList(),
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
     ephemeral: Boolean = SendDefaults.ephemeral,
-): ReplyCallbackAction = deferReply(ephemeral).applyData(MessageCreate(content, embeds, files, components, tts, mentions))
+): ReplyCallbackAction = deferReply(ephemeral).applyData(MessageCreate(content, embeds, files, components, useComponentsV2, tts, mentions))
 
 /**
  * Send a reply to this interaction.
@@ -103,12 +105,13 @@ fun IReplyCallback.reply_(
 fun InteractionHook.send(
     content: String = SendDefaults.content,
     embeds: Collection<MessageEmbed> = SendDefaults.embeds,
-    components: Collection<LayoutComponent> = SendDefaults.components,
+    components: Collection<MessageTopLevelComponent> = SendDefaults.components,
+    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
     files: Collection<FileUpload> = emptyList(),
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
     ephemeral: Boolean = SendDefaults.ephemeral,
-) = sendMessage(MessageCreate(content, embeds, files, components, tts, mentions)).setEphemeral(ephemeral)
+) = sendMessage(MessageCreate(content, embeds, files, components, useComponentsV2, tts, mentions)).setEphemeral(ephemeral)
 
 /**
  * Send a message in this channel.
@@ -125,11 +128,12 @@ fun InteractionHook.send(
 fun MessageChannel.send(
     content: String = SendDefaults.content,
     embeds: Collection<MessageEmbed> = SendDefaults.embeds,
-    components: Collection<LayoutComponent> = SendDefaults.components,
+    components: Collection<MessageTopLevelComponent> = SendDefaults.components,
+    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
     files: Collection<FileUpload> = emptyList(),
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
-): MessageCreateAction = sendMessage(MessageCreate(content, embeds, files, components, tts, mentions))
+): MessageCreateAction = sendMessage(MessageCreate(content, embeds, files, components, useComponentsV2, tts, mentions))
 
 /**
  * Send a reply to this message in the same channel.
@@ -146,8 +150,9 @@ fun MessageChannel.send(
 fun Message.reply_(
     content: String = SendDefaults.content,
     embeds: Collection<MessageEmbed> = SendDefaults.embeds,
-    components: Collection<LayoutComponent> = SendDefaults.components,
+    components: Collection<MessageTopLevelComponent> = SendDefaults.components,
+    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
     files: Collection<FileUpload> = emptyList(),
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
-) = channel.send(content, embeds, components, files, tts, mentions).setMessageReference(this)
+) = channel.send(content, embeds, components, useComponentsV2, files, tts, mentions).setMessageReference(this)

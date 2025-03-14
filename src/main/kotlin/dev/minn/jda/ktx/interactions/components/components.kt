@@ -17,50 +17,49 @@
 
 package dev.minn.jda.ktx.interactions.components
 
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.ItemComponent
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
+import net.dv8tion.jda.api.components.Component
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent
+import net.dv8tion.jda.api.components.tree.ComponentTree
 
 /**
  * Returns new collection instance of this layout with all the components in set to disabled/enabled
  */
-fun <T : LayoutComponent> Iterable<T>.withDisabled(disabled: Boolean) = map {
-    it.withDisabled(disabled)
-}
+@Suppress("UNCHECKED_CAST")
+fun <T : Component> Iterable<T>.withDisabled(disabled: Boolean): List<T> =
+    ComponentTree.of(this.toList()).withDisabled(disabled).components as List<T>
 
 /**
  * Returns new collection instance of this layout with all the components in set to disabled
  */
-fun <T : LayoutComponent> Iterable<T>.asDisabled() = withDisabled(true)
+fun <T : Component> Iterable<T>.asDisabled() = withDisabled(true)
 
 /**
  * Returns new collection instance of this layout with all the components in set to enabled
  */
-fun <T : LayoutComponent> Iterable<T>.asEnabled() = withDisabled(false)
+fun <T : Component> Iterable<T>.asEnabled() = withDisabled(false)
 
 /**
  * Returns new collection instance of this layout with all the components in set to disabled/enabled
  */
-fun <T : LayoutComponent> Sequence<T>.withDisabled(disabled: Boolean) = map {
-    it.withDisabled(disabled)
-}
+fun <T : Component> Sequence<T>.withDisabled(disabled: Boolean) = asIterable().withDisabled(disabled).asSequence()
 
 /**
  * Returns new collection instance of this layout with all the components in set to disabled
  */
-fun <T : LayoutComponent> Sequence<T>.asDisabled() = withDisabled(true)
+fun <T : Component> Sequence<T>.asDisabled() = withDisabled(true)
 
 /**
  * Returns new collection instance of this layout with all the components in set to enabled
  */
-fun <T : LayoutComponent> Sequence<T>.asEnabled() = withDisabled(false)
+fun <T : Component> Sequence<T>.asEnabled() = withDisabled(false)
 
 /**
  * Construct an [ActionRow] from the provided components
  */
-fun row(vararg components: ItemComponent) = ActionRow.of(*components)
+fun row(vararg components: ActionRowChildComponent) = ActionRow.of(*components)
 
 /**
  * Construct an [ActionRow] from the provided components
  */
-fun Collection<ItemComponent>.row() = ActionRow.of(this)
+fun Collection<ActionRowChildComponent>.row() = ActionRow.of(this)
