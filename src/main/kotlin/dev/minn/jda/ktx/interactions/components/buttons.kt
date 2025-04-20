@@ -18,6 +18,7 @@ package dev.minn.jda.ktx.interactions.components
 
 import dev.minn.jda.ktx.events.onButton
 import dev.minn.jda.ktx.jdabuilder.scope
+import dev.minn.jda.ktx.util.applyIfNotNull
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.JDA
@@ -57,6 +58,7 @@ object ButtonDefaults {
  * This will use the defaults from [ButtonDefaults] unless specified as parameters.
  *
  * @param[id] The component id to use.
+ * @param[uniqueId] The component unique id to use.
  * @param[style] The button style.
  * @param[label] The button label
  * @param[emoji] The button emoji
@@ -67,9 +69,12 @@ fun button(
     id: String,
     label: String? = ButtonDefaults.LABEL,
     emoji: Emoji? = ButtonDefaults.EMOJI,
+    uniqueId: Int? = null,
     style: ButtonStyle = ButtonDefaults.STYLE,
     disabled: Boolean = ButtonDefaults.DISABLED,
-) = Button.of(style, id, label, emoji).withDisabled(disabled)
+) = Button.of(style, id, label, emoji)
+    .withDisabled(disabled)
+    .applyIfNotNull(uniqueId, Button::withUniqueId)
 
 /**
  * Create a button with keyword arguments.
@@ -79,6 +84,7 @@ fun button(
  * This will use the defaults from [ButtonDefaults] unless specified as parameters.
  *
  * @param[id] The component id to use.
+ * @param[uniqueId] The component unique id to use.
  * @param[label] The button label
  * @param[emoji] The button emoji
  *
@@ -88,8 +94,9 @@ fun primary(
     id: String,
     label: String? = ButtonDefaults.LABEL,
     emoji: Emoji? = ButtonDefaults.EMOJI,
+    uniqueId: Int? = null,
     disabled: Boolean = ButtonDefaults.DISABLED,
-) = button(id, label, emoji, ButtonStyle.PRIMARY, disabled)
+) = button(id, label, emoji, uniqueId, ButtonStyle.PRIMARY, disabled)
 
 /**
  * Create a button with keyword arguments.
@@ -99,6 +106,7 @@ fun primary(
  * This will use the defaults from [ButtonDefaults] unless specified as parameters.
  *
  * @param[id] The component id to use.
+ * @param[uniqueId] The component unique id to use.
  * @param[label] The button label
  * @param[emoji] The button emoji
  *
@@ -108,8 +116,9 @@ fun secondary(
     id: String,
     label: String? = ButtonDefaults.LABEL,
     emoji: Emoji? = ButtonDefaults.EMOJI,
+    uniqueId: Int? = null,
     disabled: Boolean = ButtonDefaults.DISABLED,
-) = button(id, label, emoji, ButtonStyle.SECONDARY, disabled)
+) = button(id, label, emoji, uniqueId, ButtonStyle.SECONDARY, disabled)
 
 /**
  * Create a button with keyword arguments.
@@ -119,6 +128,7 @@ fun secondary(
  * This will use the defaults from [ButtonDefaults] unless specified as parameters.
  *
  * @param[id] The component id to use.
+ * @param[uniqueId] The component unique id to use.
  * @param[label] The button label
  * @param[emoji] The button emoji
  *
@@ -128,8 +138,9 @@ fun success(
     id: String,
     label: String? = ButtonDefaults.LABEL,
     emoji: Emoji? = ButtonDefaults.EMOJI,
+    uniqueId: Int? = null,
     disabled: Boolean = ButtonDefaults.DISABLED,
-) = button(id, label, emoji, ButtonStyle.SUCCESS, disabled)
+) = button(id, label, emoji, uniqueId, ButtonStyle.SUCCESS, disabled)
 
 /**
  * Create a button with keyword arguments.
@@ -139,6 +150,7 @@ fun success(
  * This will use the defaults from [ButtonDefaults] unless specified as parameters.
  *
  * @param[id] The component id to use.
+ * @param[uniqueId] The component unique id to use.
  * @param[label] The button label
  * @param[emoji] The button emoji
  *
@@ -148,8 +160,9 @@ fun danger(
     id: String,
     label: String? = ButtonDefaults.LABEL,
     emoji: Emoji? = ButtonDefaults.EMOJI,
+    uniqueId: Int? = null,
     disabled: Boolean = ButtonDefaults.DISABLED,
-) = button(id, label, emoji, ButtonStyle.DANGER, disabled)
+) = button(id, label, emoji, uniqueId, ButtonStyle.DANGER, disabled)
 
 /**
  * Create a button with keyword arguments.
@@ -158,7 +171,8 @@ fun danger(
  *
  * This will use the defaults from [ButtonDefaults] unless specified as parameters.
  *
- * @param[id] The component id to use.
+ * @param[url] The button URL to use.
+ * @param[uniqueId] The component unique id to use.
  * @param[label] The button label
  * @param[emoji] The button emoji
  *
@@ -168,8 +182,9 @@ fun link(
     url: String,
     label: String? = ButtonDefaults.LABEL,
     emoji: Emoji? = ButtonDefaults.EMOJI,
+    uniqueId: Int? = null,
     disabled: Boolean = ButtonDefaults.DISABLED,
-) = button(url, label, emoji, ButtonStyle.LINK, disabled)
+) = button(url, label, emoji, uniqueId, ButtonStyle.LINK, disabled)
 
 
 
@@ -182,6 +197,7 @@ fun link(
  * @param[style] The button style.
  * @param[label] The button label
  * @param[emoji] The button emoji
+ * @param[uniqueId] The component unique id to use.
  * @param[disabled] Whether the button is disabled
  * @param[expiration] The relative expiration time for the listener as [Duration], use [Duration.INFINITE] to disable timeout
  * @param[user] The user who is authorized to click the button. If the button is pressed by another user it will just defer edit and ignore.
@@ -190,11 +206,11 @@ fun link(
  * @return[Button] The resulting button instance. You still need to send it with a message!
  */
 fun JDA.button(style: ButtonStyle = ButtonDefaults.STYLE, label: String? = ButtonDefaults.LABEL, emoji: Emoji? = ButtonDefaults.EMOJI,
-               disabled: Boolean = ButtonDefaults.DISABLED, expiration: Duration = ButtonDefaults.EXPIRATION,
+               uniqueId: Int? = null, disabled: Boolean = ButtonDefaults.DISABLED, expiration: Duration = ButtonDefaults.EXPIRATION,
                user: User? = null, listener: suspend (ButtonInteractionEvent) -> Unit
 ): Button {
     val id = ThreadLocalRandom.current().nextLong().toString()
-    val button = button(id, label, emoji, style, disabled)
+    val button = button(id, label, emoji, uniqueId, style, disabled)
     val task = onButton(id, timeout=expiration) {
         if (user == null || user == it.user)
             listener(it)

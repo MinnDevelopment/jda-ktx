@@ -56,12 +56,15 @@ inline fun TextInputBuilder(
         id: String,
         label: String,
         style: TextInputStyle,
+        uniqueId: Int? = null,
         required: Boolean = TextInputDefaults.required,
         value: String? = TextInputDefaults.value,
         placeholder: String? = TextInputDefaults.placeholder,
         requiredLength: IntRange? = TextInputDefaults.requiredLength,
         builder: InlineTextInput.() -> Unit = {}
 ): InlineTextInput = InlineTextInput(TextInput.create(id, label, style)).also {
+    if (uniqueId != null)
+        it.uniqueId = uniqueId
     it.required = required
     it.value = value
     it.placeholder = placeholder
@@ -93,12 +96,13 @@ inline fun TextInput(
         id: String,
         label: String,
         style: TextInputStyle,
+        uniqueId: Int? = null,
         required: Boolean = TextInputDefaults.required,
         value: String? = TextInputDefaults.value,
         placeholder: String? = TextInputDefaults.placeholder,
         requiredLength: IntRange? = TextInputDefaults.requiredLength,
         builder: InlineTextInput.() -> Unit = {}
-) = TextInputBuilder(id, label, style, required, value, placeholder, requiredLength, builder).build()
+) = TextInputBuilder(id, label, style, uniqueId, required, value, placeholder, requiredLength, builder).build()
 
 /**
  * Kotlin idiomatic builder for [TextInput]
@@ -109,6 +113,13 @@ class InlineTextInput(val builder: TextInput.Builder) {
         get() = builder.customId
         set(value) {
             builder.id = value
+        }
+
+    /** Delegated property for [TextInput.Builder.setUniqueId] */
+    var uniqueId: Int
+        get() = builder.uniqueId
+        set(value) {
+            builder.uniqueId = value
         }
 
     /** Delegated property for [TextInput.Builder.setLabel] */
