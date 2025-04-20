@@ -33,12 +33,15 @@ fun StringSelectMenu.Builder.option(label: String, value: String, description: S
 
 inline fun StringSelectMenu(
     customId: String,
+    uniqueId: Int? = null,
     placeholder: String? = null,
     valueRange: IntRange = 1..1,
     disabled: Boolean = false,
     options: Collection<SelectOption> = emptyList(),
     builder: StringSelectMenu.Builder.() -> Unit = {}
 ) = StringSelectMenu.create(customId).let {
+    if (uniqueId != null)
+        it.uniqueId = uniqueId
     it.placeholder = placeholder
     it.setRequiredRange(valueRange.first, valueRange.last)
     it.isDisabled = disabled
@@ -50,11 +53,14 @@ inline fun StringSelectMenu(
 inline fun EntitySelectMenu(
     customId: String,
     types: Collection<SelectTarget>,
+    uniqueId: Int? = null,
     placeholder: String? = null,
     valueRange: IntRange = 1..1,
     disabled: Boolean = false,
     builder: EntitySelectMenu.Builder.() -> Unit = {}
 ) = EntitySelectMenu.create(customId, types).let {
+    if (uniqueId != null)
+        it.uniqueId = uniqueId
     it.placeholder = placeholder
     it.setRequiredRange(valueRange.first, valueRange.last)
     it.isDisabled = disabled
@@ -66,16 +72,18 @@ fun SelectTarget.into() = listOf(this)
 
 fun SelectTarget.menu(
     customId: String,
+    uniqueId: Int? = null,
     placeholder: String? = null,
     valueRange: IntRange = 1..1,
     disabled: Boolean = false,
     builder: EntitySelectMenu.Builder.() -> Unit = {}
-) = EntitySelectMenu(customId, into(), placeholder, valueRange, disabled, builder)
+) = EntitySelectMenu(customId, into(), uniqueId, placeholder, valueRange, disabled, builder)
 
 fun Collection<SelectTarget>.menu(
     customId: String,
+    uniqueId: Int? = null,
     placeholder: String? = null,
     valueRange: IntRange = 1..1,
     disabled: Boolean = false,
     builder: EntitySelectMenu.Builder.() -> Unit = {}
-) = EntitySelectMenu(customId, this, placeholder, valueRange, disabled, builder)
+) = EntitySelectMenu(customId, this, uniqueId, placeholder, valueRange, disabled, builder)

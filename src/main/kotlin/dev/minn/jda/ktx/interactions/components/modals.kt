@@ -114,6 +114,7 @@ class InlineModal(val builder: Modal.Builder) {
     fun paragraph(
         id: String,
         label: String,
+        uniqueId: Int? = null,
         required: Boolean = TextInputDefaults.required,
         value: String? = TextInputDefaults.value,
         placeholder: String? = TextInputDefaults.placeholder,
@@ -121,6 +122,8 @@ class InlineModal(val builder: Modal.Builder) {
         builder: TextInput.Builder.() -> Unit = {}
     ) {
         val text = TextInput.create(id, label, TextInputStyle.PARAGRAPH)
+        if (uniqueId != null)
+            text.uniqueId = uniqueId
         text.isRequired = required
         text.value = value
         text.placeholder = placeholder
@@ -134,6 +137,7 @@ class InlineModal(val builder: Modal.Builder) {
     fun short(
         id: String,
         label: String,
+        uniqueId: Int? = null,
         required: Boolean = TextInputDefaults.required,
         value: String? = TextInputDefaults.value,
         placeholder: String? = TextInputDefaults.placeholder,
@@ -141,6 +145,8 @@ class InlineModal(val builder: Modal.Builder) {
         builder: TextInput.Builder.() -> Unit = {}
     ) {
         val text = TextInput.create(id, label, TextInputStyle.SHORT)
+        if (uniqueId != null)
+            text.uniqueId = uniqueId
         text.isRequired = required
         text.value = value
         text.placeholder = placeholder
