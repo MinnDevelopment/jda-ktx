@@ -63,3 +63,15 @@ fun row(vararg components: ActionRowChildComponent) = ActionRow.of(*components)
  * Construct an [ActionRow] from the provided components
  */
 fun Collection<ActionRowChildComponent>.row() = ActionRow.of(this)
+
+abstract class InlineComponentWithChildren<T> {
+    var components = arrayListOf<T>()
+
+    operator fun T.unaryPlus() {
+        components += this
+    }
+
+    operator fun Collection<T>.unaryPlus() {
+        components += this
+    }
+}

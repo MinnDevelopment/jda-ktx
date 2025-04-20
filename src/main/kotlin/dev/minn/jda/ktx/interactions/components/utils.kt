@@ -21,6 +21,8 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
+import org.intellij.lang.annotations.Language
+import java.awt.Color
 
 
 /**
@@ -71,3 +73,8 @@ inline fun <reified T> CommandInteractionPayload.getOption(name: String): T? = w
     }
 
 }
+
+fun rgb(red: Int, green: Int, blue: Int): Int = Color(red, green, blue).rgb
+fun hsb(hue: Float, saturation: Float, brightness: Float): Int = Color.HSBtoRGB(hue, saturation, brightness)
+@OptIn(ExperimentalStdlibApi::class)
+fun hex(@Language(value = "html", prefix = "<div style=\"border-left: #", suffix = "\"/>") hex: String): Int = hex.hexToInt()
