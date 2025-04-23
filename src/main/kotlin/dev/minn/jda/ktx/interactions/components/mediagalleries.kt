@@ -32,8 +32,8 @@ class InlineMediaGallery(
      * @param spoiler     Hides the item until the user clicks on it
      * @param block       Lambda allowing further configuration
      */
-    fun item(url: String, description: String? = null, spoiler: Boolean = false, block: InlineMediaGalleryItem.() -> Unit = {}): MediaGalleryItem =
-        InlineMediaGalleryItem(MediaGalleryItem.fromUrl(url)).apply(block).build()
+    fun item(url: String, description: String? = null, spoiler: Boolean = false, block: InlineMediaGalleryItem.() -> Unit = {}): Unit =
+        +InlineMediaGalleryItem(MediaGalleryItem.fromUrl(url), description, spoiler).apply(block).build()
 
     /**
      * A singular item (not a component) of a [MediaGallery], you can mark it as a spoiler and set a description.
@@ -43,8 +43,8 @@ class InlineMediaGallery(
      * @param spoiler     Hides the item until the user clicks on it
      * @param block       Lambda allowing further configuration
      */
-    fun item(file: FileUpload, description: String? = null, spoiler: Boolean = false, block: InlineMediaGalleryItem.() -> Unit = {}): MediaGalleryItem =
-        InlineMediaGalleryItem(MediaGalleryItem.fromFile(file)).apply(block).build()
+    fun item(file: FileUpload, description: String? = null, spoiler: Boolean = false, block: InlineMediaGalleryItem.() -> Unit = {}): Unit =
+        +InlineMediaGalleryItem(MediaGalleryItem.fromFile(file), description, spoiler).apply(block).build()
 
     fun build(): MediaGallery {
         var gallery = MediaGallery.of(components)
