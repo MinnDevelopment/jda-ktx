@@ -22,8 +22,8 @@ import dev.minn.jda.ktx.util.applyIfNotNull
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.components.button.Button
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent

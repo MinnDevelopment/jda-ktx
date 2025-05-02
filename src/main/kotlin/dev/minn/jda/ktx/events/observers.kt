@@ -16,7 +16,7 @@
 
 package dev.minn.jda.ktx.events
 
-import net.dv8tion.jda.api.components.button.Button
+import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
