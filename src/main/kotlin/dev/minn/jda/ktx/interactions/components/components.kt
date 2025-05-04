@@ -64,7 +64,13 @@ fun row(vararg components: ActionRowChildComponent) = ActionRow.of(*components)
  */
 fun Collection<ActionRowChildComponent>.row() = ActionRow.of(this)
 
-abstract class InlineComponentWithChildren<T> {
+@DslMarker
+internal annotation class InlineComponentDSL
+
+@InlineComponentDSL
+internal interface InlineComponent
+
+abstract class InlineComponentWithChildren<T> : InlineComponent {
     var components = arrayListOf<T>()
 
     operator fun T.unaryPlus() {

@@ -7,7 +7,7 @@ class InlineTextDisplay(
     var content: String,
     /** Unique identifier of this component */
     var uniqueId: Int?,
-) {
+) : InlineComponent {
 
     fun build(): TextDisplay {
         var textDisplay = TextDisplay.of(content)

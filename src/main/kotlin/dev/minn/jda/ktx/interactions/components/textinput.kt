@@ -107,7 +107,7 @@ inline fun TextInput(
 /**
  * Kotlin idiomatic builder for [TextInput]
  */
-class InlineTextInput(val builder: TextInput.Builder) {
+class InlineTextInput(val builder: TextInput.Builder) : InlineComponent {
     /** Delegated property for [TextInput.Builder.setId] */
     var id: String
         get() = builder.customId
