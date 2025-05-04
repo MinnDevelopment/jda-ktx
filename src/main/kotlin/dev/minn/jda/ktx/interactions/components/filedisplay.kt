@@ -9,7 +9,7 @@ class InlineFileDisplay(
     var uniqueId: Int?,
     /** Hides the file until the user clicks on it */
     var spoiler: Boolean,
-) {
+) : InlineComponent {
 
     fun build(): FileDisplay {
         var fileDisplay = fileDisplay

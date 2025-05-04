@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.components.mediagallery.MediaGallery
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem
 import net.dv8tion.jda.api.utils.FileUpload
 
+@InlineComponentDSL
 class InlineMediaGalleryItem(
     private val item: MediaGalleryItem,
     /** Known as an "alternative text", must not exceed [MAX_DESCRIPTION_LENGTH][MediaGalleryItem.MAX_DESCRIPTION_LENGTH] characters */

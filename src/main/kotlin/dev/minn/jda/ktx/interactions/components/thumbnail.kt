@@ -11,7 +11,7 @@ class InlineThumbnail(
     var description: String?,
     /** Hides the thumbnail until the user clicks on it */
     var spoiler: Boolean,
-) {
+) : InlineComponent {
 
     fun build(): Thumbnail {
         var thumbnail = thumbnail

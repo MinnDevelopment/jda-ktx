@@ -9,7 +9,7 @@ class InlineSeparator(
     var spacing: Separator.Spacing,
     /** Unique identifier of this component */
     var uniqueId: Int?,
-) {
+) : InlineComponent {
 
     fun build(): Separator {
         var separator = Separator.create(isDivider, spacing)
