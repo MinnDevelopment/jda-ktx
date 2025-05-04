@@ -72,9 +72,9 @@ class Paginator internal constructor(private val nonce: String, private val ttl:
     var delete: Button = PaginatorDefaults.DELETE
 
     internal val controls: ActionRow get() = ActionRow.of(
-        prev.withDisabled(index == 0).withId("$nonce:prev"),
-        next.withDisabled(index == pageCache.size - 1).withId("$nonce:next"),
-        delete.withId("$nonce:delete")
+        prev.withDisabled(index == 0).withCustomId("$nonce:prev"),
+        next.withDisabled(index == pageCache.size - 1).withCustomId("$nonce:next"),
+        delete.withCustomId("$nonce:delete")
     )
 
     val pages: List<MessageCreateData> get() = pageCache.toList()
