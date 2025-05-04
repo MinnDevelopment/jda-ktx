@@ -10,7 +10,7 @@ class InlineTextDisplay(
 ) {
 
     fun build(): TextDisplay {
-        var textDisplay = TextDisplay.create(content)
+        var textDisplay = TextDisplay.of(content)
         if (uniqueId != null)
             textDisplay = textDisplay.withUniqueId(uniqueId!!)
         return textDisplay
