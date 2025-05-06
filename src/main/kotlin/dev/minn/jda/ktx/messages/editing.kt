@@ -91,7 +91,7 @@ fun InteractionHook.editMessage(
     useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
     attachments: Collection<AttachedFile>? = null,
     replace: Boolean = MessageEditDefaults.replace,
-) = editMessageById(id, "tmp").applyData(MessageEdit(content, embeds, attachments, components, useComponentsV2, null, replace))
+) = editMessageById(id, MessageEdit(content, embeds, attachments, components, useComponentsV2, null, replace))
 
 /**
  * Edit a message from this channel.
