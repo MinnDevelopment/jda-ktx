@@ -172,6 +172,54 @@ val message = MessageCreate { // Builds MessageCreateData
 }
 ```
 
+### V2 Components
+
+We also provide builders similar to messages/embeds, they can be used instead of the factories JDA provides.
+
+You can see them in the [interactions/components](./src/main/kotlin/dev/minn/jda/ktx/interactions/components) package.
+
+**Example**
+
+```kotlin
+val rustAnimation = javaClass.getResourceAsStream("/rust.webp")!!.named("rust.webp")
+val message = MessageCreate(useComponentsV2 = true) {
+    components += Container {
+        +MediaGallery {
+            item(rustAnimation)
+        }
+
+        +Section(
+            accessory = Thumbnail(kotlinIcon)
+        ) {
+            +TextDisplay("Kotlin FTW")
+        }
+
+        +FileDisplay(FileUpload.fromData("abc".encodeToByteArray(), "abc.txt"))
+
+        +Separator(isDivider = true, spacing = Separator.Spacing.LARGE)
+
+        +ActionRow {
+            +buttons.link("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "Link? ain't no way")
+        }
+    }
+}
+```
+
+You will also find a few extensions for component trees:
+
+- `<T : ComponentUnion, E : Component> Collection<E>.toComponentTree(): ComponentTree<T>`
+- `Collection<Component>.toDefaultComponentTree(): ComponentTree<ComponentUnion>`
+- `<T : Component> ComponentTree<*>.findAll(): List<T>`
+- `<T : Component> ComponentTree<*>.findAll(filter: (T) -> Boolean): List<T>`
+
+### Colors
+
+There are also a few utilities to create color:
+
+- `rgb`
+- `hsb`
+- `hex`
+
 ### Command and SelectMenu Builders
 
 ```kotlin
