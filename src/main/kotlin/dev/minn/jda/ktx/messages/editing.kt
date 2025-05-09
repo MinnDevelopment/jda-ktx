@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
 import net.dv8tion.jda.api.utils.AttachedFile
-import net.dv8tion.jda.api.utils.messages.MessageRequest
 
 /**
  * Defaults used for edit message extensions provided by this module.
@@ -38,6 +37,11 @@ object MessageEditDefaults {
      * Whether message edits should replace the entire message by default
      */
     var replace: Boolean = false
+
+    /**
+     * The default components V2 flag
+     */
+    var useComponentsV2: Boolean = false
 }
 
 // Using an underscore at the end to prevent overload specialization
@@ -62,7 +66,7 @@ fun IMessageEditCallback.editMessage_(
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
     components: Collection<MessageTopLevelComponent>? = null,
-    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
+    useComponentsV2: Boolean = MessageEditDefaults.useComponentsV2,
     attachments: Collection<AttachedFile>? = null,
     replace: Boolean = MessageEditDefaults.replace
 ): MessageEditCallbackAction = deferEdit().applyData(MessageEdit(content, embeds, attachments, components, useComponentsV2, null, replace))
@@ -88,7 +92,7 @@ fun InteractionHook.editMessage(
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
     components: Collection<MessageTopLevelComponent>? = null,
-    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
+    useComponentsV2: Boolean = MessageEditDefaults.useComponentsV2,
     attachments: Collection<AttachedFile>? = null,
     replace: Boolean = MessageEditDefaults.replace,
 ) = editMessageById(id, MessageEdit(content, embeds, attachments, components, useComponentsV2, null, replace))
@@ -114,7 +118,7 @@ fun MessageChannel.editMessage(
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
     components: Collection<MessageTopLevelComponent>? = null,
-    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
+    useComponentsV2: Boolean = MessageEditDefaults.useComponentsV2,
     attachments: Collection<AttachedFile>? = null,
     replace: Boolean = MessageEditDefaults.replace,
 ) = editMessageById(id, MessageEdit(content, embeds, attachments, components, useComponentsV2, null, replace))
@@ -138,7 +142,7 @@ fun Message.edit(
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
     components: Collection<MessageTopLevelComponent>? = null,
-    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
+    useComponentsV2: Boolean = MessageEditDefaults.useComponentsV2,
     attachments: Collection<AttachedFile>? = null,
     replace: Boolean = MessageEditDefaults.replace,
 ) = channel.editMessage(id, content, embeds, components, useComponentsV2, attachments, replace)
