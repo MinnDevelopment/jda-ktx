@@ -467,6 +467,15 @@ data class Mentions(
             )
         }
 
+        fun none(): Mentions {
+            return Mentions(
+                users = MentionConfig(false, emptyList(), MentionType.USER),
+                roles = MentionConfig(false, emptyList(), MentionType.ROLE),
+                everyone = false,
+                here = false
+            )
+        }
+
         fun of(vararg configs: MentionConfig): Mentions {
             val allowedMentions = default()
 
