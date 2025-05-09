@@ -26,7 +26,6 @@ import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
 import net.dv8tion.jda.api.utils.FileUpload
-import net.dv8tion.jda.api.utils.messages.MessageRequest
 
 // Defaults for keyword arguments
 /**
@@ -56,6 +55,11 @@ object SendDefaults {
      */
     var ephemeral: Boolean = false
     // Not supporting files since input streams are single use, and I don't think its worth it
+
+    /**
+     * The default components V2 flag
+     */
+    var useComponentsV2: Boolean = false
 }
 
 // Using an underscore at the end to prevent overload specialization
@@ -80,7 +84,7 @@ fun IReplyCallback.reply_(
     content: String = SendDefaults.content,
     embeds: Collection<MessageEmbed> = SendDefaults.embeds,
     components: Collection<MessageTopLevelComponent> = SendDefaults.components,
-    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
+    useComponentsV2: Boolean = SendDefaults.useComponentsV2,
     files: Collection<FileUpload> = emptyList(),
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
@@ -106,7 +110,7 @@ fun InteractionHook.send(
     content: String = SendDefaults.content,
     embeds: Collection<MessageEmbed> = SendDefaults.embeds,
     components: Collection<MessageTopLevelComponent> = SendDefaults.components,
-    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
+    useComponentsV2: Boolean = SendDefaults.useComponentsV2,
     files: Collection<FileUpload> = emptyList(),
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
@@ -129,7 +133,7 @@ fun MessageChannel.send(
     content: String = SendDefaults.content,
     embeds: Collection<MessageEmbed> = SendDefaults.embeds,
     components: Collection<MessageTopLevelComponent> = SendDefaults.components,
-    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
+    useComponentsV2: Boolean = SendDefaults.useComponentsV2,
     files: Collection<FileUpload> = emptyList(),
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
@@ -151,7 +155,7 @@ fun Message.reply_(
     content: String = SendDefaults.content,
     embeds: Collection<MessageEmbed> = SendDefaults.embeds,
     components: Collection<MessageTopLevelComponent> = SendDefaults.components,
-    useComponentsV2: Boolean = MessageRequest.isDefaultUseComponentsV2(),
+    useComponentsV2: Boolean = SendDefaults.useComponentsV2,
     files: Collection<FileUpload> = emptyList(),
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
