@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
 import net.dv8tion.jda.api.utils.FileUpload
+import net.dv8tion.jda.api.utils.messages.MessageCreateData
 
 // Defaults for keyword arguments
 /**
@@ -80,7 +81,7 @@ object SendDefaults {
  *
  * @see  [IReplyCallback.deferReply]
  */
-fun IReplyCallback.reply_(
+inline fun IReplyCallback.reply_(
     content: String = SendDefaults.content,
     embeds: Collection<MessageEmbed> = SendDefaults.embeds,
     components: Collection<MessageTopLevelComponent> = SendDefaults.components,
@@ -89,7 +90,8 @@ fun IReplyCallback.reply_(
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
     ephemeral: Boolean = SendDefaults.ephemeral,
-): ReplyCallbackAction = deferReply(ephemeral).applyData(MessageCreate(content, embeds, files, components, useComponentsV2, tts, mentions))
+    builder: InlineMessage<MessageCreateData>.() -> Unit = {},
+): ReplyCallbackAction = deferReply(ephemeral).applyData(MessageCreate(content, embeds, files, components, useComponentsV2, tts, mentions, builder))
 
 /**
  * Send a reply to this interaction.
@@ -106,7 +108,7 @@ fun IReplyCallback.reply_(
  *
  * @see  [InteractionHook.sendMessage]
  */
-fun InteractionHook.send(
+inline fun InteractionHook.send(
     content: String = SendDefaults.content,
     embeds: Collection<MessageEmbed> = SendDefaults.embeds,
     components: Collection<MessageTopLevelComponent> = SendDefaults.components,
@@ -115,7 +117,8 @@ fun InteractionHook.send(
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
     ephemeral: Boolean = SendDefaults.ephemeral,
-) = sendMessage(MessageCreate(content, embeds, files, components, useComponentsV2, tts, mentions)).setEphemeral(ephemeral)
+    builder: InlineMessage<MessageCreateData>.() -> Unit = {},
+) = sendMessage(MessageCreate(content, embeds, files, components, useComponentsV2, tts, mentions, builder)).setEphemeral(ephemeral)
 
 /**
  * Send a message in this channel.
@@ -129,7 +132,7 @@ fun InteractionHook.send(
  *
  * @return[MessageCreateAction]
  */
-fun MessageChannel.send(
+inline fun MessageChannel.send(
     content: String = SendDefaults.content,
     embeds: Collection<MessageEmbed> = SendDefaults.embeds,
     components: Collection<MessageTopLevelComponent> = SendDefaults.components,
@@ -137,7 +140,8 @@ fun MessageChannel.send(
     files: Collection<FileUpload> = emptyList(),
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
-): MessageCreateAction = sendMessage(MessageCreate(content, embeds, files, components, useComponentsV2, tts, mentions))
+    builder: InlineMessage<MessageCreateData>.() -> Unit = {},
+): MessageCreateAction = sendMessage(MessageCreate(content, embeds, files, components, useComponentsV2, tts, mentions, builder))
 
 /**
  * Send a reply to this message in the same channel.
@@ -151,7 +155,7 @@ fun MessageChannel.send(
  *
  * @return[MessageCreateAction]
  */
-fun Message.reply_(
+inline fun Message.reply_(
     content: String = SendDefaults.content,
     embeds: Collection<MessageEmbed> = SendDefaults.embeds,
     components: Collection<MessageTopLevelComponent> = SendDefaults.components,
@@ -159,4 +163,5 @@ fun Message.reply_(
     files: Collection<FileUpload> = emptyList(),
     tts: Boolean = false,
     mentions: Mentions = Mentions.default(),
-) = channel.send(content, embeds, components, useComponentsV2, files, tts, mentions).setMessageReference(this)
+    builder: InlineMessage<MessageCreateData>.() -> Unit = {},
+) = channel.send(content, embeds, components, useComponentsV2, files, tts, mentions, builder).setMessageReference(this)

@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
 import net.dv8tion.jda.api.utils.AttachedFile
+import net.dv8tion.jda.api.utils.messages.MessageEditData
 
 /**
  * Defaults used for edit message extensions provided by this module.
@@ -62,14 +63,15 @@ object MessageEditDefaults {
  *
  * @return[MessageEditCallbackAction]
  */
-fun IMessageEditCallback.editMessage_(
+inline fun IMessageEditCallback.editMessage_(
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
     components: Collection<MessageTopLevelComponent>? = null,
     useComponentsV2: Boolean = MessageEditDefaults.useComponentsV2,
     attachments: Collection<AttachedFile>? = null,
-    replace: Boolean = MessageEditDefaults.replace
-): MessageEditCallbackAction = deferEdit().applyData(MessageEdit(content, embeds, attachments, components, useComponentsV2, null, replace))
+    replace: Boolean = MessageEditDefaults.replace,
+    builder: InlineMessage<MessageEditData>.() -> Unit = {},
+): MessageEditCallbackAction = deferEdit().applyData(MessageEdit(content, embeds, attachments, components, useComponentsV2, null, replace, builder))
 
 /**
  * Edit a message from this interaction.
@@ -87,7 +89,7 @@ fun IMessageEditCallback.editMessage_(
  *
  * @return[WebhookMessageEditAction]
  */
-fun InteractionHook.editMessage(
+inline fun InteractionHook.editMessage(
     id: String = "@original",
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
@@ -95,7 +97,8 @@ fun InteractionHook.editMessage(
     useComponentsV2: Boolean = MessageEditDefaults.useComponentsV2,
     attachments: Collection<AttachedFile>? = null,
     replace: Boolean = MessageEditDefaults.replace,
-) = editMessageById(id, MessageEdit(content, embeds, attachments, components, useComponentsV2, null, replace))
+    builder: InlineMessage<MessageEditData>.() -> Unit = {},
+) = editMessageById(id, MessageEdit(content, embeds, attachments, components, useComponentsV2, null, replace, builder))
 
 /**
  * Edit a message from this channel.
@@ -113,7 +116,7 @@ fun InteractionHook.editMessage(
  *
  * @return[net.dv8tion.jda.api.requests.restaction.MessageEditAction]
  */
-fun MessageChannel.editMessage(
+inline fun MessageChannel.editMessage(
     id: String,
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
@@ -121,7 +124,8 @@ fun MessageChannel.editMessage(
     useComponentsV2: Boolean = MessageEditDefaults.useComponentsV2,
     attachments: Collection<AttachedFile>? = null,
     replace: Boolean = MessageEditDefaults.replace,
-) = editMessageById(id, MessageEdit(content, embeds, attachments, components, useComponentsV2, null, replace))
+    builder: InlineMessage<MessageEditData>.() -> Unit = {},
+) = editMessageById(id, MessageEdit(content, embeds, attachments, components, useComponentsV2, null, replace, builder))
 
 /**
  * Edit the message.
@@ -138,11 +142,12 @@ fun MessageChannel.editMessage(
  *
  * @return[net.dv8tion.jda.api.requests.restaction.MessageEditAction]
  */
-fun Message.edit(
+inline fun Message.edit(
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
     components: Collection<MessageTopLevelComponent>? = null,
     useComponentsV2: Boolean = MessageEditDefaults.useComponentsV2,
     attachments: Collection<AttachedFile>? = null,
     replace: Boolean = MessageEditDefaults.replace,
-) = channel.editMessage(id, content, embeds, components, useComponentsV2, attachments, replace)
+    builder: InlineMessage<MessageEditData>.() -> Unit = {},
+) = channel.editMessage(id, content, embeds, components, useComponentsV2, attachments, replace, builder)
