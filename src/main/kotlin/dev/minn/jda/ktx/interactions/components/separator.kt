@@ -31,3 +31,11 @@ class InlineSeparator(
  */
 inline fun Separator(isDivider: Boolean, spacing: Separator.Spacing, uniqueId: Int? = null, block: InlineSeparator.() -> Unit = {}): Separator =
     InlineSeparator(isDivider, spacing, uniqueId).apply(block).build()
+
+// TODO: docs
+inline fun smallSeparator(isDivider: Boolean, uniqueId: Int? = null, block: InlineSeparator.() -> Unit = {}): Separator =
+    InlineSeparator(isDivider, Separator.Spacing.SMALL, uniqueId).apply(block).build()
+
+// TODO: docs
+inline fun largeSeparator(isDivider: Boolean, uniqueId: Int? = null, block: InlineSeparator.() -> Unit = {}): Separator =
+    InlineSeparator(isDivider, Separator.Spacing.LARGE, uniqueId).apply(block).build()
