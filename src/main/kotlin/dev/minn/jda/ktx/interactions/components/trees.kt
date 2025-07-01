@@ -14,23 +14,25 @@ inline fun <reified T : IComponentUnion, E : Component> Collection<E>.toComponen
     ComponentTree.of(T::class.java, this)
 
 /**
- * Creates a [ComponentTree] of [ComponentUnion] from this collection.
+ * Creates a [ComponentTree] of [IComponentUnion] from this collection.
  */
 fun Collection<Component>.toDefaultComponentTree(): ComponentTree<IComponentUnion> =
     ComponentTree.of(this)
 
 /**
- * Recursively finds all components of the [T] type.
+ * Finds all components of the [T] type, recursively.
  */
 inline fun <reified T : Component> ComponentTree<*>.findAll(): List<T> =
     findAll(T::class.java)
 
 /**
- * Recursively finds all components of the [T] type and satisfying the provided [filter].
+ * Finds all components of type [T] satisfying the [filter], recursively.
  */
 inline fun <reified T : Component> ComponentTree<*>.findAll(crossinline filter: (T) -> Boolean): List<T> =
     findAll(T::class.java) { filter(it) }
 
-// TODO: docs
+/**
+ * Finds the first component of type [T] satisfying the [filter], recursively.
+ */
 inline fun <reified T : Component> ComponentTree<*>.find(crossinline filter: (T) -> Boolean): T? =
     find(T::class.java) { filter(it) }.getOrNull()

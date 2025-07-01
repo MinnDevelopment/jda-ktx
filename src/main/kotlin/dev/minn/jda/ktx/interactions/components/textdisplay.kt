@@ -18,11 +18,7 @@ class InlineTextDisplay(
 }
 
 /**
- * A component to display text, supports Markdown.
- *
- * This component has no content length limit, however,
- * you are still limited to the [MAX_CONTENT_LENGTH_COMPONENT_V2][net.dv8tion.jda.api.entities.Message.MAX_CONTENT_LENGTH_COMPONENT_V2] total characters,
- * as imposed by [MessageRequest.useComponentsV2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2].
+ * See [TextDisplay][net.dv8tion.jda.api.components.textdisplay.TextDisplay].
  *
  * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
  *

@@ -20,7 +20,7 @@ class InlineSeparator(
 }
 
 /**
- * A component to separate content vertically, you can change its size and make it invisible.
+ * See [Separator][net.dv8tion.jda.api.components.separator.Separator].
  *
  * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
  *
@@ -32,10 +32,26 @@ class InlineSeparator(
 inline fun Separator(isDivider: Boolean, spacing: Separator.Spacing, uniqueId: Int? = null, block: InlineSeparator.() -> Unit = {}): Separator =
     InlineSeparator(isDivider, spacing, uniqueId).apply(block).build()
 
-// TODO: docs
+/**
+ * Creates a [Separator][net.dv8tion.jda.api.components.separator.Separator] with [small spacing][Separator.Spacing.SMALL].
+ *
+ * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
+ *
+ * @param isDivider `true` if the separator should be visible
+ * @param uniqueId  Unique identifier of this component
+ * @param block     Lambda allowing further configuration
+ */
 inline fun smallSeparator(isDivider: Boolean, uniqueId: Int? = null, block: InlineSeparator.() -> Unit = {}): Separator =
     InlineSeparator(isDivider, Separator.Spacing.SMALL, uniqueId).apply(block).build()
 
-// TODO: docs
+/**
+ * Creates a [Separator][net.dv8tion.jda.api.components.separator.Separator] with [large spacing][Separator.Spacing.LARGE].
+ *
+ * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
+ *
+ * @param isDivider `true` if the separator should be visible
+ * @param uniqueId  Unique identifier of this component
+ * @param block     Lambda allowing further configuration
+ */
 inline fun largeSeparator(isDivider: Boolean, uniqueId: Int? = null, block: InlineSeparator.() -> Unit = {}): Separator =
     InlineSeparator(isDivider, Separator.Spacing.LARGE, uniqueId).apply(block).build()

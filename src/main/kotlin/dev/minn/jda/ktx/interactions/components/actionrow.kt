@@ -17,7 +17,7 @@ class InlineActionRow(
 }
 
 /**
- * Component which groups components horizontally.
+ * See [ActionRow][net.dv8tion.jda.api.components.actionrow.ActionRow].
  *
  * @param uniqueId    Unique identifier of this component
  * @param block       Lambda allowing further configuration

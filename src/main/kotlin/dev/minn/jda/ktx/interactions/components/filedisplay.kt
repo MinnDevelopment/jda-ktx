@@ -21,9 +21,7 @@ class InlineFileDisplay(
 }
 
 /**
- * Component displaying a file, you can mark it as a spoiler.
- *
- * **Note:** Audio files and text files cannot be _previewed_.
+ * See [FileDisplay.fromFile].
  *
  * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
  *
@@ -34,6 +32,14 @@ class InlineFileDisplay(
 fun FileDisplay(file: FileUpload, uniqueId: Int? = null, spoiler: Boolean = false, block: InlineFileDisplay.() -> Unit = {}): FileDisplay =
     InlineFileDisplay(FileDisplay.fromFile(file), uniqueId, spoiler).apply(block).build()
 
-// TODO: docs
+/**
+ * See [FileDisplay.fromFileName].
+ *
+ * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
+ *
+ * @param uniqueId    Unique identifier of this component
+ * @param spoiler     Hides the file until the user clicks on it
+ * @param block       Lambda allowing further configuration
+ */
 fun FileDisplay(fileName: String, uniqueId: Int? = null, spoiler: Boolean = false, block: InlineFileDisplay.() -> Unit = {}): FileDisplay =
-    InlineFileDisplay(FileDisplay.fromFile(fileName), uniqueId, spoiler).apply(block).build()
+    InlineFileDisplay(FileDisplay.fromFileName(fileName), uniqueId, spoiler).apply(block).build()

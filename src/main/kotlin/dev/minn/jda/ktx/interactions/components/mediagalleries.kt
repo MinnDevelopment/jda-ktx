@@ -26,7 +26,7 @@ class InlineMediaGallery(
 ) : InlineComponentWithChildren<MediaGalleryItem>() {
 
     /**
-     * A singular item (not a component) of a [MediaGallery], you can mark it as a spoiler and set a description.
+     * See [MediaGalleryItem.fromUrl].
      *
      * @param url         The URL of the image to display
      * @param description Known as an "alternative text", must not exceed [MAX_DESCRIPTION_LENGTH][MediaGalleryItem.MAX_DESCRIPTION_LENGTH] characters
@@ -37,7 +37,7 @@ class InlineMediaGallery(
         +InlineMediaGalleryItem(MediaGalleryItem.fromUrl(url), description, spoiler).apply(block).build()
 
     /**
-     * A singular item (not a component) of a [MediaGallery], you can mark it as a spoiler and set a description.
+     * See [MediaGalleryItem.fromFile].
      *
      * @param file        The image to display
      * @param description Known as an "alternative text", must not exceed [MAX_DESCRIPTION_LENGTH][MediaGalleryItem.MAX_DESCRIPTION_LENGTH] characters
@@ -56,9 +56,7 @@ class InlineMediaGallery(
 }
 
 /**
- * Component which displays a group of images, videos, GIFs or WEBPs into a gallery grid.
- *
- * Can contain up to [MAX_ITEMS][net.dv8tion.jda.api.components.mediagallery.MediaGallery.MAX_ITEMS] [media items][MediaGalleryItem].
+ * See [MediaGallery][net.dv8tion.jda.api.components.mediagallery.MediaGallery].
  *
  * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
  *

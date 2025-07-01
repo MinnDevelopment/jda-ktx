@@ -20,9 +20,7 @@ class InlineSection(
 }
 
 /**
- * Component which contains the main content on the left and an accessory on the right.
- *
- * This can contain up to [MAX_COMPONENTS][net.dv8tion.jda.api.components.section.Section.MAX_COMPONENTS] [SectionContentComponent].
+ * See [Section][net.dv8tion.jda.api.components.section.Section].
  *
  * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
  *

@@ -23,10 +23,7 @@ class InlineContainer(
 }
 
 /**
- * Component which groups components vertically, you can specify an accent color, similar to embeds,
- * and mark the container as a spoiler.
- *
- * This can contain up to [MAX_COMPONENTS][net.dv8tion.jda.api.components.container.Container.MAX_COMPONENTS] [ContainerChildComponent].
+ * See [Container][net.dv8tion.jda.api.components.container.Container].
  *
  * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
  *

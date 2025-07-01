@@ -24,7 +24,7 @@ class InlineThumbnail(
 }
 
 /**
- * Component displaying a thumbnail, you can mark it as a spoiler and set a description.
+ * See [Thumbnail.fromUrl].
  *
  * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
  *
@@ -38,10 +38,7 @@ fun Thumbnail(url: String, uniqueId: Int? = null, description: String? = null, s
     InlineThumbnail(Thumbnail.fromUrl(url), uniqueId, description, spoiler).apply(block).build()
 
 /**
- * Component displaying a thumbnail, you can mark it as a spoiler and set a description.
- *
- * This will automatically add the file when building the message;
- * as such, you do not need to add it manually (with [MessageCreateBuilder.addFiles][net.dv8tion.jda.api.utils.messages.MessageCreateBuilder.addFiles] for example).
+ * See [Thumbnail.fromFile].
  *
  * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
  *
