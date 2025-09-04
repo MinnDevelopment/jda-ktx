@@ -20,20 +20,8 @@ import kotlinx.coroutines.future.await
 import kotlinx.coroutines.suspendCancellableCoroutine
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.utils.concurrent.Task
-import java.util.concurrent.CompletableFuture
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-
-/**
- * Awaits the result of this CompletableFuture
- *
- * @return Result
- */
-@Deprecated(
-    "This is obsolete, kotlin coroutines already provide awaiting futures.",
-    replaceWith = ReplaceWith(expression = "this.await()", imports = ["kotlinx.coroutines.future.await"]),
-    level = DeprecationLevel.WARNING)
-suspend fun <T> CompletableFuture<T>.await(): T = this.await()
 
 /**
  * Awaits the result of this RestAction
@@ -49,6 +37,6 @@ suspend fun <T> RestAction<T>.await(): T = submit().await()
  */
 suspend fun <T> Task<T>.await() = suspendCancellableCoroutine<T> {
     it.invokeOnCancellation { cancel() }
-    onSuccess { r -> it.resume(r)  }
+    onSuccess { r -> it.resume(r) }
     onError { e -> it.resumeWithException(e) }
 }

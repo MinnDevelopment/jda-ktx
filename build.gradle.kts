@@ -1,61 +1,34 @@
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.base.DokkaBaseConfiguration
 import org.jetbrains.dokka.gradle.DokkaTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+import org.jreleaser.gradle.plugin.tasks.AbstractJReleaserTask
+import org.jreleaser.model.Active
 import java.net.URI
-
-buildscript {
-    dependencies {
-        classpath("org.jetbrains.dokka:dokka-base:1.+")
-    }
-
-    dependencyLocking.lockAllConfigurations()
-}
 
 plugins {
     `maven-publish`
-    signing
 
-    kotlin("jvm") version "2.0.0"
-    id("io.github.gradle-nexus.publish-plugin") version "1.+"
-    id("io.gitlab.arturbosch.detekt") version "1.+"
-    id("org.jetbrains.dokka") version "1.+"
+    kotlin("jvm") version(libs.versions.kotlin)
+    alias(libs.plugins.detekt)
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.versions)
+    alias(libs.plugins.version.catalog.update)
+    alias(libs.plugins.jreleaser)
+}
+
+buildscript {
+    dependencies {
+        classpath("org.jetbrains.dokka:dokka-base:2.0.0")
+    }
 }
 
 group = "club.minnced"
-version = "0.12.0"
-val jdaVersion = "5.0.0"
-
-
-
-////////////////////////////////
-// Dependency Version Locking //
-////////////////////////////////
-
-fun ComponentSelectionRules.notRc() {
-    all {
-        if (candidate.version.contains("RC", ignoreCase = true))
-            reject("not a release version")
-    }
-}
-
-// To update lockfile, run ./gradlew dependencies --update-locks '<group id>:<artifact id>'
-// To update all locks use ./gradlew dependencies --write-locks
-
-configurations {
-    compileClasspath {
-        resolutionStrategy.activateDependencyLocking()
-        resolutionStrategy.componentSelection.notRc()
-    }
-    runtimeClasspath {
-        resolutionStrategy.activateDependencyLocking()
-        resolutionStrategy.componentSelection.notRc()
-    }
-}
-
-dependencyLocking {
-    lockMode.set(LockMode.STRICT)
-}
+version = "0.13.0"
 
 
 
@@ -68,12 +41,12 @@ configure<JavaPluginExtension> {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.allWarningsAsErrors = true
-    kotlinOptions.jvmTarget = "1.8"
-    kotlinOptions.freeCompilerArgs = listOf(
-        "-Xjvm-default=all",  // use default methods in interfaces
-    )
+tasks.withType<KotlinJvmCompile> {
+    compilerOptions {
+        allWarningsAsErrors.set(true)
+        jvmTarget.set(JvmTarget.JVM_1_8)
+        freeCompilerArgs.addAll("-Xjvm-default=all")
+    }
 }
 
 
@@ -87,13 +60,32 @@ repositories {
 }
 
 dependencies {
-    compileOnly("ch.qos.logback:logback-classic:latest.release")
-    compileOnly("club.minnced:discord-webhooks:latest.release")
+    compileOnly(libs.logback)
+    compileOnly(libs.webhooks)
 
-    api(kotlin("stdlib"))
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.+")
+    api(libs.kotlin)
+    api(libs.coroutines)
 
-    implementation("net.dv8tion:JDA:$jdaVersion")
+    implementation(libs.jda)
+}
+
+fun isNonStable(version: String): Boolean {
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
+    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+    val isStable = stableKeyword || regex.matches(version)
+    return isStable.not()
+}
+
+tasks.withType<DependencyUpdatesTask> {
+    rejectVersionIf {
+        isNonStable(candidate.version)
+    }
+
+    gradleReleaseChannel = "current"
+}
+
+versionCatalogUpdate {
+    versionSelector(VersionSelectors.STABLE)
 }
 
 
@@ -104,24 +96,22 @@ dependencies {
 
 val javadoc: Javadoc by tasks
 
-val sourcesJar = task<Jar>("sourcesJar") {
+val sourcesJar by tasks.registering(Jar::class) {
     from(sourceSets["main"].allSource)
     archiveClassifier.set("sources")
 }
 
-val javadocJar = task<Jar>("javadocJar") {
+val javadocJar by tasks.registering(Jar::class) {
     from(javadoc.destinationDir)
     archiveClassifier.set("javadoc")
 
     dependsOn(javadoc)
 }
 
-tasks {
-    build {
-        dependsOn(javadocJar)
-        dependsOn(sourcesJar)
-        dependsOn(jar)
-    }
+tasks.build {
+    dependsOn(javadocJar)
+    dependsOn(sourcesJar)
+    dependsOn(tasks.jar)
 }
 
 
@@ -146,8 +136,8 @@ tasks.test.get().dependsOn(tasks.getByName("detekt"))
 // Documentation //
 ///////////////////
 
-tasks.getByName("dokkaHtml", DokkaTask::class) {
-    dokkaSourceSets.configureEach {
+tasks.withType<DokkaTask>().configureEach {
+    dokkaSourceSets.named("main") {
         includes.from("packages.md")
         jdkVersion.set(8)
         sourceLink {
@@ -157,8 +147,8 @@ tasks.getByName("dokkaHtml", DokkaTask::class) {
         }
 
         externalDocumentationLink(
-            URI("https://ci.dv8tion.net/job/JDA5/javadoc/").toURL(),
-            URI("https://ci.dv8tion.net/job/JDA5/javadoc/element-list").toURL()
+            url = URI("https://ci.dv8tion.net/job/JDA5/javadoc/").toURL(),
+            packageListUrl = URI("https://ci.dv8tion.net/job/JDA5/javadoc/element-list").toURL()
         )
 
         pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
@@ -203,6 +193,7 @@ fun generatePom(): MavenPom.() -> Unit {
     }
 }
 
+val stagingDirectory = layout.buildDirectory.dir("staging-deploy").get()
 
 publishing.publications {
     register<MavenPublication>("Release") {
@@ -215,57 +206,42 @@ publishing.publications {
         artifact(sourcesJar)
 
         pom.apply(generatePom())
+    }
 
-        // Uses the resolved version instead of the 1.+ wildcards
-        // See https://docs.gradle.org/current/userguide/publishing_maven.html#publishing_maven:resolved_dependencies
-        versionMapping {
-            usage("java-api") {
-                fromResolutionOf("runtimeClasspath")
-            }
-            usage("java-runtime") {
-                fromResolutionResult()
+    repositories.maven {
+        url = stagingDirectory.asFile.toURI()
+    }
+}
+
+jreleaser {
+    project {
+        versionPattern = "CUSTOM"
+    }
+
+    release {
+        github {
+            enabled = false
+        }
+    }
+
+    signing {
+        active = Active.RELEASE
+        armored = true
+    }
+
+    deploy {
+        maven {
+            mavenCentral {
+                register("sonatype") {
+                    active = Active.RELEASE
+                    url = "https://central.sonatype.com/api/v1/publisher"
+                    stagingRepository(stagingDirectory.asFile.relativeTo(projectDir).path)
+                }
             }
         }
     }
 }
 
-val signingKey: String? by project
-val signingKeyId: String? by project
-val ossrhUser: String? by project
-val ossrhPassword: String? by project
-val stagingProfile: String? by project
-
-val enablePublishing = ossrhUser != null && ossrhPassword != null && stagingProfile != null
-
-signing {
-    useInMemoryPgpKeys(signingKeyId, signingKey, "")
-    sign(*publishing.publications.toTypedArray())
-    isRequired = enablePublishing
-}
-
-if (enablePublishing) {
-    nexusPublishing {
-        repositories.sonatype {
-            username.set(ossrhUser)
-            password.set(ossrhPassword)
-            stagingProfileId.set(stagingProfile)
-        }
-    }
-}
-
-val build by tasks
-val clean by tasks
-
-build.mustRunAfter(clean)
-
-val rebuild = tasks.register<Task>("rebuild") {
-    group = "build"
-    dependsOn(clean, build)
-}
-
-// Only enable publishing task for properly configured projects
-val publishingTasks = tasks.withType<PublishToMavenRepository> {
-    enabled = ossrhUser?.isNotEmpty() == true
-    mustRunAfter(rebuild)
-    dependsOn(rebuild)
+tasks.withType<AbstractJReleaserTask>().configureEach {
+    mustRunAfter(tasks.named("publish"))
 }
