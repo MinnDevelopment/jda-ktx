@@ -19,6 +19,7 @@ package dev.minn.jda.ktx.interactions.commands
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.OptionType
@@ -94,7 +95,12 @@ inline fun Command.editCommand(builder: SlashCommandData.() -> Unit) = editComma
  * @receiver[SlashCommandData]
  */
 fun SlashCommandData.restrict(guild: Boolean, perms: DefaultMemberPermissions? = null) {
-    isGuildOnly = guild
+    if (guild) {
+        setContexts(InteractionContextType.GUILD)
+    } else {
+        setContexts(InteractionContextType.ALL)
+    }
+
     perms?.let {
         defaultPermissions = it
     }

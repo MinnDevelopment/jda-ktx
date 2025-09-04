@@ -1,6 +1,8 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.dokka.base.DokkaBase
+import org.jetbrains.dokka.base.DokkaBaseConfiguration
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
@@ -14,6 +16,12 @@ plugins {
     alias(libs.plugins.dokka)
     alias(libs.plugins.versions)
     alias(libs.plugins.version.catalog.update)
+}
+
+buildscript {
+    dependencies {
+        classpath("org.jetbrains.dokka:dokka-base:2.0.0")
+    }
 }
 
 group = "club.minnced"
@@ -125,8 +133,8 @@ tasks.test.get().dependsOn(tasks.getByName("detekt"))
 // Documentation //
 ///////////////////
 
-tasks.named<DokkaTask>("dokkaHtml").configure {
-    dokkaSourceSets.configureEach {
+tasks.withType<DokkaTask>().configureEach {
+    dokkaSourceSets.named("main") {
         includes.from("packages.md")
         jdkVersion.set(8)
         sourceLink {
@@ -136,14 +144,13 @@ tasks.named<DokkaTask>("dokkaHtml").configure {
         }
 
         externalDocumentationLink(
-            URI("https://ci.dv8tion.net/job/JDA5/javadoc/").toURL(),
-            URI("https://ci.dv8tion.net/job/JDA5/javadoc/element-list").toURL()
+            url = URI("https://ci.dv8tion.net/job/JDA5/javadoc/").toURL(),
+            packageListUrl = URI("https://ci.dv8tion.net/job/JDA5/javadoc/element-list").toURL()
         )
 
-        //FIXME
-//        pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
-//            footerMessage = "Copyright © 2020 Florian Spieß"
-//        }
+        pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
+            footerMessage = "Copyright © 2020 Florian Spieß"
+        }
     }
 }
 
