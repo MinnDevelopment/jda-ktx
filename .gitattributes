@@ -1,5 +1,5 @@
 
 .* text eol=crlf
 * text eol=crlf
-gradlew binary
+gradlew eol=lf
 *.jar binary
