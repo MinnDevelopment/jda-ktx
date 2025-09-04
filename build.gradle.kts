@@ -1,7 +1,7 @@
-import org.jetbrains.dokka.DokkaConfiguration
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.dokka.gradle.DokkaTask
-import org.jetbrains.dokka.plugability.ConfigurableBlock
-import org.jetbrains.dokka.plugability.DokkaJavaPlugin
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 import java.net.URI
@@ -9,14 +9,15 @@ import java.net.URI
 plugins {
     `maven-publish`
 
-    kotlin("jvm") version "2.0.0"
-    id("io.gitlab.arturbosch.detekt") version "1.23.6"
-    id("org.jetbrains.dokka") version "1.9.20"
+    kotlin("jvm") version(libs.versions.kotlin)
+    alias(libs.plugins.detekt)
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.versions)
+    alias(libs.plugins.version.catalog.update)
 }
 
 group = "club.minnced"
 version = "0.12.0"
-val jdaVersion = "5.0.0"
 
 
 
@@ -48,13 +49,32 @@ repositories {
 }
 
 dependencies {
-    compileOnly("ch.qos.logback:logback-classic:1.5.6")
-    compileOnly("club.minnced:discord-webhooks:0.8.4")
+    compileOnly(libs.logback)
+    compileOnly(libs.webhooks)
 
-    api(kotlin("stdlib"))
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+    api(libs.kotlin)
+    api(libs.coroutines)
 
-    implementation("net.dv8tion:JDA:$jdaVersion")
+    implementation(libs.jda)
+}
+
+fun isNonStable(version: String): Boolean {
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
+    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+    val isStable = stableKeyword || regex.matches(version)
+    return isStable.not()
+}
+
+tasks.withType<DependencyUpdatesTask> {
+    rejectVersionIf {
+        isNonStable(candidate.version)
+    }
+
+    gradleReleaseChannel = "current"
+}
+
+versionCatalogUpdate {
+    versionSelector(VersionSelectors.STABLE)
 }
 
 
