@@ -57,7 +57,7 @@ fun <T : Component> Sequence<T>.asEnabled() = withDisabled(false)
 /**
  * Construct an [ActionRow] from the provided components
  */
-fun row(vararg components: ActionRowChildComponent) = ActionRow.of(*components)
+fun row(vararg components: ActionRowChildComponent) = ActionRow.of(components.asList())
 
 /**
  * Construct an [ActionRow] from the provided components

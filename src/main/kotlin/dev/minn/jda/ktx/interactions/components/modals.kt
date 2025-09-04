@@ -17,12 +17,12 @@
 
 package dev.minn.jda.ktx.interactions.components
 
+import net.dv8tion.jda.api.components.ModalTopLevelComponent
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.interactions.callbacks.IModalCallback
-import net.dv8tion.jda.api.interactions.modals.Modal
-import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent
+import net.dv8tion.jda.api.modals.Modal
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction
 
 /**
