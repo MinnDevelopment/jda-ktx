@@ -16,11 +16,11 @@
 
 package dev.minn.jda.ktx.interactions.components
 
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu.SelectTarget
+import net.dv8tion.jda.api.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
 fun SelectOption(label: String, value: String, description: String? = null, emoji: Emoji? = null, default: Boolean = false)
     = SelectOption.of(label, value)
@@ -33,15 +33,20 @@ fun StringSelectMenu.Builder.option(label: String, value: String, description: S
 
 inline fun StringSelectMenu(
     customId: String,
+    uniqueId: Int = -1,
     placeholder: String? = null,
     valueRange: IntRange = 1..1,
     disabled: Boolean = false,
     options: Collection<SelectOption> = emptyList(),
-    builder: StringSelectMenu.Builder.() -> Unit = {}
+    builder: StringSelectMenu.Builder.() -> Unit = {},
 ) = StringSelectMenu.create(customId).let {
-    it.placeholder = placeholder
+    if (uniqueId != -1)
+        it.uniqueId = uniqueId
+    if (placeholder != null)
+        it.placeholder = placeholder
     it.setRequiredRange(valueRange.first, valueRange.last)
-    it.isDisabled = disabled
+    if (disabled)
+        it.isDisabled = true
     it.options.addAll(options)
     it.apply(builder)
     it.build()
@@ -50,14 +55,19 @@ inline fun StringSelectMenu(
 inline fun EntitySelectMenu(
     customId: String,
     types: Collection<SelectTarget>,
+    uniqueId: Int = -1,
     placeholder: String? = null,
     valueRange: IntRange = 1..1,
     disabled: Boolean = false,
-    builder: EntitySelectMenu.Builder.() -> Unit = {}
+    builder: EntitySelectMenu.Builder.() -> Unit = {},
 ) = EntitySelectMenu.create(customId, types).let {
-    it.placeholder = placeholder
+    if (uniqueId != -1)
+        it.uniqueId = uniqueId
+    if (placeholder != null)
+        it.placeholder = placeholder
     it.setRequiredRange(valueRange.first, valueRange.last)
-    it.isDisabled = disabled
+    if (disabled)
+        it.isDisabled = true
     it.apply(builder)
     it.build()
 }
@@ -66,16 +76,18 @@ fun SelectTarget.into() = listOf(this)
 
 fun SelectTarget.menu(
     customId: String,
+    uniqueId: Int = -1,
     placeholder: String? = null,
     valueRange: IntRange = 1..1,
     disabled: Boolean = false,
     builder: EntitySelectMenu.Builder.() -> Unit = {}
-) = EntitySelectMenu(customId, into(), placeholder, valueRange, disabled, builder)
+) = EntitySelectMenu(customId, into(), uniqueId, placeholder, valueRange, disabled, builder)
 
 fun Collection<SelectTarget>.menu(
     customId: String,
+    uniqueId: Int = -1,
     placeholder: String? = null,
     valueRange: IntRange = 1..1,
     disabled: Boolean = false,
     builder: EntitySelectMenu.Builder.() -> Unit = {}
-) = EntitySelectMenu(customId, this, placeholder, valueRange, disabled, builder)
+) = EntitySelectMenu(customId, this, uniqueId, placeholder, valueRange, disabled, builder)

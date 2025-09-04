@@ -17,8 +17,8 @@
 
 package dev.minn.jda.ktx.interactions.components
 
-import net.dv8tion.jda.api.interactions.components.text.TextInput
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.components.textinput.TextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 
 /**
  * Defaults used for text inputs.
@@ -56,12 +56,15 @@ inline fun TextInputBuilder(
         id: String,
         label: String,
         style: TextInputStyle,
+        uniqueId: Int = -1,
         required: Boolean = TextInputDefaults.required,
         value: String? = TextInputDefaults.value,
         placeholder: String? = TextInputDefaults.placeholder,
         requiredLength: IntRange? = TextInputDefaults.requiredLength,
         builder: InlineTextInput.() -> Unit = {}
 ): InlineTextInput = InlineTextInput(TextInput.create(id, label, style)).also {
+    if (uniqueId != -1)
+        it.uniqueId = uniqueId
     it.required = required
     it.value = value
     it.placeholder = placeholder
@@ -93,22 +96,29 @@ inline fun TextInput(
         id: String,
         label: String,
         style: TextInputStyle,
+        uniqueId: Int = -1,
         required: Boolean = TextInputDefaults.required,
         value: String? = TextInputDefaults.value,
         placeholder: String? = TextInputDefaults.placeholder,
         requiredLength: IntRange? = TextInputDefaults.requiredLength,
         builder: InlineTextInput.() -> Unit = {}
-) = TextInputBuilder(id, label, style, required, value, placeholder, requiredLength, builder).build()
+) = TextInputBuilder(id, label, style, uniqueId, required, value, placeholder, requiredLength, builder).build()
 
 /**
  * Kotlin idiomatic builder for [TextInput]
  */
-class InlineTextInput(val builder: TextInput.Builder) {
+class InlineTextInput(val builder: TextInput.Builder) : InlineComponent {
     /** Delegated property for [TextInput.Builder.setId] */
     var id: String
-        get() = builder.id
+        get() = builder.customId
         set(value) {
             builder.id = value
+        }
+
+    override var uniqueId: Int
+        get() = builder.uniqueId
+        set(value) {
+            builder.uniqueId = value
         }
 
     /** Delegated property for [TextInput.Builder.setLabel] */

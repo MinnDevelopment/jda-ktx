@@ -18,6 +18,8 @@ package dev.minn.jda.ktx.interactions.components
 
 import dev.minn.jda.ktx.messages.MessageCreate
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.entities.emoji.Emoji
@@ -28,8 +30,6 @@ import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.hooks.SubscribeEvent
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
@@ -72,9 +72,9 @@ class Paginator internal constructor(private val nonce: String, private val ttl:
     var delete: Button = PaginatorDefaults.DELETE
 
     internal val controls: ActionRow get() = ActionRow.of(
-        prev.withDisabled(index == 0).withId("$nonce:prev"),
-        next.withDisabled(index == pageCache.size - 1).withId("$nonce:next"),
-        delete.withId("$nonce:delete")
+        prev.withDisabled(index == 0).withCustomId("$nonce:prev"),
+        next.withDisabled(index == pageCache.size - 1).withCustomId("$nonce:next"),
+        delete.withCustomId("$nonce:delete")
     )
 
     val pages: List<MessageCreateData> get() = pageCache.toList()
