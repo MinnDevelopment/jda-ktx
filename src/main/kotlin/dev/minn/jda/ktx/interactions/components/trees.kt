@@ -10,7 +10,7 @@ import kotlin.jvm.optionals.getOrNull
  *
  * @throws IllegalArgumentException If a component cannot be represented by [T]
  */
-inline fun <reified T : IComponentUnion, E : Component> Collection<E>.toComponentTree(): ComponentTree<T> =
+inline fun <reified T : IComponentUnion> Collection<Component>.toComponentTree(): ComponentTree<T> =
     ComponentTree.of(T::class.java, this)
 
 /**
