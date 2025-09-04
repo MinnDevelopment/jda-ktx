@@ -195,21 +195,23 @@ fun generatePom(): MavenPom.() -> Unit {
 
 val stagingDirectory = layout.buildDirectory.dir("staging-deploy").get()
 
-publishing.publications {
-    register<MavenPublication>("Release") {
-        from(components["java"])
-        artifactId = project.name
-        groupId = project.group as String
-        version = project.version as String
+publishing {
+    publications {
+        register<MavenPublication>("Release") {
+            from(components["java"])
+            artifactId = project.name
+            groupId = project.group as String
+            version = project.version as String
 
-        artifact(javadocJar)
-        artifact(sourcesJar)
+            artifact(javadocJar)
+            artifact(sourcesJar)
 
-        pom.apply(generatePom())
-    }
+            pom.apply(generatePom())
+        }
 
-    repositories.maven {
-        url = stagingDirectory.asFile.toURI()
+        repositories.maven {
+            url = stagingDirectory.asFile.toURI()
+        }
     }
 }
 
