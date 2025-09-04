@@ -1,18 +1,33 @@
 package dev.minn.jda.ktx.interactions.components
 
+import dev.minn.jda.ktx.interactions.components.utils.checkInit
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay
 
-class InlineTextDisplay(
+private val DUMMY_TEXT_DISPLAY = TextDisplay.of("a")
+
+class InlineTextDisplay : InlineComponent {
+
+    private var textDisplay = DUMMY_TEXT_DISPLAY
+
+    override var uniqueId: Int
+        get() = textDisplay.uniqueId
+        set(value) {
+            textDisplay = textDisplay.withUniqueId(value)
+        }
+
+    private var _content: String? = null
     /** The content displayed by this component */
-    var content: String,
-    /** Unique identifier of this component */
-    var uniqueId: Int?,
-) : InlineComponent {
+    var content: String
+        get() = _content.checkInit("content")
+        set(value) {
+            textDisplay = textDisplay.withContent(value)
+            _content = value
+        }
+
+    val hasContent: Boolean get() = _content != null
 
     fun build(): TextDisplay {
-        var textDisplay = TextDisplay.of(content)
-        if (uniqueId != null)
-            textDisplay = textDisplay.withUniqueId(uniqueId!!)
+        content.checkInit()
         return textDisplay
     }
 }
@@ -26,5 +41,13 @@ class InlineTextDisplay(
  * @param uniqueId  Unique identifier of this component
  * @param block     Lambda allowing further configuration
  */
-inline fun TextDisplay(content: String, uniqueId: Int? = null, block: InlineTextDisplay.() -> Unit = {}): TextDisplay =
-    InlineTextDisplay(content, uniqueId).apply(block).build()
+inline fun TextDisplay(content: String? = null, uniqueId: Int = -1, block: InlineTextDisplay.() -> Unit = {}): TextDisplay =
+    InlineTextDisplay()
+        .apply {
+            if (uniqueId != -1)
+                this.uniqueId = uniqueId
+            if (content != null)
+                this.content = content
+            block()
+        }
+        .build()
