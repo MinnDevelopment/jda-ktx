@@ -69,7 +69,7 @@ fun button(
     id: String,
     label: String? = ButtonDefaults.LABEL,
     emoji: Emoji? = ButtonDefaults.EMOJI,
-    uniqueId: Int? = null,
+    uniqueId: Int = -1,
     style: ButtonStyle = ButtonDefaults.STYLE,
     disabled: Boolean = ButtonDefaults.DISABLED,
 ) = Button.of(style, id, label, emoji)
@@ -94,7 +94,7 @@ fun primary(
     id: String,
     label: String? = ButtonDefaults.LABEL,
     emoji: Emoji? = ButtonDefaults.EMOJI,
-    uniqueId: Int? = null,
+    uniqueId: Int = -1,
     disabled: Boolean = ButtonDefaults.DISABLED,
 ) = button(id, label, emoji, uniqueId, ButtonStyle.PRIMARY, disabled)
 
@@ -116,7 +116,7 @@ fun secondary(
     id: String,
     label: String? = ButtonDefaults.LABEL,
     emoji: Emoji? = ButtonDefaults.EMOJI,
-    uniqueId: Int? = null,
+    uniqueId: Int = -1,
     disabled: Boolean = ButtonDefaults.DISABLED,
 ) = button(id, label, emoji, uniqueId, ButtonStyle.SECONDARY, disabled)
 
@@ -138,7 +138,7 @@ fun success(
     id: String,
     label: String? = ButtonDefaults.LABEL,
     emoji: Emoji? = ButtonDefaults.EMOJI,
-    uniqueId: Int? = null,
+    uniqueId: Int = -1,
     disabled: Boolean = ButtonDefaults.DISABLED,
 ) = button(id, label, emoji, uniqueId, ButtonStyle.SUCCESS, disabled)
 
@@ -160,7 +160,7 @@ fun danger(
     id: String,
     label: String? = ButtonDefaults.LABEL,
     emoji: Emoji? = ButtonDefaults.EMOJI,
-    uniqueId: Int? = null,
+    uniqueId: Int = -1,
     disabled: Boolean = ButtonDefaults.DISABLED,
 ) = button(id, label, emoji, uniqueId, ButtonStyle.DANGER, disabled)
 
@@ -182,7 +182,7 @@ fun link(
     url: String,
     label: String? = ButtonDefaults.LABEL,
     emoji: Emoji? = ButtonDefaults.EMOJI,
-    uniqueId: Int? = null,
+    uniqueId: Int = -1,
     disabled: Boolean = ButtonDefaults.DISABLED,
 ) = button(url, label, emoji, uniqueId, ButtonStyle.LINK, disabled)
 
@@ -206,7 +206,7 @@ fun link(
  * @return[Button] The resulting button instance. You still need to send it with a message!
  */
 fun JDA.button(style: ButtonStyle = ButtonDefaults.STYLE, label: String? = ButtonDefaults.LABEL, emoji: Emoji? = ButtonDefaults.EMOJI,
-               uniqueId: Int? = null, disabled: Boolean = ButtonDefaults.DISABLED, expiration: Duration = ButtonDefaults.EXPIRATION,
+               uniqueId: Int = -1, disabled: Boolean = ButtonDefaults.DISABLED, expiration: Duration = ButtonDefaults.EXPIRATION,
                user: User? = null, listener: suspend (ButtonInteractionEvent) -> Unit
 ): Button {
     val id = ThreadLocalRandom.current().nextLong().toString()

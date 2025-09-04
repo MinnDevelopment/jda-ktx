@@ -4,54 +4,46 @@ import net.dv8tion.jda.api.components.mediagallery.MediaGallery
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem
 import net.dv8tion.jda.api.utils.FileUpload
 
-@InlineComponentDSL
-class InlineMediaGalleryItem(
-    private val item: MediaGalleryItem,
-    /** Known as an "alternative text", must not exceed [MAX_DESCRIPTION_LENGTH][MediaGalleryItem.MAX_DESCRIPTION_LENGTH] characters */
-    var description: String? = null,
-    /** Hides the item until the user clicks on it */
-    var spoiler: Boolean = false,
-) {
+private val DUMMY_MEDIA_GALLERY = MediaGallery.of(MediaGalleryItem.fromUrl("https://github.com"))
 
-    fun build(): MediaGalleryItem {
-        return item
-            .withDescription(description)
-            .withSpoiler(spoiler)
-    }
-}
+class InlineMediaGallery : InlineComponent {
 
-class InlineMediaGallery(
-    /** Unique identifier of this component */
-    var uniqueId: Int?,
-) : InlineComponentWithChildren<MediaGalleryItem>() {
+    private var mediaGallery = DUMMY_MEDIA_GALLERY
+
+    override var uniqueId: Int
+        get() = mediaGallery.uniqueId
+        set(value) {
+            mediaGallery = mediaGallery.withUniqueId(value)
+        }
+
+    val items = mutableListOf<MediaGalleryItem>()
 
     /**
-     * See [MediaGalleryItem.fromUrl].
+     * Add an item to this gallery, see [MediaGalleryItem.fromUrl].
      *
      * @param url         The URL of the image to display
      * @param description Known as an "alternative text", must not exceed [MAX_DESCRIPTION_LENGTH][MediaGalleryItem.MAX_DESCRIPTION_LENGTH] characters
      * @param spoiler     Hides the item until the user clicks on it
      * @param block       Lambda allowing further configuration
      */
-    fun item(url: String, description: String? = null, spoiler: Boolean = false, block: InlineMediaGalleryItem.() -> Unit = {}): Unit =
-        +InlineMediaGalleryItem(MediaGalleryItem.fromUrl(url), description, spoiler).apply(block).build()
+    inline fun item(url: String, description: String? = null, spoiler: Boolean = false, block: InlineMediaGalleryItem.() -> Unit = {}) {
+        items += MediaGalleryItem(url, description, spoiler, block)
+    }
 
     /**
-     * See [MediaGalleryItem.fromFile].
+     * Add an item to this gallery, see [MediaGalleryItem.fromFile].
      *
      * @param file        The image to display
      * @param description Known as an "alternative text", must not exceed [MAX_DESCRIPTION_LENGTH][MediaGalleryItem.MAX_DESCRIPTION_LENGTH] characters
      * @param spoiler     Hides the item until the user clicks on it
      * @param block       Lambda allowing further configuration
      */
-    fun item(file: FileUpload, description: String? = null, spoiler: Boolean = false, block: InlineMediaGalleryItem.() -> Unit = {}): Unit =
-        +InlineMediaGalleryItem(MediaGalleryItem.fromFile(file), description, spoiler).apply(block).build()
+    inline fun item(file: FileUpload, description: String? = null, spoiler: Boolean = false, block: InlineMediaGalleryItem.() -> Unit = {}) {
+        items += MediaGalleryItem(file, description, spoiler, block)
+    }
 
     fun build(): MediaGallery {
-        var gallery = MediaGallery.of(components)
-        if (uniqueId != null)
-            gallery = gallery.withUniqueId(uniqueId!!)
-        return gallery
+        return mediaGallery.withItems(items)
     }
 }
 
@@ -60,9 +52,15 @@ class InlineMediaGallery(
  *
  * This requires [Components V2][net.dv8tion.jda.api.utils.messages.MessageRequest.useComponentsV2] to be enabled.
  *
- * @param uniqueId    Unique identifier of this component
- * @param block       Lambda allowing further configuration
+ * @param uniqueId Unique identifier of this component
+ * @param block    Lambda allowing further configuration
  */
-inline fun MediaGallery(uniqueId: Int? = null, block: InlineMediaGallery.() -> Unit): MediaGallery {
-    return InlineMediaGallery(uniqueId).apply(block).build()
+inline fun MediaGallery(uniqueId: Int = -1, block: InlineMediaGallery.() -> Unit): MediaGallery {
+    return InlineMediaGallery()
+        .apply {
+            if (uniqueId != -1)
+                this.uniqueId = uniqueId
+            block()
+        }
+        .build()
 }

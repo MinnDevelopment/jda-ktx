@@ -68,16 +68,7 @@ fun Collection<ActionRowChildComponent>.row() = ActionRow.of(this)
 internal annotation class InlineComponentDSL
 
 @InlineComponentDSL
-internal interface InlineComponent
-
-abstract class InlineComponentWithChildren<T> : InlineComponent {
-    var components = arrayListOf<T>()
-
-    operator fun T.unaryPlus() {
-        components += this
-    }
-
-    operator fun Collection<T>.unaryPlus() {
-        components += this
-    }
+interface InlineComponent {
+    /** Unique identifier of this component, see [Component.withUniqueId] */
+    var uniqueId: Int
 }

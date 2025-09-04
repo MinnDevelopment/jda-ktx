@@ -183,23 +183,23 @@ You can see them in the [interactions/components](./src/main/kotlin/dev/minn/jda
 ```kotlin
 val rustAnimation = javaClass.getResourceAsStream("/rust.webp")!!.named("rust.webp")
 val message = MessageCreate(useComponentsV2 = true) {
-    components += Container {
-        +MediaGallery {
+    container {
+        mediaGallery {
             item(rustAnimation)
         }
 
-        +Section(
+        section(
             accessory = Thumbnail(kotlinIcon)
         ) {
-            +TextDisplay("Kotlin FTW")
+            text("Kotlin FTW")
         }
 
-        +FileDisplay(FileUpload.fromData("abc".encodeToByteArray(), "abc.txt"))
+        fileDisplay(FileUpload.fromData("abc".encodeToByteArray(), "abc.txt"))
 
-        +Separator(isDivider = true, spacing = Separator.Spacing.LARGE)
+        separator(isDivider = true, spacing = Separator.Spacing.LARGE)
 
-        +ActionRow {
-            +buttons.link("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "Link? ain't no way")
+        actionRow {
+            linkButton("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "Link? ain't no way")
         }
     }
 }

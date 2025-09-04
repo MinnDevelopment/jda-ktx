@@ -33,18 +33,20 @@ fun StringSelectMenu.Builder.option(label: String, value: String, description: S
 
 inline fun StringSelectMenu(
     customId: String,
-    uniqueId: Int? = null,
+    uniqueId: Int = -1,
     placeholder: String? = null,
     valueRange: IntRange = 1..1,
     disabled: Boolean = false,
     options: Collection<SelectOption> = emptyList(),
-    builder: StringSelectMenu.Builder.() -> Unit = {}
+    builder: StringSelectMenu.Builder.() -> Unit = {},
 ) = StringSelectMenu.create(customId).let {
-    if (uniqueId != null)
+    if (uniqueId != -1)
         it.uniqueId = uniqueId
-    it.placeholder = placeholder
+    if (placeholder != null)
+        it.placeholder = placeholder
     it.setRequiredRange(valueRange.first, valueRange.last)
-    it.isDisabled = disabled
+    if (disabled)
+        it.isDisabled = true
     it.options.addAll(options)
     it.apply(builder)
     it.build()
@@ -53,17 +55,19 @@ inline fun StringSelectMenu(
 inline fun EntitySelectMenu(
     customId: String,
     types: Collection<SelectTarget>,
-    uniqueId: Int? = null,
+    uniqueId: Int = -1,
     placeholder: String? = null,
     valueRange: IntRange = 1..1,
     disabled: Boolean = false,
-    builder: EntitySelectMenu.Builder.() -> Unit = {}
+    builder: EntitySelectMenu.Builder.() -> Unit = {},
 ) = EntitySelectMenu.create(customId, types).let {
-    if (uniqueId != null)
+    if (uniqueId != -1)
         it.uniqueId = uniqueId
-    it.placeholder = placeholder
+    if (placeholder != null)
+        it.placeholder = placeholder
     it.setRequiredRange(valueRange.first, valueRange.last)
-    it.isDisabled = disabled
+    if (disabled)
+        it.isDisabled = true
     it.apply(builder)
     it.build()
 }
@@ -72,7 +76,7 @@ fun SelectTarget.into() = listOf(this)
 
 fun SelectTarget.menu(
     customId: String,
-    uniqueId: Int? = null,
+    uniqueId: Int = -1,
     placeholder: String? = null,
     valueRange: IntRange = 1..1,
     disabled: Boolean = false,
@@ -81,7 +85,7 @@ fun SelectTarget.menu(
 
 fun Collection<SelectTarget>.menu(
     customId: String,
-    uniqueId: Int? = null,
+    uniqueId: Int = -1,
     placeholder: String? = null,
     valueRange: IntRange = 1..1,
     disabled: Boolean = false,

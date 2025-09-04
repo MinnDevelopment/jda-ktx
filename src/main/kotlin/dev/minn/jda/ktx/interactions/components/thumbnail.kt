@@ -4,23 +4,30 @@ import net.dv8tion.jda.api.components.thumbnail.Thumbnail
 import net.dv8tion.jda.api.utils.FileUpload
 
 class InlineThumbnail(
-    private val thumbnail: Thumbnail,
-    /** Unique identifier of this component */
-    var uniqueId: Int?,
-    /** Known as an "alternative text", must not exceed [MAX_DESCRIPTION_LENGTH][net.dv8tion.jda.api.components.thumbnail.Thumbnail.MAX_DESCRIPTION_LENGTH] characters */
-    var description: String?,
-    /** Hides the thumbnail until the user clicks on it */
-    var spoiler: Boolean,
+    private var thumbnail: Thumbnail,
 ) : InlineComponent {
 
-    fun build(): Thumbnail {
-        var thumbnail = thumbnail
-            .withSpoiler(spoiler)
-            .withDescription(description)
-        if (uniqueId != null)
-            thumbnail = thumbnail.withUniqueId(uniqueId!!)
-        return thumbnail
-    }
+    override var uniqueId: Int
+        get() = thumbnail.uniqueId
+        set(value) {
+            thumbnail = thumbnail.withUniqueId(value)
+        }
+
+    /** Known as an "alternative text", must not exceed [MAX_DESCRIPTION_LENGTH][net.dv8tion.jda.api.components.thumbnail.Thumbnail.MAX_DESCRIPTION_LENGTH] characters */
+    var description: String?
+        get() = thumbnail.description
+        set(value) {
+            thumbnail = thumbnail.withDescription(value)
+        }
+
+    /** Hides the thumbnail until the user clicks on it */
+    var spoiler: Boolean
+        get() = thumbnail.isSpoiler
+        set(value) {
+            thumbnail = thumbnail.withSpoiler(value)
+        }
+
+    fun build(): Thumbnail = thumbnail
 }
 
 /**
@@ -34,8 +41,18 @@ class InlineThumbnail(
  * @param spoiler     Hides the thumbnail until the user clicks on it
  * @param block       Lambda allowing further configuration
  */
-fun Thumbnail(url: String, uniqueId: Int? = null, description: String? = null, spoiler: Boolean = false, block: InlineThumbnail.() -> Unit = {}): Thumbnail =
-    InlineThumbnail(Thumbnail.fromUrl(url), uniqueId, description, spoiler).apply(block).build()
+fun Thumbnail(url: String, uniqueId: Int = -1, description: String? = null, spoiler: Boolean = false, block: InlineThumbnail.() -> Unit = {}): Thumbnail =
+    InlineThumbnail(Thumbnail.fromUrl(url))
+        .apply {
+            if (uniqueId != -1)
+                this.uniqueId = uniqueId
+            if (description != null)
+                this.description = description
+            if (spoiler)
+                this.spoiler = true
+            block()
+        }
+        .build()
 
 /**
  * See [Thumbnail.fromFile].
@@ -48,5 +65,15 @@ fun Thumbnail(url: String, uniqueId: Int? = null, description: String? = null, s
  * @param spoiler     Hides the thumbnail until the user clicks on it
  * @param block       Lambda allowing further configuration
  */
-fun Thumbnail(file: FileUpload, uniqueId: Int? = null, description: String? = null, spoiler: Boolean = false, block: InlineThumbnail.() -> Unit = {}): Thumbnail =
-    InlineThumbnail(Thumbnail.fromFile(file), uniqueId, description, spoiler).apply(block).build()
+fun Thumbnail(file: FileUpload, uniqueId: Int = -1, description: String? = null, spoiler: Boolean = false, block: InlineThumbnail.() -> Unit = {}): Thumbnail =
+    InlineThumbnail(Thumbnail.fromFile(file))
+        .apply {
+            if (uniqueId != -1)
+                this.uniqueId = uniqueId
+            if (description != null)
+                this.description = description
+            if (spoiler)
+                this.spoiler = true
+            block()
+        }
+        .build()
