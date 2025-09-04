@@ -20,7 +20,7 @@ fun Collection<Component>.toDefaultComponentTree(): ComponentTree<IComponentUnio
     ComponentTree.of(this)
 
 /**
- * Finds all components of the [T] type, recursively.
+ * Finds all components of type [T], recursively.
  */
 inline fun <reified T : Component> ComponentTree<*>.findAll(): List<T> =
     findAll(T::class.java)
