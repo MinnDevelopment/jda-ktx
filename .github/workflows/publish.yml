@@ -18,15 +18,7 @@ jobs:
         with:
           java-version: 17
           distribution: temurin
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: Build and test
+        run: ./gradlew build test dokkaHtml
       - name: Publish
-        uses: gradle/gradle-build-action@v2
-        env:
-          ORG_GRADLE_PROJECT_ossrhUser: ${{ secrets.OSSRH_USER }}
-          ORG_GRADLE_PROJECT_ossrhPassword: ${{ secrets.OSSRH_PASSWORD }}
-          ORG_GRADLE_PROJECT_stagingProfile: ${{ secrets.STAGING_PROFILE_ID }}
-          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.GPG_KEY }}
-          ORG_GRADLE_PROJECT_signingKeyId: ${{ secrets.GPG_KEYID }}
-        with:
-          arguments: "publishToSonatype closeAndReleaseStagingRepository"
+        run: echo TODO

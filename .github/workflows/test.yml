@@ -19,8 +19,7 @@ jobs:
       with:
         java-version: 17
         distribution: temurin
-    - name: Make gradlew executable
-      run: chmod u+x gradlew
-    - uses: gradle/gradle-build-action@v2
-      with:
-        arguments: build test dokkaHtml
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+    - name: Build and test
+      run: ./gradlew build test dokkaHtml
