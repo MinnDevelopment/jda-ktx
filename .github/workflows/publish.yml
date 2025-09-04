@@ -9,7 +9,7 @@ concurrency:
 
 jobs:
   publish:
-    environment: MavenRelease
+    environment: maven-central-release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,5 +20,11 @@ jobs:
           distribution: temurin
       - name: Build and test
         run: ./gradlew build test dokkaHtml
-      - name: Publish
-        run: echo TODO
+      - name: Release to Maven Central
+        env:
+          JRELEASER_MAVENCENTRAL_USERNAME: ${{ secrets.MAVENCENTRAL_USERNAME }}
+          JRELEASER_MAVENCENTRAL_TOKEN: ${{ secrets.MAVENCENTRAL_TOKEN }}
+          JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
+          JRELEASER_GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
+          JRELEASER_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: ./gradlew build publish jreleaserDeploy

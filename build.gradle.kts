@@ -6,6 +6,8 @@ import org.jetbrains.dokka.base.DokkaBaseConfiguration
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+import org.jreleaser.gradle.plugin.tasks.AbstractJReleaserTask
+import org.jreleaser.model.Active
 import java.net.URI
 
 plugins {
@@ -16,6 +18,7 @@ plugins {
     alias(libs.plugins.dokka)
     alias(libs.plugins.versions)
     alias(libs.plugins.version.catalog.update)
+    alias(libs.plugins.jreleaser)
 }
 
 buildscript {
@@ -190,6 +193,7 @@ fun generatePom(): MavenPom.() -> Unit {
     }
 }
 
+val stagingDirectory = layout.buildDirectory.dir("staging-deploy").get()
 
 publishing.publications {
     register<MavenPublication>("Release") {
@@ -203,4 +207,41 @@ publishing.publications {
 
         pom.apply(generatePom())
     }
+
+    repositories.maven {
+        url = stagingDirectory.asFile.toURI()
+    }
+}
+
+jreleaser {
+    project {
+        versionPattern = "CUSTOM"
+    }
+
+    release {
+        github {
+            enabled = false
+        }
+    }
+
+    signing {
+        active = Active.RELEASE
+        armored = true
+    }
+
+    deploy {
+        maven {
+            mavenCentral {
+                register("sonatype") {
+                    active = Active.RELEASE
+                    url = "https://central.sonatype.com/api/v1/publisher"
+                    stagingRepository(stagingDirectory.asFile.relativeTo(projectDir).path)
+                }
+            }
+        }
+    }
+}
+
+tasks.withType<AbstractJReleaserTask>().configureEach {
+    mustRunAfter(tasks.named("publish"))
 }
