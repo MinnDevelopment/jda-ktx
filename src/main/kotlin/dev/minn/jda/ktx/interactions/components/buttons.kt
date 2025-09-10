@@ -18,7 +18,6 @@ package dev.minn.jda.ktx.interactions.components
 
 import dev.minn.jda.ktx.events.onButton
 import dev.minn.jda.ktx.jdabuilder.scope
-import dev.minn.jda.ktx.util.applyIfNotNull
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.JDA
@@ -74,7 +73,12 @@ fun button(
     disabled: Boolean = ButtonDefaults.DISABLED,
 ) = Button.of(style, id, label, emoji)
     .withDisabled(disabled)
-    .applyIfNotNull(uniqueId, Button::withUniqueId)
+    .let {
+        if (uniqueId != -1)
+            it.withUniqueId(uniqueId)
+        else
+            it
+    }
 
 /**
  * Create a button with keyword arguments.
