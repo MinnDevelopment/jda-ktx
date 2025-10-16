@@ -82,15 +82,15 @@ suspend inline fun MessageChannel.awaitMessage(
  * }
  * ```
  *
- * @param[id] The button id
+ * @param[customId] The button id
  * @param[user] A specific user to filter for (optional)
  * @param[filter] A filter function to simplify code flow (optional)
  *
  * @return[ButtonInteractionEvent]
  */
-suspend inline fun MessageChannel.awaitButton(id: String, user: User? = null, crossinline filter: (ButtonInteractionEvent) -> Boolean = { true }) = jda.await<ButtonInteractionEvent> {
+suspend inline fun MessageChannel.awaitButton(customId: String, user: User? = null, crossinline filter: (ButtonInteractionEvent) -> Boolean = { true }) = jda.await<ButtonInteractionEvent> {
     it.channel == this
-        && it.componentId == id
+        && it.componentId == customId
         && (user == null || it.user == user)
         && filter(it)
 }
@@ -144,14 +144,14 @@ suspend inline fun MessageChannel.awaitButton(button: Button, user: User? = null
  * }
  * ```
  *
- * @param[id] The button id
+ * @param[customId] The button id
  * @param[filter] A filter function to simplify code flow (optional)
  *
  * @return[ButtonInteractionEvent]
  */
-suspend inline fun User.awaitButton(id: String, crossinline filter: (ButtonInteractionEvent) -> Boolean = { true }) = jda.await<ButtonInteractionEvent> {
+suspend inline fun User.awaitButton(customId: String, crossinline filter: (ButtonInteractionEvent) -> Boolean = { true }) = jda.await<ButtonInteractionEvent> {
     it.user == this
-        && it.componentId == id
+        && it.componentId == customId
         && filter(it)
 }
 
@@ -203,14 +203,14 @@ suspend inline fun User.awaitButton(button: Button, crossinline filter: (ButtonI
  * }
  * ```
  *
- * @param[id] The button id
+ * @param[customId] The button id
  * @param[filter] A filter function to simplify code flow (optional)
  *
  * @return[ButtonInteractionEvent]
  */
-suspend inline fun Member.awaitButton(id: String, crossinline filter: (ButtonInteractionEvent) -> Boolean = { true }) = jda.await<ButtonInteractionEvent> {
+suspend inline fun Member.awaitButton(customId: String, crossinline filter: (ButtonInteractionEvent) -> Boolean = { true }) = jda.await<ButtonInteractionEvent> {
     it.member == this
-        && it.componentId == id
+        && it.componentId == customId
         && filter(it)
 }
 
