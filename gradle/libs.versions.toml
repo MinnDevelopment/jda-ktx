@@ -1,5 +1,5 @@
 [versions]
-jda = "6.0.0-rc.3"
+jda = "6.0.0"
 kotlin = "2.2.10"
 
 [libraries]

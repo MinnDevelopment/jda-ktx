@@ -18,9 +18,6 @@
 package dev.minn.jda.ktx.interactions.components
 
 import net.dv8tion.jda.api.components.ModalTopLevelComponent
-import net.dv8tion.jda.api.components.actionrow.ActionRow
-import net.dv8tion.jda.api.components.textinput.TextInput
-import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.interactions.callbacks.IModalCallback
 import net.dv8tion.jda.api.modals.Modal
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction
@@ -110,58 +107,12 @@ class InlineModal(val builder: Modal.Builder) {
             builder.title = value
         }
 
-    /** Adds a [TextInput] with [TextInputStyle.PARAGRAPH] to the modal */
-    fun paragraph(
-        id: String,
-        label: String,
-        uniqueId: Int = -1,
-        required: Boolean = TextInputDefaults.required,
-        value: String? = TextInputDefaults.value,
-        placeholder: String? = TextInputDefaults.placeholder,
-        requiredLength: IntRange? = TextInputDefaults.requiredLength,
-        builder: TextInput.Builder.() -> Unit = {}
-    ) {
-        val text = TextInput.create(id, label, TextInputStyle.PARAGRAPH)
-        if (uniqueId != -1)
-            text.uniqueId = uniqueId
-        text.isRequired = required
-        text.value = value
-        text.placeholder = placeholder
-        requiredLength?.let {
-            text.setRequiredRange(it.first, it.last)
-        }
-        configuredComponents.add(row(text.apply(builder).build()))
-    }
-
-    /** Adds a [TextInput] with [TextInputStyle.SHORT] to the modal */
-    fun short(
-        id: String,
-        label: String,
-        uniqueId: Int = -1,
-        required: Boolean = TextInputDefaults.required,
-        value: String? = TextInputDefaults.value,
-        placeholder: String? = TextInputDefaults.placeholder,
-        requiredLength: IntRange? = TextInputDefaults.requiredLength,
-        builder: TextInput.Builder.() -> Unit = {}
-    ) {
-        val text = TextInput.create(id, label, TextInputStyle.SHORT)
-        if (uniqueId != -1)
-            text.uniqueId = uniqueId
-        text.isRequired = required
-        text.value = value
-        text.placeholder = placeholder
-        requiredLength?.let {
-            text.setRequiredRange(it.first, it.last)
-        }
-        configuredComponents.add(row(text.apply(builder).build()))
-    }
-
     /**
      * Builds the [Modal]
      *
      * @return The [Modal] instance
      */
-    fun build(): Modal = builder.addComponents(configuredComponents.mapNotNull { it as? ActionRow }).build()
+    fun build(): Modal = builder.addComponents(configuredComponents).build()
 }
 
 class ModalComponentAccumulator(private val config: MutableList<ModalTopLevelComponent>) {

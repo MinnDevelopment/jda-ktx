@@ -40,7 +40,6 @@ object TextInputDefaults {
  * Uses [TextInputDefaults] for default values.
  *
  * @param[id] The component id used for events
- * @param[label] The label to display above the input box
  * @param[style] The [TextInputStyle]
  * @param[required] Whether the user must provide an input for this field (uses requiredLength)
  * @param[value] The prepopulated value for the input (this will be shown as typed input that the user can replace or keep)
@@ -54,7 +53,6 @@ object TextInputDefaults {
  */
 inline fun TextInputBuilder(
         id: String,
-        label: String,
         style: TextInputStyle,
         uniqueId: Int = -1,
         required: Boolean = TextInputDefaults.required,
@@ -62,7 +60,7 @@ inline fun TextInputBuilder(
         placeholder: String? = TextInputDefaults.placeholder,
         requiredLength: IntRange? = TextInputDefaults.requiredLength,
         builder: InlineTextInput.() -> Unit = {}
-): InlineTextInput = InlineTextInput(TextInput.create(id, label, style)).also {
+): InlineTextInput = InlineTextInput(TextInput.create(id, style)).also {
     if (uniqueId != -1)
         it.uniqueId = uniqueId
     it.required = required
@@ -80,7 +78,6 @@ inline fun TextInputBuilder(
  * Uses [TextInputDefaults] for default values.
  *
  * @param[id] The component id used for events
- * @param[label] The label to display above the input box
  * @param[style] The [TextInputStyle]
  * @param[required] Whether the user must provide an input for this field (uses requiredRange)
  * @param[value] The prepopulated value for the input (this will be shown as typed input that the user can replace or keep)
@@ -94,7 +91,6 @@ inline fun TextInputBuilder(
  */
 inline fun TextInput(
         id: String,
-        label: String,
         style: TextInputStyle,
         uniqueId: Int = -1,
         required: Boolean = TextInputDefaults.required,
@@ -102,30 +98,23 @@ inline fun TextInput(
         placeholder: String? = TextInputDefaults.placeholder,
         requiredLength: IntRange? = TextInputDefaults.requiredLength,
         builder: InlineTextInput.() -> Unit = {}
-) = TextInputBuilder(id, label, style, uniqueId, required, value, placeholder, requiredLength, builder).build()
+) = TextInputBuilder(id, style, uniqueId, required, value, placeholder, requiredLength, builder).build()
 
 /**
  * Kotlin idiomatic builder for [TextInput]
  */
 class InlineTextInput(val builder: TextInput.Builder) : InlineComponent {
-    /** Delegated property for [TextInput.Builder.setId] */
+    /** Delegated property for [TextInput.Builder.setCustomId] */
     var id: String
         get() = builder.customId
         set(value) {
-            builder.id = value
+            builder.customId = value
         }
 
     override var uniqueId: Int
         get() = builder.uniqueId
         set(value) {
             builder.uniqueId = value
-        }
-
-    /** Delegated property for [TextInput.Builder.setLabel] */
-    var label: String
-        get() = builder.label
-        set(value) {
-            builder.label = value
         }
 
     /** Delegated property for [TextInput.Builder.setStyle] */
