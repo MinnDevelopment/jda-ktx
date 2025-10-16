@@ -17,7 +17,10 @@
 
 package dev.minn.jda.ktx.interactions.components
 
+import net.dv8tion.jda.api.components.Component
 import net.dv8tion.jda.api.components.ModalTopLevelComponent
+import net.dv8tion.jda.api.components.label.Label
+import net.dv8tion.jda.api.components.label.LabelChildComponent
 import net.dv8tion.jda.api.interactions.callbacks.IModalCallback
 import net.dv8tion.jda.api.modals.Modal
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction
@@ -106,6 +109,26 @@ class InlineModal(val builder: Modal.Builder) {
         set(value) {
             builder.title = value
         }
+
+    /**
+     * Component that contains a label, an optional description,
+     * and a [child component][LabelChildComponent], see [Label][net.dv8tion.jda.api.components.label.Label].
+     *
+     * @param label       Label of the Label, see [Label.withLabel]
+     * @param uniqueId    Unique identifier of this component, see [Component.withUniqueId]
+     * @param description The description of this Label, see [Label.withDescription]
+     * @param child       The child contained by this Label, see [Label.withChild]
+     * @param block       Lambda allowing further configuration
+     */
+    inline fun label(
+        label: String?,
+        uniqueId: Int = -1,
+        description: String? = null,
+        child: LabelChildComponent? = null,
+        block: InlineLabel.() -> Unit = {},
+    ) {
+        builder.addComponents(Label(label, uniqueId, description, child, block))
+    }
 
     /**
      * Builds the [Modal]
