@@ -87,5 +87,4 @@ fun hsb(hue: Float, saturation: Float, brightness: Float): Int = Color.HSBtoRGB(
 /**
  * Converts the provided hexadecimal color into an integer.
  */
-@OptIn(ExperimentalStdlibApi::class)
 fun hex(@Language(value = "html", prefix = "<div style=\"border-left: #", suffix = "\"/>") hex: String): Int = hex.hexToInt()
