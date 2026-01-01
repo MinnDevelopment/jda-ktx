@@ -17,13 +17,12 @@
 
 package dev.minn.jda.ktx.interactions.components
 
-import dev.minn.jda.ktx.messages.ComponentAccumulator
+import net.dv8tion.jda.api.components.Component
+import net.dv8tion.jda.api.components.ModalTopLevelComponent
+import net.dv8tion.jda.api.components.label.Label
+import net.dv8tion.jda.api.components.label.LabelChildComponent
 import net.dv8tion.jda.api.interactions.callbacks.IModalCallback
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.text.TextInput
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction
 
 /**
@@ -39,7 +38,7 @@ import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction
 fun IModalCallback.replyModal(
     id: String,
     title: String,
-    components: Collection<LayoutComponent> = emptyList(),
+    components: Collection<ModalTopLevelComponent> = emptyList(),
     builder: InlineModal.() -> Unit = {}
 ): ModalCallbackAction {
     return replyModal(Modal(id, title, components, builder))
@@ -60,7 +59,7 @@ fun IModalCallback.replyModal(
 fun ModalBuilder(
     id: String,
     title: String,
-    components: Collection<LayoutComponent> = emptyList(),
+    components: Collection<ModalTopLevelComponent> = emptyList(),
     builder: InlineModal.() -> Unit = {}
 ) = InlineModal(Modal.create(id, title)).also {
     it.configuredComponents.addAll(components)
@@ -80,7 +79,7 @@ fun ModalBuilder(
 fun Modal(
     id: String,
     title: String,
-    components: Collection<LayoutComponent> = emptyList(),
+    components: Collection<ModalTopLevelComponent> = emptyList(),
     builder: InlineModal.() -> Unit = {}
 ) = ModalBuilder(id, title, components, builder).build()
 
@@ -88,14 +87,14 @@ fun Modal(
  * Kotlin idiomatic builder for [Modals][Modal].
  */
 class InlineModal(val builder: Modal.Builder) {
-    internal val configuredComponents = mutableListOf<LayoutComponent>()
+    internal val configuredComponents = mutableListOf<ModalTopLevelComponent>()
 
     /**
      * Components added to the modal.
      *
      * Allows `+=` syntax for adding components.
      */
-    val components: ComponentAccumulator = ComponentAccumulator(configuredComponents)
+    val components: ModalComponentAccumulator = ModalComponentAccumulator(configuredComponents)
 
     /** Delegated property for [Modal.Builder.setId] */
     var id: String
@@ -111,44 +110,24 @@ class InlineModal(val builder: Modal.Builder) {
             builder.title = value
         }
 
-    /** Adds a [TextInput] with [TextInputStyle.PARAGRAPH] to the modal */
-    fun paragraph(
-        id: String,
-        label: String,
-        required: Boolean = TextInputDefaults.required,
-        value: String? = TextInputDefaults.value,
-        placeholder: String? = TextInputDefaults.placeholder,
-        requiredLength: IntRange? = TextInputDefaults.requiredLength,
-        builder: TextInput.Builder.() -> Unit = {}
+    /**
+     * Component that contains a label, an optional description,
+     * and a [child component][LabelChildComponent], see [Label][net.dv8tion.jda.api.components.label.Label].
+     *
+     * @param label       Label of the Label, see [Label.withLabel]
+     * @param uniqueId    Unique identifier of this component, see [Component.withUniqueId]
+     * @param description The description of this Label, see [Label.withDescription]
+     * @param child       The child contained by this Label, see [Label.withChild]
+     * @param block       Lambda allowing further configuration
+     */
+    inline fun label(
+        label: String?,
+        uniqueId: Int = -1,
+        description: String? = null,
+        child: LabelChildComponent? = null,
+        block: InlineLabel.() -> Unit = {},
     ) {
-        val text = TextInput.create(id, label, TextInputStyle.PARAGRAPH)
-        text.isRequired = required
-        text.value = value
-        text.placeholder = placeholder
-        requiredLength?.let {
-            text.setRequiredRange(it.first, it.last)
-        }
-        configuredComponents.add(row(text.apply(builder).build()))
-    }
-
-    /** Adds a [TextInput] with [TextInputStyle.SHORT] to the modal */
-    fun short(
-        id: String,
-        label: String,
-        required: Boolean = TextInputDefaults.required,
-        value: String? = TextInputDefaults.value,
-        placeholder: String? = TextInputDefaults.placeholder,
-        requiredLength: IntRange? = TextInputDefaults.requiredLength,
-        builder: TextInput.Builder.() -> Unit = {}
-    ) {
-        val text = TextInput.create(id, label, TextInputStyle.SHORT)
-        text.isRequired = required
-        text.value = value
-        text.placeholder = placeholder
-        requiredLength?.let {
-            text.setRequiredRange(it.first, it.last)
-        }
-        configuredComponents.add(row(text.apply(builder).build()))
+        builder.addComponents(Label(label, uniqueId, description, child, block))
     }
 
     /**
@@ -156,5 +135,23 @@ class InlineModal(val builder: Modal.Builder) {
      *
      * @return The [Modal] instance
      */
-    fun build(): Modal = builder.addComponents(configuredComponents.mapNotNull { it as? ActionRow }).build()
+    fun build(): Modal = builder.addComponents(configuredComponents).build()
+}
+
+class ModalComponentAccumulator(private val config: MutableList<ModalTopLevelComponent>) {
+    operator fun plusAssign(components: Collection<ModalTopLevelComponent>) {
+        config += components
+    }
+
+    operator fun plusAssign(component: ModalTopLevelComponent) {
+        config += component
+    }
+
+    operator fun minusAssign(components: Collection<ModalTopLevelComponent>) {
+        config -= components.toSet()
+    }
+
+    operator fun minusAssign(component: ModalTopLevelComponent) {
+        config -= component
+    }
 }

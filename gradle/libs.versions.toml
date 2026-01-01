@@ -1,5 +1,5 @@
 [versions]
-jda = "5.6.1"
+jda = "6.0.0"
 kotlin = "2.2.10"
 
 [libraries]
@@ -15,4 +15,3 @@ dokka = "org.jetbrains.dokka:2.0.0"
 jreleaser = "org.jreleaser:1.20.0"
 version-catalog-update = "nl.littlerobots.version-catalog-update:1.0.0"
 versions = "com.github.ben-manes.versions:0.52.0"
-
