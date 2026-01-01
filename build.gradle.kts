@@ -1,14 +1,10 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 import org.gradle.kotlin.dsl.withType
-import org.jetbrains.dokka.base.DokkaBase
-import org.jetbrains.dokka.base.DokkaBaseConfiguration
-import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 import org.jreleaser.gradle.plugin.tasks.AbstractJReleaserTask
 import org.jreleaser.model.Active
-import java.net.URI
 
 plugins {
     `maven-publish`
@@ -28,7 +24,7 @@ buildscript {
 }
 
 group = "club.minnced"
-version = "0.13.0"
+version = "0.14.0"
 
 
 
@@ -45,7 +41,6 @@ tasks.withType<KotlinJvmCompile> {
     compilerOptions {
         allWarningsAsErrors.set(true)
         jvmTarget.set(JvmTarget.JVM_1_8)
-        freeCompilerArgs.addAll("-Xjvm-default=all")
     }
 }
 
@@ -136,22 +131,23 @@ tasks.test.get().dependsOn(tasks.getByName("detekt"))
 // Documentation //
 ///////////////////
 
-tasks.withType<DokkaTask>().configureEach {
-    dokkaSourceSets.named("main") {
+dokka {
+    dokkaSourceSets.main {
         includes.from("packages.md")
         jdkVersion.set(8)
+
         sourceLink {
             localDirectory.set(file("src/main/kotlin"))
-            remoteUrl.set(URI("https://github.com/MinnDevelopment/jda-ktx/tree/master/src/main/kotlin").toURL())
+            remoteUrl("https://github.com/MinnDevelopment/jda-ktx/tree/master/src/main/kotlin")
             remoteLineSuffix.set("#L")
         }
 
-        externalDocumentationLink(
-            url = URI("https://ci.dv8tion.net/job/JDA5/javadoc/").toURL(),
-            packageListUrl = URI("https://ci.dv8tion.net/job/JDA5/javadoc/element-list").toURL()
-        )
+        externalDocumentationLinks.register("JDA") {
+            url("https://docs.jda.wiki/")
+            packageListUrl("https://docs.jda.wiki/element-list")
+        }
 
-        pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
+        pluginsConfiguration.html {
             footerMessage = "Copyright © 2020 Florian Spieß"
         }
     }
@@ -226,7 +222,7 @@ jreleaser {
         }
     }
 
-    signing {
+    signing.pgp {
         active = Active.RELEASE
         armored = true
     }

@@ -100,7 +100,7 @@ dependencies {
 
 # Package dev.minn.jda.ktx.coroutines
 
-Implements extension functions to easily integrate [RestAction](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/requests/RestAction.html), [Task](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/utils/concurrent/Task.html), and [CompletableFuture](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html) into coroutine scopes by adding `await()` for each.
+Implements extension functions to easily integrate [RestAction](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html), [Task](https://docs.jda.wiki/net/dv8tion/jda/api/utils/concurrent/Task.html), and [CompletableFuture](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html) into coroutine scopes by adding `await()` for each.
 
 This also adds any other useful extensions like `Flow` integrations.
 

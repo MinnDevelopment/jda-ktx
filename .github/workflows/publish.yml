@@ -12,14 +12,14 @@ jobs:
     environment: maven-central-release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: 17
           distribution: temurin
       - name: Build and test
-        run: ./gradlew build test dokkaHtml
+        run: ./gradlew build test dokkaGenerateHtml
       - name: Release to Maven Central
         env:
           JRELEASER_MAVENCENTRAL_USERNAME: ${{ secrets.MAVENCENTRAL_USERNAME }}
