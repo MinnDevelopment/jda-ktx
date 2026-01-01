@@ -1,17 +1,17 @@
 [versions]
-jda = "6.0.0"
-kotlin = "2.2.10"
+jda = "6.2.0"
+kotlin = "2.3.0"
 
 [libraries]
 coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2"
 jda = { module = "net.dv8tion:JDA", version.ref = "jda" }
 kotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
-logback = "ch.qos.logback:logback-classic:1.5.18"
+logback = "ch.qos.logback:logback-classic:1.5.23"
 webhooks = "club.minnced:discord-webhooks:0.8.4"
 
 [plugins]
 detekt = "io.gitlab.arturbosch.detekt:1.23.8"
-dokka = "org.jetbrains.dokka:2.0.0"
-jreleaser = "org.jreleaser:1.20.0"
-version-catalog-update = "nl.littlerobots.version-catalog-update:1.0.0"
-versions = "com.github.ben-manes.versions:0.52.0"
+dokka = "org.jetbrains.dokka:2.1.0"
+jreleaser = "org.jreleaser:1.22.0"
+version-catalog-update = "nl.littlerobots.version-catalog-update:1.0.1"
+versions = "com.github.ben-manes.versions:0.53.0"
