@@ -21,13 +21,14 @@ import net.dv8tion.jda.api.entities.channel.Channel
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.io.File
 
+@Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
 inline fun <reified T> optionType() = when(T::class.java) {
-    Float::class.java, Double::class.java -> OptionType.NUMBER
-    Int::class.java, Long::class.java, Short::class.java, Byte::class.java -> OptionType.INTEGER
+    java.lang.Float::class.java, java.lang.Double::class.java -> OptionType.NUMBER
+    Integer::class.java, java.lang.Long::class.java, java.lang.Short::class.java, java.lang.Byte::class.java -> OptionType.INTEGER
     String::class.java -> OptionType.STRING
     User::class.java, Member::class.java -> OptionType.USER
     Role::class.java -> OptionType.ROLE
-    Boolean::class.java -> OptionType.BOOLEAN
+    java.lang.Boolean::class.java -> OptionType.BOOLEAN
     File::class.java, Message.Attachment::class.java -> OptionType.ATTACHMENT
     else -> when {
         Channel::class.java.isAssignableFrom(T::class.java) -> OptionType.CHANNEL

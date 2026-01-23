@@ -48,15 +48,15 @@ import java.awt.Color
  *
  * @return The resolved option value as the given type, or null if the option is not provided by the user
  */
-@Suppress("EXTENSION_SHADOWED_BY_MEMBER") // <- not true if you have generic parameters
+@Suppress("EXTENSION_SHADOWED_BY_MEMBER", "PLATFORM_CLASS_MAPPED_TO_KOTLIN") // <- not true if you have generic parameters
 inline fun <reified T> CommandInteractionPayload.getOption(name: String): T? = when(T::class.java) {
     User::class.java -> getOption(name, OptionMapping::getAsUser) as? T
     Member::class.java -> getOption(name, OptionMapping::getAsMember) as? T
     Role::class.java -> getOption(name, OptionMapping::getAsRole) as? T
-    Int::class.java -> getOption(name, OptionMapping::getAsInt) as? T
-    Long::class.java -> getOption(name, OptionMapping::getAsLong) as? T
+    Integer::class.java, Int::class.java -> getOption(name, OptionMapping::getAsInt) as? T
+    Long::class.java, java.lang.Long::class.java -> getOption(name, OptionMapping::getAsLong) as? T
     Double::class.java -> getOption(name, OptionMapping::getAsDouble) as? T
-    Boolean::class.java -> getOption(name, OptionMapping::getAsBoolean) as? T
+    Boolean::class.java, java.lang.Boolean::class.java -> getOption(name, OptionMapping::getAsBoolean) as? T
     String::class.java -> getOption(name, OptionMapping::getAsString) as? T
     Message.Attachment::class.java -> getOption(name, OptionMapping::getAsAttachment) as? T
     IMentionable::class.java -> getOption(name, OptionMapping::getAsMentionable) as? T
