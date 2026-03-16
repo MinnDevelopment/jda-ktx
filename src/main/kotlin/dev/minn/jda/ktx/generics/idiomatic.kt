@@ -16,8 +16,10 @@
 
 package dev.minn.jda.ktx.generics
 
+import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.channel.Channel
 import net.dv8tion.jda.api.entities.channel.attribute.IGuildChannelContainer
+import net.dv8tion.jda.api.events.GenericEvent
 
 /**
  * Same as [IGuildChannelContainer.getChannelById] but with a generic type parameter instead.
@@ -33,3 +35,8 @@ inline fun <reified T : Channel> IGuildChannelContainer<in T>.getChannel(id: Str
  * Same as [IGuildChannelContainer.getChannelById] but with a generic type parameter instead.
  */
 inline fun <reified T : Channel> IGuildChannelContainer<in T>.getChannel(id: ULong) = getChannel<T>(id.toLong())
+
+/**
+ * Same as [JDA.listenOnce] but with a reified type parameter instead.
+ */
+inline fun <reified E : GenericEvent> JDA.listenOnce() = listenOnce(E::class.java)
