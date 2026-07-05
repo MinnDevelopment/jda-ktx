@@ -3,18 +3,18 @@ import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
-import org.jreleaser.gradle.plugin.tasks.AbstractJReleaserTask
-import org.jreleaser.model.Active
 
 plugins {
     `maven-publish`
+    signing
 
     kotlin("jvm") version(libs.versions.kotlin)
     alias(libs.plugins.detekt)
     alias(libs.plugins.dokka)
     alias(libs.plugins.versions)
     alias(libs.plugins.version.catalog.update)
-    alias(libs.plugins.jreleaser)
+    alias(libs.plugins.nmcp.aggregation)
+    alias(libs.plugins.nmcp)
 }
 
 buildscript {
@@ -62,6 +62,7 @@ dependencies {
     api(libs.coroutines)
 
     implementation(libs.jda)
+    nmcpAggregation(rootProject)
 }
 
 fun isNonStable(version: String): Boolean {
@@ -159,7 +160,24 @@ dokka {
 // Publishing //
 ////////////////
 
-// Generate pom file for maven central
+val mavenCentralUsername: String? = System.getenv("MAVENCENTRAL_USERNAME")?.takeIf { it.isNotBlank() }
+val mavenCentralPassword: String? = System.getenv("MAVENCENTRAL_TOKEN")?.takeIf { it.isNotBlank() }
+val gpgSecretKey: String? = System.getenv("GPG_SECRET_KEY")?.takeIf { it.isNotBlank() }
+val gpgPassphrase: String? = System.getenv("GPG_PASSPHRASE")?.takeIf { it.isNotBlank() }
+
+val stagingDirectory = layout.buildDirectory.dir("staging-deploy").get()
+
+nmcpAggregation {
+    localRepository {
+        name = "staging-deploy"
+        path = stagingDirectory.asFile.path
+    }
+
+    centralPortal {
+        username.set(mavenCentralUsername)
+        password.set(mavenCentralPassword)
+    }
+}
 
 fun generatePom(): MavenPom.() -> Unit {
     return {
@@ -189,8 +207,6 @@ fun generatePom(): MavenPom.() -> Unit {
     }
 }
 
-val stagingDirectory = layout.buildDirectory.dir("staging-deploy").get()
-
 publishing {
     publications {
         register<MavenPublication>("Release") {
@@ -204,42 +220,12 @@ publishing {
 
             pom.apply(generatePom())
         }
-
-        repositories.maven {
-            url = stagingDirectory.asFile.toURI()
-        }
     }
 }
 
-jreleaser {
-    project {
-        versionPattern = "CUSTOM"
+if (gpgSecretKey != null) {
+    signing {
+        useInMemoryPgpKeys(gpgSecretKey, gpgPassphrase ?: "")
+        sign(publishing.publications)
     }
-
-    release {
-        github {
-            enabled = false
-        }
-    }
-
-    signing.pgp {
-        active = Active.RELEASE
-        armored = true
-    }
-
-    deploy {
-        maven {
-            mavenCentral {
-                register("sonatype") {
-                    active = Active.RELEASE
-                    url = "https://central.sonatype.com/api/v1/publisher"
-                    stagingRepository(stagingDirectory.asFile.relativeTo(projectDir).path)
-                }
-            }
-        }
-    }
-}
-
-tasks.withType<AbstractJReleaserTask>().configureEach {
-    mustRunAfter(tasks.named("publish"))
 }
