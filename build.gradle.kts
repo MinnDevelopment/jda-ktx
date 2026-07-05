@@ -1,4 +1,3 @@
-import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -11,7 +10,6 @@ plugins {
     kotlin("jvm") version(libs.versions.kotlin)
     alias(libs.plugins.detekt)
     alias(libs.plugins.dokka)
-    alias(libs.plugins.versions)
     alias(libs.plugins.version.catalog.update)
     alias(libs.plugins.nmcp.aggregation)
     alias(libs.plugins.nmcp)
@@ -65,21 +63,6 @@ dependencies {
     nmcpAggregation(rootProject)
 }
 
-fun isNonStable(version: String): Boolean {
-    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
-    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
-    val isStable = stableKeyword || regex.matches(version)
-    return isStable.not()
-}
-
-tasks.withType<DependencyUpdatesTask> {
-    rejectVersionIf {
-        isNonStable(candidate.version)
-    }
-
-    gradleReleaseChannel = "current"
-}
-
 versionCatalogUpdate {
     versionSelector(VersionSelectors.STABLE)
 }
@@ -90,18 +73,22 @@ versionCatalogUpdate {
 // Task Configuration //
 ////////////////////////
 
-val javadoc: Javadoc by tasks
+val sourcesJar = tasks.register<Jar>("sourcesJar") {
+    group = "build"
+    description = "Assembles sources JAR"
 
-val sourcesJar by tasks.registering(Jar::class) {
     from(sourceSets["main"].allSource)
     archiveClassifier.set("sources")
 }
 
-val javadocJar by tasks.registering(Jar::class) {
-    from(javadoc.destinationDir)
+val javadocJar = tasks.register<Jar>("javadocJar") {
+    group = "build"
+    description = "Assembles javadoc JAR"
+
+    from(tasks.javadoc.get().destinationDir)
     archiveClassifier.set("javadoc")
 
-    dependsOn(javadoc)
+    dependsOn(tasks.javadoc)
 }
 
 tasks.build {

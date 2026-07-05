@@ -29,7 +29,7 @@ potential-bugs:
   Deprecation:
     active: true
   IgnoredReturnValue:
-    restrictToAnnotatedMethods: false
+    restrictToConfig: false
     active: true
   MissingPackageDeclaration:
     active: true
