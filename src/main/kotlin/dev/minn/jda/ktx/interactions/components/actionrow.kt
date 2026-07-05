@@ -33,7 +33,12 @@ class InlineActionRow : InlineComponent {
         uniqueId: Int = -1,
     ) {
         components += Button.of(style, customId, label, emoji)
-            .withUniqueId(uniqueId)
+            .let {
+                if (uniqueId != -1)
+                    it.withUniqueId(uniqueId)
+                else
+                    it
+            }
             .withDisabled(disabled)
     }
 
